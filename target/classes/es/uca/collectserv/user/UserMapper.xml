@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="es.uca.collectserv.user.User">
+  	<resultMap id="userResultMap" type="es.uca.collectserv.user.User">
+  		<result property="id" column="id_user_pk "/>
+  		<result property="name" column="name_nn" />
+  		<result property="phone_number" column="telephone_num" />
+  	</resultMap>
+  	
+  	<select id="userId" resultMap="userResultMap">
+  		SELECT * FROM servrecog_usuarios WHERE id_user_pk = #{id}
+  	</select>
+  	
+  	<insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO servrecog_usuarios (name_nn,telephone_num)
+  		VALUES (#{name},#{phone_number})
+	</insert>
+  	
+  </mapper>
