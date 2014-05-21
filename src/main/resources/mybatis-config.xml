@@ -23,7 +23,8 @@
 	 </environments>
 	     
 	 <mappers>
-	    <mapper resource="es/uca/collectserv/user/UserMapper.xml"/>
+	    <mapper resource="es/collectserv/user/UserMapper.xml"/> 
+	    <mapper resource="es/collectserv/collectionpoint/CollectionPointMapper.xml"/>
 	 </mappers>
      
  </configuration>
