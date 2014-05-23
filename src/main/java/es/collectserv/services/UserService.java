@@ -1,4 +1,4 @@
-package es.collectserv.user;
+package es.collectserv.services;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;

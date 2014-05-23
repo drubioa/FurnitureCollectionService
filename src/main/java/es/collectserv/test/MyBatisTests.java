@@ -14,8 +14,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import es.collectserv.collectionpoint.CollectionPoint;
-import es.collectserv.user.User;
+import es.collectserv.clases.CollectionPoint;
+import es.collectserv.clases.User;
 
 
 @RunWith(JUnit4.class)
@@ -50,7 +50,7 @@ public class MyBatisTests {
 		SqlSession session = sqlSesionFac.openSession();
 		try{
 			CollectionPoint point = (CollectionPoint) 
-					session.selectOne("es.collectserv.collectionpoint.CollectionPointMapper.selectPoint", 1);
+					session.selectOne("es.collectserv.clases.CollectionPointMapper.selectPoint", 1);
 			System.out.println(point.getDirection());
 			assertTrue(point.getDirection().equals("Calle Sol"));
 		}finally{
@@ -63,7 +63,7 @@ public class MyBatisTests {
 	public void testInsertUser(){
 		SqlSession session = sqlSesionFac.openSession();
 		User user1 = new User("Diego","699390216");
-		session.insert("es.collectserv.user.UserMapper.insertUser", user1);
+		session.insert("es.collectserv.services.UserMapper.insertUser", user1);
 		session.commit();
 		User user2 = (User) session.selectOne("es.uca.collectserv.user.UserMapper.selectUser", 1);
 		assertTrue(user2.getName() == user1.getName());

@@ -1,4 +1,4 @@
-package es.collectserv.user;
+package es.collectserv.clases;
 
 public class User {
 	private int id;

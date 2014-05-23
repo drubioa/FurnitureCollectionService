@@ -1,4 +1,4 @@
-package es.collectserv.collectionpoint;
+package es.collectserv.clases;
 
 public class CollectionPoint {
 	private int id;

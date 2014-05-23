@@ -3,8 +3,8 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-  <mapper namespace="es.collectserv.user.User">
-  	<resultMap id="userResultMap" type="es.collectserv.user.User">
+  <mapper namespace="es.collectserv.services.User">
+  	<resultMap id="userResultMap" type="es.collectserv.services.User">
   		<result property="id" column="id_user_pk"/>
   		<result property="name" column="name_nn" />
   		<result property="phone_number" column="telephone_num" />

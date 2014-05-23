@@ -3,10 +3,10 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-  <mapper namespace="es.collectserv.collectionpoint.CollectionPointMapper">
+  <mapper namespace="es.collectserv.clases.CollectionPointMapper">
   	
   	<resultMap id="collectionPointMap" 
-  	type="es.collectserv.collectionpoint.CollectionPoint">
+  	type="es.collectserv.clases.CollectionPoint">
   		<result property="id" column="id_punto_recogida_pk"/>
   		<result property="longitude" column="lon_nn" />
   		<result property="latitude" column="lat_nn" />
