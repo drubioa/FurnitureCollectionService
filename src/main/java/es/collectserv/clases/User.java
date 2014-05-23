@@ -1,9 +1,15 @@
 package es.collectserv.clases;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class User {
-	private int id;
 	private String name;
 	private String phone_number;
+	
+	public User(){
+		
+	}
 	
 	public User(String name,String phone_number){
 		this.name = name;
@@ -18,14 +24,6 @@ public class User {
 		this.name = name;
 	}
 	
-	public int getId() {
-		return id;
-	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
-	
 	public String getPhone_number() {
 		return phone_number;
 	}
@@ -33,4 +31,18 @@ public class User {
 	public void setPhone_number(String phone_number) {
 		this.phone_number = phone_number;
 	}
+	
+	 @Override
+	    public boolean equals(Object o) {
+	        if (this == o) return true;
+	        if (o == null || getClass() != o.getClass()) return false;
+
+	        User that = (User) o;
+
+	        if (phone_number != that.phone_number) return false;
+	        if (name != null ? !name.equals(that.name) : 
+	        	that.name != null)return false;
+
+	        return true;
+	    }
 }

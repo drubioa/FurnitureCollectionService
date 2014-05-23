@@ -3,24 +3,23 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
-  <mapper namespace="es.collectserv.services.User">
-  	<resultMap id="userResultMap" type="es.collectserv.services.User">
-  		<result property="id" column="id_user_pk"/>
+  <mapper namespace="UserMapper">
+  	<resultMap id="userResultMap" type="es.collectserv.clases.User">
   		<result property="name" column="name_nn" />
-  		<result property="phone_number" column="telephone_num" />
+  		<result property="phone_number" column="telephone_pk" />
   	</resultMap>
   	
   	<select id="selectUser" resultMap="userResultMap">
-  		SELECT * FROM servrecog_usuarios WHERE id_user_pk = #{id}
+  		SELECT * FROM servrecog_usuarios WHERE telephone_pk = #{phone_number}
   	</select>
   	
-  	<insert id="insertUser" useGeneratedKeys="true" keyProperty="id">
-		INSERT INTO servrecog_usuarios (name_nn,telephone_num)
+  	<insert id="insertUser">
+		INSERT INTO servrecog_usuarios (name_nn, telephone_pk)
   		VALUES (#{name},#{phone_number})
 	</insert>
   	
 	<delete id="deleteUser">
-	  DELETE FROM servrecog_usuarios WHERE id_user_pk = #{deleteUser}
+	  DELETE FROM servrecog_usuarios WHERE telephone_pk = #{phone_number}
 	</delete>
   	
   </mapper>

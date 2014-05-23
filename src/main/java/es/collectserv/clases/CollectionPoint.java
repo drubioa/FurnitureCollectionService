@@ -6,6 +6,10 @@ public class CollectionPoint {
 	private String direction;
 	private int zone;
 	
+	public CollectionPoint(){
+		
+	}
+	
 	public double getLongitude() {
 		return longitude;
 	}

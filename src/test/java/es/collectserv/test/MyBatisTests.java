@@ -17,7 +17,6 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import es.collectserv.clases.CollectionPoint;
 import es.collectserv.clases.User;
 
-
 @RunWith(JUnit4.class)
 public class MyBatisTests {
 	private String configFile;
@@ -50,9 +49,11 @@ public class MyBatisTests {
 		SqlSession session = sqlSesionFac.openSession();
 		try{
 			CollectionPoint point = (CollectionPoint) 
-					session.selectOne("es.collectserv.clases.CollectionPointMapper.selectPoint", 1);
+					session.selectOne("CollectionPointMapper.selectPoint", 1);
 			System.out.println(point.getDirection());
 			assertTrue(point.getDirection().equals("Calle Sol"));
+		}catch(Exception e){
+			fail(e.toString());
 		}finally{
 			session.close();
 		}
@@ -61,14 +62,22 @@ public class MyBatisTests {
 	
 	@Test
 	public void testInsertUser(){
+		String name = "Diego";
+		String phone_number = "699390216";
 		SqlSession session = sqlSesionFac.openSession();
-		User user1 = new User("Diego","699390216");
-		session.insert("es.collectserv.services.UserMapper.insertUser", user1);
+		try{
+		User user1 = new User(name,phone_number);
+		session.insert("UserMapper.insertUser", user1);
+		User user2 = (User) session.selectOne("UserMapper.selectUser", phone_number);
+		assertTrue(user2.getName().equals(name));
+		assertTrue(user2.getPhone_number().equals(phone_number));
+		session.delete("UserMapper.deleteUser", phone_number);
 		session.commit();
-		User user2 = (User) session.selectOne("es.uca.collectserv.user.UserMapper.selectUser", 1);
-		assertTrue(user2.getName() == user1.getName());
-		assertTrue(user2.getPhone_number() == user1.getPhone_number());
-		session.close();
+		}catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.close();
+		}
 	}
 
 }

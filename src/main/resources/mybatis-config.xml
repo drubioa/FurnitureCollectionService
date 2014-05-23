@@ -15,16 +15,17 @@
 	        </transactionManager>
 	        <dataSource type="UNPOOLED">
 	            <property name="driver" value="org.postgresql.Driver"/>
-	            <property name="url" value="jdbc:postgresql://localhost:5432/servrecog"/>
+	            <property name="url" 
+	                value="jdbc:postgresql://localhost:5432/servrecog"/>
 	            <property name="username" value="postgres"/>
-	            <property name="password" value="1234"/>
+	            <property name="password" value="admin"/>
 	        </dataSource>
 	   </environment>
 	 </environments>
 	     
 	 <mappers>
-	    <mapper resource="es/collectserv/user/UserMapper.xml"/> 
-	    <mapper resource="es/collectserv/collectionpoint/CollectionPointMapper.xml"/>
+	    <mapper resource="UserMapper.xml"/> 
+	    <mapper resource="CollectionPointMapper.xml"/>
 	 </mappers>
      
  </configuration>
