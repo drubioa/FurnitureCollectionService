@@ -33,16 +33,16 @@ public class User {
 	}
 	
 	 @Override
-	    public boolean equals(Object o) {
-	        if (this == o) return true;
-	        if (o == null || getClass() != o.getClass()) return false;
+	 public boolean equals(Object o) {
+	    if (this == o) return true;
+	    if (o == null || getClass() != o.getClass()) return false;
 
-	        User that = (User) o;
+	    User that = (User) o;
 
-	        if (phone_number != that.phone_number) return false;
-	        if (name != null ? !name.equals(that.name) : 
-	        	that.name != null)return false;
+	    if (phone_number != that.phone_number) return false;
+	    if (name != null ? !name.equals(that.name) : 
+	        that.name != null)return false;
 
-	        return true;
-	    }
+	    return true;
+	}
 }

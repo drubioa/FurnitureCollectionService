@@ -1,5 +1,8 @@
 package es.collectserv.clases;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class CollectionPoint extends Point{
 	private int id;
 
