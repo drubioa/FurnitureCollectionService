@@ -63,7 +63,7 @@ public class UserService {
 					Response.Status.INTERNAL_SERVER_ERROR);
 		}
 		if(usuario == null){
-			throw new WebApplicationException(Response.Status.NOT_FOUND);
+			throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
 		}
 		return usuario;
 	}
