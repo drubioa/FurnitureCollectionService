@@ -10,21 +10,21 @@
           <id property="id" column="id_solicitud_pk"/>
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>
-          <result property="telepohone_number" column="telephone_nn"/>
+          <result property="telephone_number" column="telephone_nn"/>
           <association property="collectionPoint" 
           	column="punto_recogida_nn" 
             javaType="es.collectserv.clases.CollectionPoint"
             select="selectCollectionPoint"/> 
            <collection property="furnitures" 
-          	javaType="ArrayList"
-          	ofType="es.collectserv.clases.Furniture"
-          	select="selectFurniture" 
-          	column="id_solicitud_pk"/> 
+           	 javaType="ArrayList"
+          	 ofType="es.collectserv.clases.Furniture"
+          	 select="selectFurniture" 
+          	 column="id_solicitud_pk"/> 
       </resultMap>
       
       <select id="selectCollectionPoint" 
   	    resultType="es.collectserv.clases.CollectionPoint">
-  		  SELECT id_punto_recogida_pk AS id,
+  		  SELECT id_punto_recogida_pk AS pointId,
           	lon_nn AS longitude,
        	  	lat_nn AS latitude,
        	  	direccion AS direction,
@@ -33,7 +33,7 @@
           	WHERE id_punto_recogida_pk = #{id}
 	  </select>
 
-       <select id="selectFurniture" 
+      <select id="selectFurniture" 
           resultType="es.collectserv.clases.Furniture">
           SELECT 
           id_furniture_nn AS id,
@@ -45,4 +45,18 @@
   		SELECT * FROM servrecog_solicitudes WHERE id_solicitud_pk = #{id}
 	  </select>
 	  
+      <insert id="insertCollectionRequest" 
+          parameterType="es.collectserv.clases.CollectionRequest"
+          useGeneratedKeys="true" keyColumn="id_solicitud_pk"
+           keyProperty="id">
+     	INSERT INTO servrecog_solicitudes(
+			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn) 
+			VALUES (#{fch_request},#{fch_collection},
+			#{telephone_number},#{collectionPoint.pointId}) 
+      </insert>
+     
+      <insert id="insertFurniture">
+          
+      </insert>
+      
   </mapper>

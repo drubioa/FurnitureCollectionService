@@ -10,7 +10,7 @@ public class CollectionRequest{
 	private int id;
 	private Date fch_request;
 	private Date fch_collection;
-	private String telepohone_number;
+	private String telephone_number;
 	private CollectionPoint collectionPoint;
 	private List<Furniture> furnitures;
 	
@@ -35,11 +35,11 @@ public class CollectionRequest{
 	}
 
 	public String getTelepehone_number() {
-		return telepohone_number;
+		return telephone_number;
 	}
 
 	public void setTelepehone_number(String telepehone_number) {
-		this.telepohone_number = telepehone_number;
+		this.telephone_number = telepehone_number;
 	}
 
 	public List<Furniture> getFurnitures() {

@@ -17,7 +17,7 @@
     
   	<select id="selectCollectPointForZone" 
   	    resultType="es.collectserv.clases.CollectionPoint">
-  		SELECT id_punto_recogida_pk AS id,
+  		SELECT id_punto_recogida_pk AS pointId,
           lon_nn AS longitude,
        	  lat_nn AS latitude,
           direccion AS direcion,

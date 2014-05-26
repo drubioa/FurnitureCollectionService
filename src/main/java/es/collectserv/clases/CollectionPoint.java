@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class CollectionPoint extends Point{
-	private int id;
+	private int pointId;
 	private int zone;
 	
 	public CollectionPoint(){
@@ -19,12 +19,12 @@ public class CollectionPoint extends Point{
 		this.zone = zone;
 	}
 
-	public int getId() {
-		return id;
+	public int getPointId() {
+		return pointId;
 	}
 
-	public void setId(int id) {
-		this.id = id;
+	public void setPointId(int pointId) {
+		this.pointId = pointId;
 	}
 	
 }
