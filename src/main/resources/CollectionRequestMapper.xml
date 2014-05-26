@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="CollectionRequestMapper">
+      
+      <resultMap id="collectionRequestMap" 
+          type="es.collectserv.clases.CollectionRequest">
+          <id property="id" column="id_solicitud_pk"/>
+          <result property="fch_request" column="fch_solicitud_nn"/>
+          <result property="fch_collection" column="fch_recogida_nn"/>
+          <result property="telepohone_number" column="telephone_nn"/>
+          <association property="collectionPoint" 
+          	column="punto_recogida_nn" 
+            javaType="es.collectserv.clases.CollectionPoint"
+            select="selectCollectionPoint"/> 
+           <collection property="furnitures" 
+          	javaType="ArrayList"
+          	ofType="es.collectserv.clases.Furniture"
+          	select="selectFurniture" 
+          	column="id_solicitud_pk"/> 
+      </resultMap>
+      
+      <select id="selectCollectionPoint" 
+  	    resultType="es.collectserv.clases.CollectionPoint">
+  		  SELECT id_punto_recogida_pk AS id,
+          	lon_nn AS longitude,
+       	  	lat_nn AS latitude,
+       	  	direccion AS direction,
+          	zone 
+          	FROM servrecog_puntos_recogida
+          	WHERE id_punto_recogida_pk = #{id}
+	  </select>
+
+       <select id="selectFurniture" 
+          resultType="es.collectserv.clases.Furniture">
+          SELECT 
+          id_furniture_nn AS id,
+          cantidad_ck AS cantidad 
+          FROM servrecog_muebles_solicitud WHERE id_solicitud_nn = #{id}
+      </select>
+      
+      <select id="selectCollectionRequest" resultMap="collectionRequestMap">
+  		SELECT * FROM servrecog_solicitudes WHERE id_solicitud_pk = #{id}
+	  </select>
+	  
+  </mapper>

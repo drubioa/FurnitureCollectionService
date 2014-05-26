@@ -3,22 +3,14 @@ package es.collectserv.clases;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class CollectionPoint extends Point{
+public class Furniture {
 	private int id;
-	private int zone;
+	private int cantidad;
 	
-	public CollectionPoint(){
+	public Furniture(){
 		
 	}
 	
-	public int getZone() {
-		return zone;
-	}
-
-	public void setZone(int zone) {
-		this.zone = zone;
-	}
-
 	public int getId() {
 		return id;
 	}
@@ -27,4 +19,11 @@ public class CollectionPoint extends Point{
 		this.id = id;
 	}
 	
+	public int getCantidad() {
+		return cantidad;
+	}
+
+	public void setCantidad(int cantidad) {
+		this.cantidad = cantidad;
+	}
 }

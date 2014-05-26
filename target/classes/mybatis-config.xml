@@ -26,6 +26,7 @@
 	 <mappers>
 	    <mapper resource="UserMapper.xml"/> 
 	    <mapper resource="ZoneMapper.xml"/>
+	    <mapper resource="CollectionRequestMapper.xml"/> 
 	 </mappers>
      
  </configuration>
