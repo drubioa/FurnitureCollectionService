@@ -8,7 +8,9 @@ import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
@@ -17,6 +19,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import es.collectserv.clases.CollectionPoint;
 import es.collectserv.clases.CollectionRequest;
+import es.collectserv.clases.Furniture;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
 import es.collectserv.clases.Zone;
@@ -103,7 +106,14 @@ public class TestMyBatis {
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
 			// Test to add furnitures
-			 
+			List<Furniture> list = new ArrayList<Furniture>();
+			Furniture example = new Furniture();
+			example.setCantidad(1);
+			example.setId(1);
+			list.add(example);
+			solicitud.setFurnitures(list);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
+					solicitud);
 		}
 		catch(Exception e){
 			fail(e.toString());

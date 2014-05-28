@@ -11,6 +11,7 @@
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>
           <result property="telephone_number" column="telephone_nn"/>
+          <result property="totalItems" column="num_enseres"/>
           <association property="collectionPoint" 
           	column="punto_recogida_nn" 
             javaType="es.collectserv.clases.CollectionPoint"
@@ -42,17 +43,27 @@
       </select>
       
       <select id="selectCollectionRequest" resultMap="collectionRequestMap">
-  		SELECT * FROM servrecog_solicitudes WHERE id_solicitud_pk = #{id}
+  		SELECT * FROM servrecog_muebles_solicitud_view 
+  		WHERE id_solicitud_pk = #{id}
 	  </select>
 	  
-      <insert id="insertCollectionRequest" 
-          parameterType="es.collectserv.clases.CollectionRequest"
+      <insert id="insertCollectionRequest"
           useGeneratedKeys="true" keyColumn="id_solicitud_pk"
            keyProperty="id">
      	INSERT INTO servrecog_solicitudes(
 			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn) 
 			VALUES (#{fch_request},#{fch_collection},
 			#{telephone_number},#{collectionPoint.pointId}) 
+      </insert>
+      
+      <insert id="insertFurnituresInRequest">
+		INSERT INTO servrecog_muebles_solicitud(
+			id_furniture_nn,id_solicitud_nn,cantidad_ck) 
+			VALUES 
+        <foreach collection="furnitures" item="item" 	
+            open="(" close=")" separator=",">
+          #{item.id},#{id},#{item.cantidad}
+        </foreach>
       </insert>
      
       <insert id="insertFurniture">

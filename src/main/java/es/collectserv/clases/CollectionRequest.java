@@ -13,6 +13,7 @@ public class CollectionRequest{
 	private String telephone_number;
 	private CollectionPoint collectionPoint;
 	private List<Furniture> furnitures;
+	private int totalItems;
 	
 	public CollectionRequest(){
 		
@@ -64,6 +65,14 @@ public class CollectionRequest{
 
 	public void setCollectionPoint(CollectionPoint collectionPoint) {
 		this.collectionPoint = collectionPoint;
+	}
+
+	public int getTotalItems() {
+		return totalItems;
+	}
+
+	public void setTotalItems(int totalItems) {
+		this.totalItems = totalItems;
 	}
 
 }
