@@ -1,7 +1,5 @@
 package es.collectserv.services;
 
-import java.io.IOException;
-import java.io.InputStream;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -11,23 +9,17 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import es.collectserv.clases.CollectionPoint;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.Zone;
+import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 @Path("/point")
 public class ColletionPointsService {
-	private InputStream is;
-	private SqlSessionFactory sqlSesionFac;
-	
-	public ColletionPointsService() throws IOException{
-		is = Resources.getResourceAsStream("mybatis-config.xml");
-		sqlSesionFac = new SqlSessionFactoryBuilder().build(is);
+
+	public ColletionPointsService(){
 	}
 	
 	@GET
@@ -42,7 +34,8 @@ public class ColletionPointsService {
 			point = new Point(lat,lng);
 			// Try to mapper Zone 
 			try{
-				SqlSession session = sqlSesionFac.openSession();
+				SqlSession session = 
+						new SimpleMyBatisSesFactory().getOpenSqlSesion();
 				zone = session.selectOne("ZoneMapper.selectZone", 
 						zoneId);
 				session.close();

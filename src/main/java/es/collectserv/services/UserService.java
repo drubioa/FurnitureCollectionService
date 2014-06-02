@@ -1,7 +1,5 @@
 package es.collectserv.services;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
@@ -14,28 +12,24 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import es.collectserv.clases.User;
+import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 @Path("/users")
 public class UserService {
-	private InputStream is;
-	private SqlSessionFactory sqlSesionFac;
 	
-	public UserService() throws IOException{
-		is = Resources.getResourceAsStream("mybatis-config.xml");
-		sqlSesionFac = new SqlSessionFactoryBuilder().build(is);
+	public UserService(){
 	}
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createNewUser(User user) {
 		try{
-			SqlSession session = sqlSesionFac.openSession();
+			
+			SqlSession session =
+					new SimpleMyBatisSesFactory().getOpenSqlSesion();
 			session.insert("UserMapper.insertUser", user);
 			session.commit();
 			session.close();
@@ -54,7 +48,8 @@ public class UserService {
 		String phone_number){
 		User usuario;
 		try{
-			SqlSession session = sqlSesionFac.openSession();
+			SqlSession session = 
+					new SimpleMyBatisSesFactory().getOpenSqlSesion();
 			usuario = session.selectOne("UserMapper.selectUser", 
 					phone_number);
 			session.close();

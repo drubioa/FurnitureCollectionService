@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -153,6 +154,84 @@ public class TestMyBatis {
 			session.rollback();
 			session.close();
 		}
+	}
+	
+	@Test
+	public void testInsertAndSelectCollectionRequest(){
+		String name = "Diego";
+		String phone_number = "615690926";
+		User user = new User(name,phone_number);
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelepehone_number(phone_number);
+		solicitud.setFch_collection(new Date());
+		solicitud.setFch_request(new Date());
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			// Inserts new example user
+			session.insert("UserMapper.insertUser", user);
+			// Find some collection point
+			Point currentPoint = new Point(36.5363800,-6.1930940); 
+			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			CollectionPoint point = 
+					zone.nearestCollectionPoint(currentPoint); 
+			solicitud.setCollectionPoint(point);
+			assertTrue(solicitud.getId() == 0);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			assertTrue(solicitud.getId() > 0);
+			// Select inserted request in db
+			assertNotNull(
+					session.selectOne("CollectionRequestMapper"+
+			".selectCollectionRequestById",solicitud.getId()));
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}		
+	}
+	
+	@Test
+	public void testSelectAllCollectionRequests(){
+		String name = "Diego";
+		String phone_number = "615690926";
+		User user = new User(name,phone_number);
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelepehone_number(phone_number);
+		Calendar gc = Calendar.getInstance(); 
+		gc.add(Calendar.DATE, 1);
+		solicitud.setFch_collection(gc.getTime());
+		solicitud.setFch_request(new Date());
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			// Inserts new example user
+			session.insert("UserMapper.insertUser", user);
+			// Find some collection point
+			Point currentPoint = new Point(36.5363800,-6.1930940); 
+			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			CollectionPoint point = 
+					zone.nearestCollectionPoint(currentPoint); 
+			solicitud.setCollectionPoint(point);
+			assertTrue(solicitud.getId() == 0);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			assertTrue(solicitud.getId() > 0);
+			// Select inserted request in db
+			assertNotNull(
+					session.selectList("CollectionRequestMapper"+
+			".selectPendingRequest"));
+			assertTrue(session.selectList("CollectionRequestMapper"+
+					".selectPendingRequest").size() == 2);
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}		
 	}
 	
 	@Test
