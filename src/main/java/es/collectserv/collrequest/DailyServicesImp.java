@@ -1,4 +1,4 @@
-package es.collectserv.clases;
+package es.collectserv.collrequest;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,14 +15,14 @@ import es.collectserv.factories.SimpleMyBatisSesFactory;
  * @author Diego Rubio Abujas
  * @version 1.0
  */
-public class DailyServices {
+public class DailyServicesImp implements DailyServices{
 	private Date day;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private List<ProvisionalAppointment> requestToConfirmation;
 	private int furniteres_per_day;
 	
-	DailyServices(Date day) throws Exception{
+	DailyServicesImp(Date day) throws Exception{
 		if(day.after(new Date())){
 			throw new Exception("invalid day, it must "
 					+ "be later than the current day");
@@ -32,17 +32,25 @@ public class DailyServices {
 		SqlSession session = new SimpleMyBatisSesFactory().getOpenSqlSesion();
 		furniteres_per_day = 
 				session.selectOne("CollectionResquestMapper"
-					+".selectFurnituresByDay");
+					+".selectFurnituresByDay",day);
 		if(furniteres_per_day > MAX_FUNRITNURES_PER_DAY){
 			throw new Exception("Invalid number of furnirutre request for this day");
 		}
 	}	
 	
-	/**
-	 * Obtiene el número de enseres que el servicio puere recoger para un día especifico.
-	 * @return int número de enseres que se pueden solicitar dicho día en función
-	 * de las peticiones previamente realizadas
-	 */
+
+	public ProvisionalAppointment getAppointment(String phone,
+			int num_furnitures) throws Exception{
+		if(!(obtainRealizablePeticions() < num_furnitures)
+				|| userGotPreviousRequest(phone)){
+			throw new Exception("Resquest is not realizable");
+		}
+		ProvisionalAppointment requestToConfirmation = 
+				new ProvisionalAppointment(phone,num_furnitures,day);
+		this.furniteres_per_day += num_furnitures;
+		return requestToConfirmation;
+	}
+	
 	public int obtainRealizablePeticions(){
 		if((MAX_FUNRITNURES_PER_DAY - furniteres_per_day) != 0){
 			if((MAX_FUNRITNURES_PER_DAY - furniteres_per_day) > 
@@ -52,7 +60,6 @@ public class DailyServices {
 			else{
 				return (MAX_FUNRITNURES_PER_DAY - furniteres_per_day);
 			}
-	
 		}
 		else{
 			return 0;

@@ -2,17 +2,25 @@ package es.collectserv.clases;
 
 import java.util.Date;
 
-public class Request {
+public abstract class Request {
+	private String telephone;
+	private int num_furnitures;
 	private Date fch_request;
 	private Date fch_collection;
-	private int num_furnitures;
-	private String telephone;
+
 	final static int MAX_FURNITURES_PER_REQ = 4;
 	
 	public Request(){
 		
 	}
 
+	public Request(String telephone,int num_furnitures,Date fch_collection){
+		this.telephone = telephone;
+		this.num_furnitures = num_furnitures;
+		this.fch_collection = fch_collection;
+		this.fch_request = new Date();
+	}
+	
 	public Date getFch_request() {
 		return fch_request;
 	}

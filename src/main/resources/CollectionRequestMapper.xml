@@ -67,7 +67,7 @@
   		WHERE fch_recogida_nn > now() AND telephone_nn = #{id}
 	  </select>
       
-      <select id="selectAllCollectionDays">
+      <select id="selectAllCollectionDays" resultType="Date">
           SELECT DISTINCT(fch_recogida_nn) FROM servrecog_solicitudes
       </select>	  
       

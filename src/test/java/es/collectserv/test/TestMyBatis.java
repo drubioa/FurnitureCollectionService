@@ -192,6 +192,8 @@ public class TestMyBatis {
 		}		
 	}
 	
+	
+	
 	@Test
 	public void testSelectAllCollectionRequests(){
 		String name = "Diego";
@@ -232,6 +234,119 @@ public class TestMyBatis {
 			session.rollback();
 			session.close();
 		}		
+	}
+	
+	@Test
+	public void testSelectEmptyPendingResquestByPhone(){
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			assertTrue(
+					session.selectList("CollectionRequestMapper"+
+			".selectPendingRequestByPhone","900900900").size() == 0);
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}		
+	}
+	
+	@Test
+	public void testSelectPendingRequestByPhone(){
+		String name = "Diego";
+		String phone_number = "615690926";
+		User user = new User(name,phone_number);
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelepehone_number(phone_number);
+		Calendar gc = Calendar.getInstance(); 
+		gc.add(Calendar.DATE, 1);
+		solicitud.setFch_collection(gc.getTime());
+		solicitud.setFch_request(new Date());
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			// Inserts new example user
+			session.insert("UserMapper.insertUser", user);
+			// Find some collection point
+			Point currentPoint = new Point(36.5363800,-6.1930940); 
+			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			CollectionPoint point = 
+					zone.nearestCollectionPoint(currentPoint); 
+			solicitud.setCollectionPoint(point);
+			assertTrue(solicitud.getId() == 0);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			assertTrue(solicitud.getId() > 0);
+			// Select inserted request in db by phone
+			assertNotNull(
+					session.selectList("CollectionRequestMapper"+
+			".selectPendingRequestByPhone",phone_number));
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}		
+	}
+	
+	@Test
+	public void testSelectAllEmptyCollectionDays(){
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			List<Date> days = session.selectList("CollectionRequestMapper"+
+					".selectAllCollectionDays");
+			assertNotNull(days);
+			assertTrue(days.size() == 0);
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}
+	}
+	
+	@Test
+	public void testSelectAllCollectionDays(){
+		String name = "Diego";
+		String phone_number = "615690926";
+		User user = new User(name,phone_number);
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelepehone_number(phone_number);
+		Calendar gc = Calendar.getInstance(); 
+		gc.add(Calendar.DATE, 1);
+		solicitud.setFch_collection(gc.getTime());
+		solicitud.setFch_request(new Date());
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			// Inserts new example user
+			session.insert("UserMapper.insertUser", user);
+			// Find some collection point
+			Point currentPoint = new Point(36.5363800,-6.1930940); 
+			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			CollectionPoint point = 
+					zone.nearestCollectionPoint(currentPoint); 
+			solicitud.setCollectionPoint(point);
+			assertTrue(solicitud.getId() == 0);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			assertTrue(solicitud.getId() > 0);
+			// Select inserted request in db
+			List<Date> days = session.selectList("CollectionRequestMapper"+
+					".selectAllCollectionDays");
+			assertNotNull(days);
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}finally{
+			session.rollback();
+			session.close();
+		}				
 	}
 	
 	@Test

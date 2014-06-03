@@ -1,4 +1,4 @@
-package es.collectserv.clases;
+package es.collectserv.collrequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,9 +29,9 @@ public class RequestManagement {
 			SqlSession session = new SimpleMyBatisSesFactory()
 				.getOpenSqlSesion();
 			List<Date> dates = session.selectList(
-					"CollectionRequestMapper.selectAllCollectionDates");
+					"CollectionRequestMapper.selectAllCollectionDays");
 			for(int i = 0;i < dates.size();i++){
-				days.add(new DailyServices(dates.get(i)));
+				days.add(new DailyServicesImp(dates.get(i)));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -45,7 +45,7 @@ public class RequestManagement {
 	 * @param phone
 	 * @return
 	 */
-	public boolean usertGotPreviosRequest(String phone){
+	public boolean userGotPreviosRequest(String phone){
 		boolean existRequest = false;
 		for(int i = 0;i < days.size();i++){
 			existRequest = days.get(i).userGotPreviousRequest(phone);
@@ -54,8 +54,10 @@ public class RequestManagement {
 			}
 		}
 		try {
-			SqlSession session = new SimpleMyBatisSesFactory().getOpenSqlSesion();
-			if(session.selectList("CollectionResquetMapper.selectPendingRequestByPhone",phone).size() > 0){
+			SqlSession session = new SimpleMyBatisSesFactory()
+				.getOpenSqlSesion();
+			if(session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone).size() > 0){
 				existRequest = true;
 			}
 			session.close();
@@ -73,23 +75,23 @@ public class RequestManagement {
 	 * @param itemsRequest número de enseres que desea depositar.
 	 * @return List<ProvisionalAppointment>  listado de citas provisionales pendientes
 	 * de confirmar.
-	 * @throws InterruptedException
+	 * @throws Exception 
 	 */
 	public synchronized List<ProvisionalAppointment> 
 	getAppointmentToConfirm(String phone_number,int itemsRequest) 
-			throws InterruptedException{
-		int cont = 0;
+			throws Exception{
 		while(inUse){
 			wait();
 		}
 		inUse = true;
-		for(int i = 0;i < days.size() && cont < itemsRequest;i++){
+		for(int i = 0;i < days.size() && itemsRequest >= 0;i++){
 			if(days.get(i).obtainRealizablePeticions() > 0){
-				if(days.get(i).obtainRealizablePeticions() < itemsRequest){
-					
-				}
-				else{
-					
+				int furnitureRealizables = 
+						days.get(i).obtainRealizablePeticions() - itemsRequest;
+				if(furnitureRealizables > 0){
+					days.get(i).getAppointment(phone_number,
+							furnitureRealizables);
+					itemsRequest -= furnitureRealizables;
 				}
 			}
 		}
