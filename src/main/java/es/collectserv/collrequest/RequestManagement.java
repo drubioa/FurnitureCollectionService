@@ -1,13 +1,6 @@
 package es.collectserv.collrequest;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-
-import org.apache.ibatis.session.SqlSession;
-
-import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 /**
  * Dicha clase representa un gestor de solicitudes que se encargará de proporcionar
@@ -18,54 +11,15 @@ import es.collectserv.factories.SimpleMyBatisSesFactory;
  * @author Diego Rubio Abujas
  * @version 1.0
  */
-public class RequestManagement {
-	private static boolean inUse;
-	private static List<DailyServices> days;
-	
-	public RequestManagement(){
-		inUse = false;
-		days = new ArrayList<DailyServices>();
-		try {
-			SqlSession session = new SimpleMyBatisSesFactory()
-				.getOpenSqlSesion();
-			List<Date> dates = session.selectList(
-					"CollectionRequestMapper.selectAllCollectionDays");
-			for(int i = 0;i < dates.size();i++){
-				days.add(new DailyServicesImp(dates.get(i)));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-	}
-	
+public interface RequestManagement {
 	/**
 	 * Comprueba si el usuario con dicho teléfono tiene alguna solicitud en curso
 	 * o alguna solicitud pendiente de confirmar
-	 * @param phone
-	 * @return
-	 */
-	public boolean userGotPreviosRequest(String phone){
-		boolean existRequest = false;
-		for(int i = 0;i < days.size();i++){
-			existRequest = days.get(i).userGotPreviousRequest(phone);
-			if(existRequest){
-				break;
-			}
-		}
-		try {
-			SqlSession session = new SimpleMyBatisSesFactory()
-				.getOpenSqlSesion();
-			if(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequestByPhone",phone).size() > 0){
-				existRequest = true;
-			}
-			session.close();
-		}catch (IOException e) {
-			e.printStackTrace();
-		}
-		return existRequest;
-	}
+	 * @param phone numero de teléfono del usuario
+	 * @return true si el usuario tiene una solicitud previa a la fecha actual, false en 
+	 * otro caso.
+	*/
+	public boolean userGotPreviosRequest(String phone);
 	
 	/**
 	 * Se reserva uno o varios dias para la petición del usuario. Esta petición
@@ -76,28 +30,8 @@ public class RequestManagement {
 	 * @return List<ProvisionalAppointment>  listado de citas provisionales pendientes
 	 * de confirmar.
 	 * @throws Exception 
-	 */
-	public synchronized List<ProvisionalAppointment> 
-	getAppointmentToConfirm(String phone_number,int itemsRequest) 
-			throws Exception{
-		while(inUse){
-			wait();
-		}
-		inUse = true;
-		for(int i = 0;i < days.size() && itemsRequest >= 0;i++){
-			if(days.get(i).obtainRealizablePeticions() > 0){
-				int furnitureRealizables = 
-						days.get(i).obtainRealizablePeticions() - itemsRequest;
-				if(furnitureRealizables > 0){
-					days.get(i).getAppointment(phone_number,
-							furnitureRealizables);
-					itemsRequest -= furnitureRealizables;
-				}
-			}
-		}
-		inUse = false;
-		notifyAll();
-		return null;
-	}
-	
+	*/
+	public List<ProvisionalAppointment> 
+		getAppointmentToConfirm(String phone_number,int itemsRequest) 
+		throws Exception;
 }

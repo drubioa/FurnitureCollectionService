@@ -13,11 +13,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import es.collectserv.collrequest.ProvisionalAppointment;
-import es.collectserv.collrequest.RequestManagement;
+import es.collectserv.collrequest.RequestManagementimp;
 
 @Path("/appointment")
 public class DailyAppointmentService {
-	private static RequestManagement manager = new RequestManagement();
+	private static RequestManagementimp manager = new RequestManagementimp();
 	
 	public DailyAppointmentService(){
 	}
