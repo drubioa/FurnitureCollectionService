@@ -1,6 +1,7 @@
 package es.collectserv.collrequest;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -16,22 +17,22 @@ import es.collectserv.factories.SimpleMyBatisSesFactory;
  * @version 1.0
  */
 public class DailyServicesImp implements DailyServices{
-	private Date day;
+	private final Date day;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private List<ProvisionalAppointment> requestToConfirmation;
 	private int furniteres_per_day;
 	
 	DailyServicesImp(Date day) throws Exception{
-		if(day.after(new Date())){
+		if(day.before(Calendar.getInstance().getTime())){
 			throw new Exception("invalid day, it must "
-					+ "be later than the current day");
+					+ "be later than the current day ("+day.toString()+")");
 		}
 		requestToConfirmation = new ArrayList<ProvisionalAppointment>();
 		this.day = day;
 		SqlSession session = new SimpleMyBatisSesFactory().getOpenSqlSesion();
 		furniteres_per_day = 
-				session.selectOne("CollectionResquestMapper"
+				session.selectOne("CollectionRequestMapper"
 					+".selectFurnituresByDay",day);
 		if(furniteres_per_day > MAX_FUNRITNURES_PER_DAY){
 			throw new Exception("Invalid number of furnirutre request for this day");
@@ -41,7 +42,7 @@ public class DailyServicesImp implements DailyServices{
 
 	public ProvisionalAppointment getAppointment(String phone,
 			int num_furnitures) throws Exception{
-		if(!(obtainRealizablePeticions() < num_furnitures)
+		if((obtainRealizablePeticions() < num_furnitures)
 				|| userGotPreviousRequest(phone)){
 			throw new Exception("Resquest is not realizable");
 		}
@@ -51,8 +52,11 @@ public class DailyServicesImp implements DailyServices{
 		return requestToConfirmation;
 	}
 	
+	/**
+	 * Devuelve el número de enseres que se pueden solicitar para dicho dia de servicio
+	 */
 	public int obtainRealizablePeticions(){
-		if((MAX_FUNRITNURES_PER_DAY - furniteres_per_day) != 0){
+		if(MAX_FUNRITNURES_PER_DAY != furniteres_per_day){
 			if((MAX_FUNRITNURES_PER_DAY - furniteres_per_day) > 
 			MAX_FURNIUTRES_PER_DAY_USER){
 				return MAX_FURNIUTRES_PER_DAY_USER;
@@ -80,5 +84,9 @@ public class DailyServicesImp implements DailyServices{
 			}
 		}
 		return exists;
+	}
+	
+	public Date getDay(){
+		return this.day;
 	}
 }

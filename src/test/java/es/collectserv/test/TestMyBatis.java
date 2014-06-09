@@ -24,6 +24,7 @@ import es.collectserv.clases.Furniture;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
 import es.collectserv.clases.Zone;
+import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 @RunWith(JUnit4.class)
 public class TestMyBatis {
@@ -51,7 +52,24 @@ public class TestMyBatis {
 			fail(e.toString());
 		}
 	}
+	
+	@Test 
+	public void testSelectFurnituresByDay() throws IOException{
+		SqlSession session = 
+				new SimpleMyBatisSesFactory().getOpenSqlSesion();
+		try {
+			Date date = new Date();
+			int furniteres_per_day = session.selectOne("CollectionRequestMapper"
+						+".selectFurnituresByDay",date);
+			assertTrue(furniteres_per_day == 0);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}finally{
+			session.close();
+		}
 		
+	}
+	
 	@Test
 	public void testObtainsCollectionsPointByZone(){
 		try{

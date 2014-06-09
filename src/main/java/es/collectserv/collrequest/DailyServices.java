@@ -1,5 +1,7 @@
 package es.collectserv.collrequest;
 
+import java.util.Date;
+
 public interface DailyServices {
 	
 	/**
@@ -25,5 +27,11 @@ public interface DailyServices {
 	 * @return
 	 */
 	public boolean userGotPreviousRequest(String phone);
+
+	/**
+	 * Devuelve el día al que corresponde dicho servicio diario
+	 * @return
+	 */
+	public Date getDay();
 	
 }

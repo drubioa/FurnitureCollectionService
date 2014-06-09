@@ -57,9 +57,10 @@
   		WHERE fch_recogida_nn > now()
 	  </select>
       
-      <select id="selectFurnituresByDay">
-          SELECT SUM(num_total_enseres_ck) FROM servrecog_solicitudes
-			WHERE fch_solicitud_nn = #{id}
+      <select id="selectFurnituresByDay" parameterType="Date" resultType="Integer">
+          SELECT coalesce(SUM(num_total_enseres_ck),0) AS result 
+          FROM servrecog_solicitudes
+		  WHERE fch_solicitud_nn = #{id}
       </select>
       
       <select id="selectPendingRequestByPhone" resultMap="collectionRequestMap">

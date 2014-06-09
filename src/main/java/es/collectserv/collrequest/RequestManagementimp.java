@@ -2,6 +2,7 @@ package es.collectserv.collrequest;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -55,14 +56,83 @@ public class RequestManagementimp implements RequestManagement{
 	public synchronized List<ProvisionalAppointment> 
 	getAppointmentToConfirm(String phone_number,int itemsRequest) 
 			throws Exception{
-		List<ProvisionalAppointment> appintment_list = new ArrayList<ProvisionalAppointment>();
-		// Exclusión mútua en el tratamiento de solicitudes
+		Date last_day = nextDay(new Date()); // Por defecto el día siguiente
+		List<ProvisionalAppointment> appintment_list = 
+				new ArrayList<ProvisionalAppointment>();
+		// Exclusión mútua
 		while(inUse){
 			wait();
 		}
 		inUse = true;
+		appintment_list.addAll(
+				findAppointmentInServicesDays(itemsRequest,phone_number,last_day));
+		if(itemsRequest > 0){
+			appintment_list.addAll(
+					createNewServiceDaysForAppointment(itemsRequest,
+							phone_number,last_day));
+		}
+		// Fin de la exclusión mútua
+		inUse = false;
+		notifyAll();
+		return appintment_list;
+	}
+	
+	/**
+	 * Se crean nuevos días de servicio para el usuario con el número de tléfono indicado
+	 * y se devuelve un listado de solicitudes pendientes de confirmar, a partir del 
+	 * último día en el que se solítico servicio de recogida.
+	 * @param itemsRequest
+	 * @param phone_number
+	 * @param last_day
+	 * @return
+	 * @throws Exception
+	 */
+	private List<ProvisionalAppointment> createNewServiceDaysForAppointment(
+			int itemsRequest, String phone_number, Date last_day) throws Exception {
+		List<ProvisionalAppointment> appintment_list = 
+				new ArrayList<ProvisionalAppointment>();
+		while(itemsRequest > 0){
+			DailyServices day = new DailyServicesImp(last_day);
+
+			int furnitureRealizables = 
+					day.obtainRealizablePeticions() - itemsRequest;
+			if(furnitureRealizables > 0){
+				appintment_list.add(day.getAppointment(phone_number,
+						furnitureRealizables));
+				itemsRequest -= furnitureRealizables;
+			}
+			days.add(day);
+		}
+		return appintment_list;
+	}
+
+	/**
+	 * 
+	 * @param day
+	 * @return the next day
+	 */
+	private Date nextDay(Date day){
+		Calendar gc = Calendar.getInstance(); 
+		gc.add(Calendar.DATE, 1);
+		return gc.getTime();
+	}
+	
+	/**
+	 * Devuelve una lista de solicitudes pendientes de confirmar para el usuario
+	 * con el tléfono indicado, y que responde a los items solicitados.
+	 * @param itemsRequest
+	 * @param phone_number
+	 * @param last_service_day
+	 * @return
+	 * @throws Exception
+	 */
+	private List<ProvisionalAppointment> findAppointmentInServicesDays(int itemsRequest,
+			String phone_number,Date last_service_day) throws Exception{
+		List<ProvisionalAppointment> appintment_list = 
+				new ArrayList<ProvisionalAppointment>();
 		for(int i = 0;i < days.size() && itemsRequest >= 0;i++){
 			if(days.get(i).obtainRealizablePeticions() > 0){
+				last_service_day = days.get(i).getDay();
 				int furnitureRealizables = 
 						days.get(i).obtainRealizablePeticions() - itemsRequest;
 				if(furnitureRealizables > 0){
@@ -72,9 +142,6 @@ public class RequestManagementimp implements RequestManagement{
 				}
 			}
 		}
-		inUse = false;
-		notifyAll();
 		return appintment_list;
 	}
-	
 }
