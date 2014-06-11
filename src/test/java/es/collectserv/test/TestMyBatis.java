@@ -19,11 +19,11 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
 import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.CollectionRequest;
 import es.collectserv.clases.Furniture;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
 import es.collectserv.clases.Zone;
+import es.collectserv.collrequest.CollectionRequest;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 @RunWith(JUnit4.class)
@@ -109,7 +109,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		solicitud.setFch_collection(new Date());
 		solicitud.setFch_request(new Date());
 		SqlSession session = sqlSesionFac.openSession();
@@ -148,7 +148,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		solicitud.setFch_collection(new Date());
 		solicitud.setFch_request(new Date());
 		SqlSession session = sqlSesionFac.openSession();
@@ -180,7 +180,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		solicitud.setFch_collection(new Date());
 		solicitud.setFch_request(new Date());
 		SqlSession session = sqlSesionFac.openSession();
@@ -218,7 +218,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		Calendar gc = Calendar.getInstance(); 
 		gc.add(Calendar.DATE, 1);
 		solicitud.setFch_collection(gc.getTime());
@@ -276,7 +276,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		Calendar gc = Calendar.getInstance(); 
 		gc.add(Calendar.DATE, 1);
 		solicitud.setFch_collection(gc.getTime());
@@ -333,7 +333,7 @@ public class TestMyBatis {
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelepehone_number(phone_number);
+		solicitud.setTelephone(phone_number);
 		Calendar gc = Calendar.getInstance(); 
 		gc.add(Calendar.DATE, 1);
 		solicitud.setFch_collection(gc.getTime());

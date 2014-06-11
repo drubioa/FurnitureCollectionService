@@ -41,14 +41,16 @@ public class DailyServicesImp implements DailyServices{
 	
 
 	public ProvisionalAppointment getAppointment(String phone,
-			int num_furnitures) throws Exception{
+			int num_furnitures,int pointId) throws Exception{
 		if((obtainRealizablePeticions() < num_furnitures)
-				|| userGotPreviousRequest(phone)){
+				|| userGotPreviousRequest(phone)
+				|| ((num_furnitures + furniteres_per_day) > MAX_FUNRITNURES_PER_DAY)){
 			throw new Exception("Resquest is not realizable");
 		}
 		ProvisionalAppointment requestToConfirmation = 
-				new ProvisionalAppointment(phone,num_furnitures,day);
+				new ProvisionalAppointment(num_furnitures,phone,pointId,day);
 		this.furniteres_per_day += num_furnitures;
+		this.requestToConfirmation.add(requestToConfirmation);
 		return requestToConfirmation;
 	}
 	
@@ -88,5 +90,31 @@ public class DailyServicesImp implements DailyServices{
 	
 	public Date getDay(){
 		return this.day;
+	}
+
+
+	public void confirmProvisionalAppointment(String phone) throws Exception {
+		ProvisionalAppointment appointment = findAppointment(phone);
+		if(appointment == null){
+			throw new Exception("Appointment not correspond to this service day for this phone number("+phone+").");
+		}
+		else{
+			requestToConfirmation.remove(appointment);
+		}
+	}
+	
+	/**
+	 * Localiza la solicitud pendiente de confirmar para el telefono indicado
+	 * @param phone
+	 * @return la solicitud pendiente de localizar o nulo.
+	 */
+	private ProvisionalAppointment findAppointment(String phone) {
+		ProvisionalAppointment appointment = null;
+		for(int i = 0;i < requestToConfirmation.size() && appointment == null;i++){
+			if(requestToConfirmation.get(i).getTelephone() == phone){
+				appointment = requestToConfirmation.get(i);
+			}
+		}
+		return appointment;
 	}
 }

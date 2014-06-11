@@ -35,7 +35,8 @@ public class TestDailyAppointmentService {
 			HttpGet getRequest = 
 					new HttpGet("/FurnitureCollectionService/resources/appointment"
 							+"?phone_number="+"699390215"
-							+"&num_funritures="+5);
+							+"&num_funritures="+1
+							+"&collection_point_id="+0);
 			getRequest.setHeader("content-type", MediaType.APPLICATION_JSON);
 			HttpResponse httpResponse = 
 					httpclient.execute(target, getRequest);

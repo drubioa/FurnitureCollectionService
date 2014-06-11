@@ -12,6 +12,7 @@ import java.util.List;
  * @version 1.0
  */
 public interface RequestManagement {
+	
 	/**
 	 * Comprueba si el usuario con dicho teléfono tiene alguna solicitud en curso
 	 * o alguna solicitud pendiente de confirmar
@@ -27,11 +28,19 @@ public interface RequestManagement {
 	 *  se realizá con e.m a los recursos de servicio diario.
 	 * @param phone_number número de teléfono correspondiente a un usuario
 	 * @param itemsRequest número de enseres que desea depositar.
+	 * @param collectionPointId identificador del punto de recogida
 	 * @return List<ProvisionalAppointment>  listado de citas provisionales pendientes
 	 * de confirmar.
 	 * @throws Exception 
 	*/
 	public List<ProvisionalAppointment> 
-		getAppointmentToConfirm(String phone_number,int itemsRequest) 
+		getAppointmentToConfirm(String phone_number,int itemsRequest,int collectionPointId) 
 		throws Exception;
+	
+	/**
+	 * Se confirma una cita pendiente de confirmar y se registra en la base de datos.
+	 * Una vez registrada es eliminada del listado de citas pendientes de confirmar.
+	 * @param collectionRequest
+	 */
+	public void confirmProvisionalAppointmen(CollectionRequest collectionRequest);
 }

@@ -36,7 +36,7 @@ public class TestUserService {
 	@Test
 	public void testPOSTUser(){
 		try{
-			final User user = new User("Diego","672424363"); 
+			final User user = new User("UsuarioPrueba","600000000"); 
 			int statusCode =addNewUser(user).getStatusLine().getStatusCode(); 
 			assertTrue(statusCode == 201);
 		}
@@ -55,7 +55,7 @@ public class TestUserService {
 	@Test
 	public void testPOSTAndGETUser(){
 		try{
-			final String phone_number = "6149231246";
+			final String phone_number = "6149731246";
 			final User user = new User("Peter",phone_number);
 			HttpResponse response = addNewUser(user);
 			if (response.getStatusLine().getStatusCode() != 201) {

@@ -11,6 +11,11 @@ public class Furniture {
 		
 	}
 	
+	public Furniture(int id,int cantidad){
+		this.id = id;
+		this.cantidad = cantidad;
+	}
+	
 	public int getId() {
 		return id;
 	}

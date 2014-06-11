@@ -4,18 +4,16 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import es.collectserv.clases.Request;
-
 @XmlRootElement
 public class ProvisionalAppointment extends Request{
 	final static int LIVE_TIME = 60;
-	
-	ProvisionalAppointment(){
+
+	public ProvisionalAppointment(){
 		
 	}
 	
-	ProvisionalAppointment(String telephone,int num_furnitures,Date fch_collection){
-		super(telephone,num_furnitures,fch_collection);
+	public ProvisionalAppointment(int num_furnitures,String telephone,int collectionPointId,Date fch_collection) throws Exception{
+		super(num_furnitures,telephone,collectionPointId,fch_collection);
 	}
-	
+
 }

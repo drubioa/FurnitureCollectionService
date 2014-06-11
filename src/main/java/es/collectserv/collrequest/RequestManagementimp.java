@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
-
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 public class RequestManagementimp implements RequestManagement{
@@ -22,7 +21,7 @@ public class RequestManagementimp implements RequestManagement{
 				.getOpenSqlSesion();
 			List<Date> dates = session.selectList(
 					"CollectionRequestMapper.selectAllCollectionDays");
-			for(int i = 0;i < dates.size();i++){
+			for(int i = 0;i < dates.size();i++){ //Add all current collection request
 				days.add(new DailyServicesImp(dates.get(i)));
 			}
 		} catch (Exception e) {
@@ -42,8 +41,7 @@ public class RequestManagementimp implements RequestManagement{
 		try {
 			SqlSession session = new SimpleMyBatisSesFactory()
 				.getOpenSqlSesion();
-			if(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequestByPhone",phone).size() > 0){
+			if(existPreviousRequest(phone,session)){
 				existRequest = true;
 			}
 			session.close();
@@ -53,10 +51,14 @@ public class RequestManagementimp implements RequestManagement{
 		return existRequest;
 	}
 	
+	private boolean existPreviousRequest(String phone,SqlSession session){
+		return session.selectList("CollectionRequestMapper"+
+				".selectPendingRequestByPhone",phone).size() > 0;
+	}
+	
 	public synchronized List<ProvisionalAppointment> 
-	getAppointmentToConfirm(String phone_number,int itemsRequest) 
+	getAppointmentToConfirm(String phone_number,int itemsRequest,int collectionPointId) 
 			throws Exception{
-		Date last_day = nextDay(new Date()); // Por defecto el día siguiente
 		List<ProvisionalAppointment> appintment_list = 
 				new ArrayList<ProvisionalAppointment>();
 		// Exclusión mútua
@@ -64,12 +66,17 @@ public class RequestManagementimp implements RequestManagement{
 			wait();
 		}
 		inUse = true;
+		// Se utilizan los actuales dias de servicio
 		appintment_list.addAll(
-				findAppointmentInServicesDays(itemsRequest,phone_number,last_day));
+				createAppointmentInServicesDays(itemsRequest,phone_number,collectionPointId));
+		for(int i = 0;i < appintment_list.size();i++){
+			itemsRequest -= appintment_list.get(i).getNumFurnitures();
+		}
 		if(itemsRequest > 0){
+		// Se crean nuevos dias de servicio.
 			appintment_list.addAll(
 					createNewServiceDaysForAppointment(itemsRequest,
-							phone_number,last_day));
+							phone_number,collectionPointId));
 		}
 		// Fin de la exclusión mútua
 		inUse = false;
@@ -78,32 +85,53 @@ public class RequestManagementimp implements RequestManagement{
 	}
 	
 	/**
+	 * Devuelve la primera fecha disponible para crear un nuevo dia de servicio de recogida
+	 * @param appintment_list
+	 * @return una fecha en la que se podrá crear una nueva fecha de recogida.
+	 */
+	private Date obtainsFirstCollectionDay(
+			List<ProvisionalAppointment> appintment_list) {
+		Date date;
+		if(appintment_list.size() == 0){
+			date = new Date();
+		}
+		else{
+			date = appintment_list.get(appintment_list.size() - 1).getFch_collection();
+		}
+		return nextDay(date);
+	}
+
+	/**
 	 * Se crean nuevos días de servicio para el usuario con el número de tléfono indicado
 	 * y se devuelve un listado de solicitudes pendientes de confirmar, a partir del 
 	 * último día en el que se solítico servicio de recogida.
 	 * @param itemsRequest
 	 * @param phone_number
-	 * @param last_day
 	 * @return
 	 * @throws Exception
 	 */
 	private List<ProvisionalAppointment> createNewServiceDaysForAppointment(
-			int itemsRequest, String phone_number, Date last_day) throws Exception {
-		List<ProvisionalAppointment> appintment_list = 
+			int itemsRequest, String phone_number,int collectionPointId) throws Exception {
+		List<ProvisionalAppointment> appointment_list = 
 				new ArrayList<ProvisionalAppointment>();
+		Date last_day = obtainsFirstCollectionDay(appointment_list);
 		while(itemsRequest > 0){
 			DailyServices day = new DailyServicesImp(last_day);
-
-			int furnitureRealizables = 
-					day.obtainRealizablePeticions() - itemsRequest;
-			if(furnitureRealizables > 0){
-				appintment_list.add(day.getAppointment(phone_number,
-						furnitureRealizables));
+			int furnitureRealizables = day.obtainRealizablePeticions();
+			if(furnitureRealizables > itemsRequest){
+				appointment_list.add(day.getAppointment(phone_number,
+						itemsRequest,collectionPointId));
+				itemsRequest = 0;
+			}
+			else{
+				appointment_list.add(day.getAppointment(phone_number,
+						furnitureRealizables,collectionPointId));
 				itemsRequest -= furnitureRealizables;
 			}
+			last_day = nextDay(last_day);
 			days.add(day);
 		}
-		return appintment_list;
+		return appointment_list;
 	}
 
 	/**
@@ -118,7 +146,7 @@ public class RequestManagementimp implements RequestManagement{
 	}
 	
 	/**
-	 * Devuelve una lista de solicitudes pendientes de confirmar para el usuario
+	 * Genera una lista de solicitudes pendientes de confirmar para el usuario
 	 * con el tléfono indicado, y que responde a los items solicitados.
 	 * @param itemsRequest
 	 * @param phone_number
@@ -126,22 +154,56 @@ public class RequestManagementimp implements RequestManagement{
 	 * @return
 	 * @throws Exception
 	 */
-	private List<ProvisionalAppointment> findAppointmentInServicesDays(int itemsRequest,
-			String phone_number,Date last_service_day) throws Exception{
+	private List<ProvisionalAppointment> createAppointmentInServicesDays(int itemsRequest,
+			String phone_number, int collectionPointId) throws Exception{
 		List<ProvisionalAppointment> appintment_list = 
 				new ArrayList<ProvisionalAppointment>();
-		for(int i = 0;i < days.size() && itemsRequest >= 0;i++){
+		for(int i = 0;i < days.size() && itemsRequest > 0;i++){
 			if(days.get(i).obtainRealizablePeticions() > 0){
-				last_service_day = days.get(i).getDay();
 				int furnitureRealizables = 
 						days.get(i).obtainRealizablePeticions() - itemsRequest;
 				if(furnitureRealizables > 0){
 					appintment_list.add(days.get(i).getAppointment(phone_number,
-							furnitureRealizables));
+							furnitureRealizables,collectionPointId));
 					itemsRequest -= furnitureRealizables;
 				}
 			}
 		}
 		return appintment_list;
+	}
+
+	public void confirmProvisionalAppointmen(CollectionRequest request) {
+		DailyServices dailyService = findDailyService(request.getFch_collection());
+		if(dailyService == null){
+			throw new RuntimeException("Appointment to Confirm cannot be localized");
+		}
+		try {
+			// Se registra la solicitud y se elimina la cita pen diente de confirmar
+			SqlSession session =
+					new SimpleMyBatisSesFactory().getOpenSqlSesion();
+			session.insert("CollectionRequestMapper.insertCollectionRequest", request);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
+					request);
+			session.commit();
+			session.close();
+			dailyService.confirmProvisionalAppointment(request.getTelephone());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Localiza el dia de servicio correspondiente a una fecha de recogida de enseres
+	 * @param fch_collection
+	 * @return
+	 */
+	private DailyServices findDailyService(Date fch_collection) {
+		DailyServices day = null;
+		for(int i = 0;i < days.size() && day == null;i++){
+			if(days.get(i).getDay() == fch_collection){
+				day = days.get(i);
+			}
+		}
+		return day;
 	}
 }

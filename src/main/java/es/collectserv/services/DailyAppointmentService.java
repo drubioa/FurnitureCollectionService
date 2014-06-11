@@ -12,6 +12,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import es.collectserv.collrequest.CollectionRequest;
 import es.collectserv.collrequest.ProvisionalAppointment;
 import es.collectserv.collrequest.RequestManagementimp;
 
@@ -26,7 +27,8 @@ public class DailyAppointmentService {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<ProvisionalAppointment> getProvisionalAppintments(
 			@QueryParam("phone_number") String phone_number,
-			@QueryParam("num_funritures") int itemsRequest){
+			@QueryParam("num_funritures") int itemsRequest,
+			@QueryParam("collection_point_id") int collection_point_id){
 		if(manager.userGotPreviosRequest(phone_number)){
 			throw new WebApplicationException(Response.Status.
 					BAD_REQUEST);
@@ -34,7 +36,7 @@ public class DailyAppointmentService {
 		try {
 			List<ProvisionalAppointment> appointment =
 					manager.getAppointmentToConfirm(phone_number, 
-					itemsRequest); 
+					itemsRequest,collection_point_id); 
 			return appointment; 
 		} catch (Exception e) {
 			throw new WebApplicationException(Response.Status.
@@ -45,7 +47,10 @@ public class DailyAppointmentService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response confirmCollectionRequest(
-			List<ProvisionalAppointment> appoitmentsToConfirm){
+			List<CollectionRequest> appoitmentsToConfirm){
+		for(int i = 0;i < appoitmentsToConfirm.size();i++){
+			manager.confirmProvisionalAppointmen(appoitmentsToConfirm.get(i));
+		}
 		return null;
 	}
 }

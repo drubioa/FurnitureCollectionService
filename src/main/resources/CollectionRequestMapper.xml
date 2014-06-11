@@ -6,11 +6,11 @@
   <mapper namespace="CollectionRequestMapper">
       
       <resultMap id="collectionRequestMap" 
-          type="es.collectserv.clases.CollectionRequest">
+          type="es.collectserv.collrequest.CollectionRequest">
           <id property="id" column="id_solicitud_pk"/>
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>
-          <result property="telephone_number" column="telephone_nn"/>
+          <result property="telephone" column="telephone_nn"/>
           <result property="totalItems" column="num_enseres"/>
           <association property="collectionPoint" 
           	column="punto_recogida_nn" 
@@ -76,9 +76,9 @@
           useGeneratedKeys="true" keyColumn="id_solicitud_pk"
            keyProperty="id">
      	INSERT INTO servrecog_solicitudes(
-			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn) 
+			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn,num_total_enseres_ck) 
 			VALUES (#{fch_request},#{fch_collection},
-			#{telephone_number},#{collectionPoint.pointId}) 
+			#{telephone},#{collectionPointId},#{num_furnitures}) 
       </insert>
       
       <insert id="insertFurnituresInRequest">
