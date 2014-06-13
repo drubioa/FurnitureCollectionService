@@ -19,8 +19,9 @@ public interface RequestManagement {
 	 * @param phone numero de teléfono del usuario
 	 * @return true si el usuario tiene una solicitud previa a la fecha actual, false en 
 	 * otro caso.
+	 * @throws InterruptedException 
 	*/
-	public boolean userGotPreviosRequest(String phone);
+	public boolean userGotPreviosRequest(String phone) throws InterruptedException;
 	
 	/**
 	 * Se reserva uno o varios dias para la petición del usuario. Esta petición
@@ -43,4 +44,5 @@ public interface RequestManagement {
 	 * @param collectionRequest
 	 */
 	public void confirmProvisionalAppointmen(CollectionRequest collectionRequest);
+	
 }

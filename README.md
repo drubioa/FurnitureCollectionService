@@ -28,7 +28,8 @@ Se deberá adaptar la configuración de los ficheros _resources/mybatis___config
 
 ## Instalación
 
-
+## Pruebas
+Para el establecimiento de pruebas se empleará un usuario de prueba llamado 'UsuarioPrueba' con el teléfono '600000000'.
 
 
 ## Copyright y licencia

@@ -29,9 +29,13 @@ public class DailyAppointmentService {
 			@QueryParam("phone_number") String phone_number,
 			@QueryParam("num_funritures") int itemsRequest,
 			@QueryParam("collection_point_id") int collection_point_id){
-		if(manager.userGotPreviosRequest(phone_number)){
-			throw new WebApplicationException(Response.Status.
-					BAD_REQUEST);
+		try {
+			if(manager.userGotPreviosRequest(phone_number)){
+				throw new WebApplicationException(Response.Status.
+						BAD_REQUEST);
+			}
+		} catch (Exception e1) {
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
 		}
 		try {
 			List<ProvisionalAppointment> appointment =
@@ -46,11 +50,16 @@ public class DailyAppointmentService {
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response confirmCollectionRequest(
-			List<CollectionRequest> appoitmentsToConfirm){
-		for(int i = 0;i < appoitmentsToConfirm.size();i++){
-			manager.confirmProvisionalAppointmen(appoitmentsToConfirm.get(i));
+	public void confirmCollectionRequest(
+			CollectionRequest collectionRequest){
+		if(collectionRequest == null){
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
 		}
-		return null;
+		try{
+			manager.confirmProvisionalAppointmen(collectionRequest);
+		}
+		catch(Exception ex){
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+		}
 	}
 }

@@ -29,7 +29,11 @@ public class TestRequestManagement {
 	 */
 	@Test
 	public void testUserIsNotGotPreviosReq(){
-		assertFalse(management.userGotPreviosRequest("1414"));
+		try {
+			assertFalse(management.userGotPreviosRequest("1414"));
+		} catch (InterruptedException e) {
+			fail(e.toString());
+		}
 	}
 	
 	/** 
@@ -37,7 +41,7 @@ public class TestRequestManagement {
 	 **/
 	@Test
 	public void testGetAppointmentToConfirm1Item(){
-		String phone = "612345678";
+		String phone = "600000000";
 		int num_items = 1;
 		int collectionPointId = 1;
 		try {

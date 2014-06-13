@@ -19,15 +19,17 @@ public interface DailyServices {
 	 * Obtiene el número de enseres que el servicio puere recoger para un día especifico.
 	 * @return int número de enseres que se pueden solicitar dicho día en función
 	 * de las peticiones previamente realizadas
+	 * @throws InterruptedException 
 	 */
-	public int obtainRealizablePeticions();
+	public int obtainRealizablePeticions() throws InterruptedException;
 	
 	/**
 	 * Comprueba si el usuario con dicho número de teléfono tiene una solicitud previa
 	 * @param phone
 	 * @return
+	 * @throws InterruptedException 
 	 */
-	public boolean userGotPreviousRequest(String phone);
+	public boolean userGotPreviousRequest(String phone) throws InterruptedException;
 
 	/**
 	 * Devuelve el día al que corresponde dicho servicio diario
@@ -41,4 +43,11 @@ public interface DailyServices {
 	 * @param phone telefono del usuario
 	 */
 	public void confirmProvisionalAppointment(String phone) throws Exception;
+
+	/**
+	 * Remove provisional appointment an uppdate furniteres_per_day.
+	 * @param appointment
+	 * @throws InterruptedException 
+	 */
+	public void removeUnconfirmedAppointment(ProvisionalAppointment appointment) throws InterruptedException;
 }

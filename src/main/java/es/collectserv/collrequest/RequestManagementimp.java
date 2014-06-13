@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 public class RequestManagementimp implements RequestManagement{
@@ -30,8 +31,13 @@ public class RequestManagementimp implements RequestManagement{
 		
 	}
 	
-	public boolean userGotPreviosRequest(String phone){
+	public synchronized boolean userGotPreviosRequest(String phone) 
+			throws InterruptedException{
 		boolean existRequest = false;
+		while(inUse){
+			wait();
+		}
+		inUse = true;
 		for(int i = 0;i < days.size();i++){
 			existRequest = days.get(i).userGotPreviousRequest(phone);
 			if(existRequest){
@@ -46,8 +52,12 @@ public class RequestManagementimp implements RequestManagement{
 			}
 			session.close();
 		}catch (IOException e) {
+			inUse = false;
+			notifyAll();
 			e.printStackTrace();
 		}
+		inUse = false;
+		notifyAll();
 		return existRequest;
 	}
 	
@@ -172,7 +182,7 @@ public class RequestManagementimp implements RequestManagement{
 		return appintment_list;
 	}
 
-	public void confirmProvisionalAppointmen(CollectionRequest request) {
+	public synchronized void confirmProvisionalAppointmen(CollectionRequest request) {
 		DailyServices dailyService = findDailyService(request.getFch_collection());
 		if(dailyService == null){
 			throw new RuntimeException("Appointment to Confirm cannot be localized");
@@ -186,8 +196,16 @@ public class RequestManagementimp implements RequestManagement{
 					request);
 			session.commit();
 			session.close();
+			if(inUse){
+				wait();
+			}
+			inUse = true;
 			dailyService.confirmProvisionalAppointment(request.getTelephone());
+			inUse = false;
+			notifyAll();
 		} catch (Exception e) {
+			inUse = false;
+			notifyAll();
 			e.printStackTrace();
 		}
 	}

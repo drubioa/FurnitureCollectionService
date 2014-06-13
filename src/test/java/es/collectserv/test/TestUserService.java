@@ -36,7 +36,7 @@ public class TestUserService {
 	@Test
 	public void testPOSTUser(){
 		try{
-			final User user = new User("UsuarioPrueba","600000000"); 
+			final User user = new User("UsuarioPrueba","600000001"); 
 			int statusCode =addNewUser(user).getStatusLine().getStatusCode(); 
 			assertTrue(statusCode == 201);
 		}

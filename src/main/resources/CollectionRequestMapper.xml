@@ -11,7 +11,7 @@
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>
           <result property="telephone" column="telephone_nn"/>
-          <result property="totalItems" column="num_enseres"/>
+          <result property="num_furnitures" column="num_enseres"/>
           <association property="collectionPoint" 
           	column="punto_recogida_nn" 
             javaType="es.collectserv.clases.CollectionPoint"
