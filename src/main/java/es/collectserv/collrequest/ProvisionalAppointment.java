@@ -2,12 +2,10 @@ package es.collectserv.collrequest;
 
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
 public class ProvisionalAppointment 
 	extends Request
 	implements Runnable{
-	static final int SLEEP_TIME = 5000; // 5 seconds
+	static final int SLEEP_TIME = 5000; // Time which the appointment stays in the system before user confirm that,in milliseconds
 	private DailyServices refDailyServices;
 	
 	public ProvisionalAppointment(){
