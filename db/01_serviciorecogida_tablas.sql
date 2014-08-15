@@ -1,4 +1,4 @@
-﻿-- BD para el servidor del servicio de recogida de muebles y enseres
+-- BD para el servidor del servicio de recogida de muebles y enseres
 CREATE DATABASE servrecog;
 
 DROP VIEW servrecog_muebles_solicitud_view;
