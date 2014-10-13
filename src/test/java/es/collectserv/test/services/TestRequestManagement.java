@@ -1,4 +1,4 @@
-package es.collectserv.test;
+package es.collectserv.test.services;
 
 import static org.junit.Assert.*;
 
@@ -46,7 +46,8 @@ public class TestRequestManagement {
 		int collectionPointId = 1;
 		try {
 			validAppointmentList(
-					management.getAppointmentToConfirm(phone, num_items,collectionPointId));
+					management
+					.getAppointmentToConfirm(phone, num_items,collectionPointId));
 		} catch (Exception e) {
 			fail(e.toString());
 		}

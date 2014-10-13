@@ -1,4 +1,4 @@
-package es.collectserv.test;
+package es.collectserv.test.services;
 
 import static org.junit.Assert.*;
 
@@ -32,20 +32,22 @@ public class TestCollectionPoint {
 	public void testGETPoitByValidLoc(){
 		try {
 			CollectionPoint point =
-					obtainsCollectionPoint(36.5363800,-6.1930940,3);
+					obtainsCollectionPoint(36.536234,-6.193096,false);
 			assertNotNull(point);
+			assertTrue(point.getLongitude() == -6.193095 
+					&& point.getLatitude() == 36.536233);
 		} catch (Exception e) {
 			fail(e.toString());
 		}
 	}
 	
 	private CollectionPoint obtainsCollectionPoint(double lat,
-			double lng,int zone) throws Exception{
+			double lng,boolean b) throws Exception{
 		HttpGet getRequest = 
 				new HttpGet("/FurnitureCollectionService/resources/point"
 						+"?lat="+lat
 						+"&lng="+lng
-						+"&zone="+zone);
+						+"&isRuralArea="+b);
 		getRequest.setHeader("content-type", MediaType.APPLICATION_JSON);
 		HttpResponse httpResponse = 
 				httpclient.execute(target, getRequest);

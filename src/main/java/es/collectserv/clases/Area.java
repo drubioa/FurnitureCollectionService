@@ -2,30 +2,15 @@ package es.collectserv.clases;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
-public class Zone {
-	private int id;
-	private String name;
+public class Area {
+	
+	public static int DIST_MAX = 200;
 	private List<CollectionPoint> points;
 	
-	public Zone(){
-		
+	public Area(List<CollectionPoint> points){
+		this.points = points;
 	}
 	
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public List<CollectionPoint> getPoints() {
 		return points;
 	}
@@ -43,17 +28,19 @@ public class Zone {
 	 */
 	public CollectionPoint nearestCollectionPoint(Point point) 
 			throws Exception{
-		double distMin = 200; //Minimun distance to the collection point in meters
+		double distMax = DIST_MAX; //Max distance to the collection point in meters
 		CollectionPoint colectionPoint = null;
 		for(int i = 0;i < points.size();i++){
 			double dist = calculateDistance(point,points.get(i));
-			if(dist <= distMin){
-				distMin = dist;
+			// Show values
+			//System.out.print(points.get(i).toString()+"\n Distance: "+dist);
+			if(dist <= distMax){
+				distMax = dist;
 				colectionPoint = points.get(i);
 			}
 		}
 		if(colectionPoint == null){
-			throw new Exception("Collection Point annot be located");
+			throw new Exception("Collection Point cannot be located");
 		}
 		return colectionPoint;
 	}

@@ -1,5 +1,6 @@
 package es.collectserv.services;
 
+import java.io.IOException;
 import java.net.URI;
 
 import javax.ws.rs.Consumes;
@@ -27,18 +28,26 @@ public class UserService {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createNewUser(User user) {
 		try{
-			
-			SqlSession session =
-					new SimpleMyBatisSesFactory().getOpenSqlSesion();
-			session.insert("UserMapper.insertUser", user);
-			session.commit();
-			session.close();
+			addNewUser(user);
 			return Response.created(URI.create("/users/"+
 					user.getPhone_number())).build();
 		}
 		catch(Exception e){
 			return Response.status(500).entity(e.toString()).build();
 		}
+	}
+	
+	/**
+	 * Se agrega un nuevo usuario al sistema.
+	 * @param user
+	 * @throws IOException
+	 */
+	private void addNewUser(User user) throws IOException{
+		SqlSession session =
+				new SimpleMyBatisSesFactory().getOpenSqlSesion();
+		session.insert("UserMapper.insertUser", user);
+		session.commit();
+		session.close();		
 	}
 	
 	@GET

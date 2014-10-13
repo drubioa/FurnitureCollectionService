@@ -1,4 +1,4 @@
-package es.collectserv.test;
+package es.collectserv.test.mybatis;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,7 +22,7 @@ import es.collectserv.clases.CollectionPoint;
 import es.collectserv.clases.Furniture;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
-import es.collectserv.clases.Zone;
+import es.collectserv.clases.Area;
 import es.collectserv.collrequest.CollectionRequest;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
@@ -43,6 +43,9 @@ public class TestMyBatis {
 	}
 	
 	@Test
+	/**
+	 * Testing if is possible open and close a db connection session.
+	 */
 	public void testOpenAndCloseSession() {
 		try{
 			SqlSession session = sqlSesionFac.openSession();
@@ -54,6 +57,11 @@ public class TestMyBatis {
 	}
 	
 	@Test 
+	/**
+	 * Testing if possible obtain the number of furnitures to collect by 
+	 * the current date.
+	 * @throws IOException
+	 */
 	public void testSelectFurnituresByDay() throws IOException{
 		SqlSession session = 
 				new SimpleMyBatisSesFactory().getOpenSqlSesion();
@@ -70,40 +78,14 @@ public class TestMyBatis {
 		
 	}
 	
-	@Test
-	public void testObtainsCollectionsPointByZone(){
-		try{
-			SqlSession session = sqlSesionFac.openSession();
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
-			session.close();
-			assertNotNull(zone);
-			assertNotNull(zone.getPoints());
-			assertTrue(zone.getPoints().size() > 0);
-		}
-		catch(Exception e){
-			fail(e.toString());
-		}
-	}
 	
-	@Test
-	public void testGetPointByZone(){
-		try{
-			SqlSession session = sqlSesionFac.openSession();
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
-			session.close();
-			assertNotNull(zone);
-			assertNotNull(zone.getPoints());
-			assertTrue(zone.getPoints().size() > 0);
-			Point currentPoint = new Point(36.5363800,-6.1930940);
-			assertTrue(zone.nearestCollectionPoint(currentPoint) != null);
-		}
-		catch(Exception e){
-			fail(e.toString());
-		}	
-	}
 	
 	
 	@Test
+	/**
+	 * Add a furniture to collection request and later check if this 
+	 * furniture was added to the request.
+	 */
 	public void testAddFurnitureToCollectionRequest(){
 		String name = "Diego";
 		String phone_number = "615690926";
@@ -118,7 +100,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -157,7 +139,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -189,7 +171,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -229,7 +211,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -287,7 +269,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -344,7 +326,7 @@ public class TestMyBatis {
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Zone zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
@@ -368,6 +350,10 @@ public class TestMyBatis {
 	}
 	
 	@Test
+	/**
+	 * Insert a new user and later deleted it. 
+	 * Check if the user was removed successful.
+	 */
 	public void testInserAndDeleteUser(){
 		String name = "Diego";
 		String phone_number = "699390216";

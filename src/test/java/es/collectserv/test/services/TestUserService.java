@@ -1,4 +1,4 @@
-package es.collectserv.test;
+package es.collectserv.test.services;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +27,7 @@ public class TestUserService {
 	
 	public TestUserService(){
 		httpclient = new DefaultHttpClient();
-		target = new HttpHost("localhost", 8080, "http");	
+		target = new HttpHost("66.85.153.171", 8080, "http");	
 	}
 	
 	/**
@@ -37,7 +37,7 @@ public class TestUserService {
 	public void testPOSTUser(){
 		try{
 			final User user = new User("UsuarioPrueba","600000001"); 
-			int statusCode =addNewUser(user).getStatusLine().getStatusCode(); 
+			int statusCode = addNewUser(user).getStatusLine().getStatusCode(); 
 			assertTrue(statusCode == 201);
 		}
 		catch(Exception e){
