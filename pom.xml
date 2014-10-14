@@ -77,4 +77,6 @@
   	
   </dependencies>
   
+  <name>FurnitureCollectionService</name>
+  <description>Services to use in a Tomcat server with psql db for the management of furniture collection service.</description>
 </project>

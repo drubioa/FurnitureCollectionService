@@ -37,6 +37,9 @@ public class TestArea {
 		}		
 	}
 	
+	/**
+	 * Try to load all collection points of uban area.
+	 */
 	@Test
 	public void testLoadUrbanArea(){
 		try{
@@ -56,6 +59,9 @@ public class TestArea {
 		}
 	}
 	
+	/**
+	 * Try to load all collection points of rural area.
+	 */
 	@Test
 	public void testLoadRuralArea(){
 		try{

@@ -6,5 +6,5 @@ encoding//src/main/java/es/collectserv/collrequest/DailyServicesImp.java=UTF-8
 encoding//src/main/java/es/collectserv/collrequest/Request.java=UTF-8
 encoding//src/main/java/es/collectserv/collrequest/RequestManagement.java=UTF-8
 encoding//src/main/java/es/collectserv/collrequest/RequestManagementimp.java=UTF-8
-encoding//src/test/java/es/collectserv/test/mybatis/TestMyBatis.java=UTF-8
+encoding//src/test/java/es/collectserv/test/mybatis/MyBatisConfigurator.java=UTF-8
 encoding//src/test/java/es/collectserv/test/services/TestUserService.java=UTF-8

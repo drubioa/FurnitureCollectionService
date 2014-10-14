@@ -11,7 +11,8 @@
 			   lat_nn AS latitude,
 			   direccion AS direction,
                id_punto_recogida_pk AS point_id,
-               zone AS zona FROM servrecog_area_urbana_view;
+               zone AS zona 
+               FROM servrecog_area_urbana_view;
 	</select>
 	
 	<select id="selectRuralPoints" 
@@ -20,7 +21,8 @@
 			   lat_nn AS latitude,
 			   direccion AS direction,
                id_punto_recogida_pk AS point_id,
-               zone AS zona FROM servrecog_area_rural_view;
+               zone AS zona 
+               FROM servrecog_area_rural_view;
 	</select>
   	
   </mapper>
