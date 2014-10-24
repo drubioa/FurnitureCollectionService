@@ -6,19 +6,28 @@ import static org.junit.Assert.fail;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
 import es.collectserv.clases.Area;
 import es.collectserv.clases.CollectionPoint;
+import es.collectserv.clases.CollectionRequest;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
-import es.collectserv.collrequest.CollectionRequest;
 
 public class TestCollectionRequest extends MyBatisConfigurator{
+	private Area urban;
 
-
+	public TestCollectionRequest(){
+		SqlSession session = sqlSesionFac.openSession();
+		List<CollectionPoint> puntos = 
+				session.selectList(
+						"CollectionPointMapper.selectUrbanAreaPoints");
+		urban = new Area(puntos);
+		session.close();
+	}
 	
 	@Test
 	public void testInsertCollectionRequest(){
@@ -35,9 +44,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
-					zone.nearestCollectionPoint(currentPoint); 
+					urban.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
@@ -66,10 +74,9 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			// Inserts new example user
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Point currentPoint = new Point(36.5363800,-6.1930940);
 			CollectionPoint point = 
-					zone.nearestCollectionPoint(currentPoint); 
+					urban.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
@@ -88,8 +95,6 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}		
 	}
 	
-	
-	
 	@Test
 	public void testSelectAllCollectionRequests(){
 		String name = "Diego";
@@ -106,10 +111,9 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			// Inserts new example user
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Point currentPoint = new Point(36.5363800,-6.1930940);
 			CollectionPoint point = 
-					zone.nearestCollectionPoint(currentPoint); 
+					urban.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
@@ -165,9 +169,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
 			CollectionPoint point = 
-					zone.nearestCollectionPoint(currentPoint); 
+					urban.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",

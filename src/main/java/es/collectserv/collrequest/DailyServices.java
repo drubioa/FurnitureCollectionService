@@ -2,6 +2,8 @@ package es.collectserv.collrequest;
 
 import java.util.Date;
 
+import es.collectserv.clases.ProvisionalAppointment;
+
 public interface DailyServices {
 	
 	/**
@@ -10,7 +12,8 @@ public interface DailyServices {
 	 * @param num_furnitures
 	 * @param pointId
 	 * @return
-	 * @throws Exception el número de muebles debe ser inferior al máximo permitido por la organización
+	 * @throws Exception el número de muebles debe ser inferior al máximo permitido 
+	 * por la organización
 	 */
 	public ProvisionalAppointment getAppointment(String phone,
 			int num_furnitures,int pointId) throws Exception;
@@ -49,5 +52,6 @@ public interface DailyServices {
 	 * @param appointment
 	 * @throws InterruptedException 
 	 */
-	public void removeUnconfirmedAppointment(ProvisionalAppointment appointment) throws InterruptedException;
+	public void removeUnconfirmedAppointment(ProvisionalAppointment appointment) 
+			throws InterruptedException;
 }

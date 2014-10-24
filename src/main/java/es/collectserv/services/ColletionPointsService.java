@@ -1,82 +1,25 @@
 package es.collectserv.services;
 
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-
 import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.Point;
-import es.collectserv.clases.Area;
 
-@Path("/point")
-public class ColletionPointsService {
-	private Area rural,urbana;
+
+/**
+ * This class represent a Collection Points Service, this service find nearest collection 
+ * point to the furniture collection point service.
+ * @author Diego Rubio Abujas [dbiosag@gmail.com]
+ *
+ */
+public interface ColletionPointsService {
 	
-	public ColletionPointsService(){
-		String configFile = "mybatis-config.xml";
-		InputStream is;
-		SqlSessionFactory sqlSesionFac;
-		try {
-			is = Resources.getResourceAsStream(configFile);
-			sqlSesionFac = new SqlSessionFactoryBuilder().build(is);
-			SqlSession session = sqlSesionFac.openSession();
-			List<CollectionPoint> puntos = 
-					session.selectList("CollectionPointMapper.selectUrbanAreaPoints");
-			urbana = new Area(puntos);
-			puntos = session.selectList("CollectionPointMapper.selectRuralPoints");
-			rural = new Area(puntos);
-			session.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}		
-	}
-	
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
+	/**
+	 * Receives a position of user's home and return the nearest 
+	 * collection point.
+	 * @param lat
+	 * @param lng
+	 * @param isRuralArea
+	 * @return nearest collection point in JSON format.
+	 */
 	public CollectionPoint getCollectionPoint(
-			@QueryParam("lat") Double lat,
-			@QueryParam("lng") Double lng,
-			@QueryParam("isRuralArea") Boolean isRuralArea){
-		Point point;
-		Area zone;
-		if(isRuralArea == null){
-			System.out.print("isRuralArea is null");
-		}
-		try{
-			point = new Point(lat,lng);
-			if(isRuralArea){
-				zone = rural;
-			}
-			else{
-				zone = urbana;			
-			}
-			if(zone == null){
-				throw new NullPointerException("zone is null");
-			}
-			// Find the nearest collect point of this zone
-			CollectionPoint collectPoint = zone.nearestCollectionPoint(point);
-			if(collectPoint == null){
-				System.out.print("collectPoint is null");
-				throw new WebApplicationException(Response.Status.NOT_FOUND);
-			}
-			return collectPoint;
-		}catch(Exception e){
-			System.out.print("ERROR: "+e.toString());
-			throw new WebApplicationException(Response.Status.BAD_REQUEST);
-		}
-	}
+			Double lat,Double lng,Boolean isRuralArea);
+	
 }

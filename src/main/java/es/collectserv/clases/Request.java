@@ -1,4 +1,4 @@
-package es.collectserv.collrequest;
+package es.collectserv.clases;
 
 import java.util.Date;
 

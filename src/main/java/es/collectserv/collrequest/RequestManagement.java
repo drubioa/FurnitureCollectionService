@@ -2,6 +2,9 @@ package es.collectserv.collrequest;
 
 import java.util.List;
 
+import es.collectserv.clases.CollectionRequest;
+import es.collectserv.clases.ProvisionalAppointment;
+
 /**
  * Dicha clase representa un gestor de solicitudes que se encargará de proporcionar
  * las fechas de recogida de enseres, y registrar dichas en solicitudes una vez hayan

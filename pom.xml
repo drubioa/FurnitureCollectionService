@@ -78,5 +78,16 @@
   </dependencies>
   
   <name>FurnitureCollectionService</name>
-  <description>Services to use in a Tomcat server with psql db for the management of furniture collection service.</description>
+  <description>Services to use in a Tomcat server with psql db for the management 
+  sof furniture collection service.</description>
+  
+  <dependencyManagement>
+  	<dependencies>
+  		<dependency>
+  			<groupId>org.glassfish.jersey</groupId>
+  			<artifactId>jersey-bom</artifactId>
+  			<version>${jersey.version}</version>
+  		</dependency>
+  	</dependencies>
+  </dependencyManagement>
 </project>

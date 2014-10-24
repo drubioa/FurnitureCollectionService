@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import es.collectserv.clases.Area;
 import es.collectserv.clases.CollectionPoint;
+import es.collectserv.clases.CollectionRequest;
 import es.collectserv.clases.Point;
 import es.collectserv.clases.User;
-import es.collectserv.collrequest.CollectionRequest;
 
-public class TestCollectonDays extends MyBatisConfigurator{
+public class TestCollectionDays extends MyBatisConfigurator{
 
 	@Test
 	public void testSelectAllEmptyCollectionDays(){

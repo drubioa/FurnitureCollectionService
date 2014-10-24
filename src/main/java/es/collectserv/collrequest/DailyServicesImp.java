@@ -9,6 +9,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.ibatis.session.SqlSession;
 
+import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 /**
@@ -25,7 +26,7 @@ public class DailyServicesImp implements DailyServices{
 	private List<ProvisionalAppointment> requestToConfirmation;
 	private ExecutorService ex = Executors.newFixedThreadPool(MAX_FUNRITNURES_PER_DAY);
 	private int furniteres_per_day;
-	private boolean inUse;
+	private boolean inUse; // By control of concurrency
 	
 	public DailyServicesImp(Date day) throws Exception{
 		if(day.before(Calendar.getInstance().getTime())){
@@ -69,8 +70,12 @@ public class DailyServicesImp implements DailyServices{
 		return requestToConfirmation;
 	}
 	
+	/**
+	 * 
+	 * @return amount of request realizables of current day
+	 */
 	private int calculateRealizablePetitions(){
-		int realizables = 0;
+		int realizables = 0; // By default 
 		inUse = true;
 		if(MAX_FUNRITNURES_PER_DAY != furniteres_per_day){
 			if((MAX_FUNRITNURES_PER_DAY - furniteres_per_day) > 

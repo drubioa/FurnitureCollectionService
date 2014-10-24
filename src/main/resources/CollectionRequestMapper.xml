@@ -6,7 +6,7 @@
   <mapper namespace="CollectionRequestMapper">
       
       <resultMap id="collectionRequestMap" 
-          type="es.collectserv.collrequest.CollectionRequest">
+          type="es.collectserv.clases.CollectionRequest">
           <id property="id" column="id_solicitud_pk"/>
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>

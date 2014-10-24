@@ -1,6 +1,8 @@
-package es.collectserv.collrequest;
+package es.collectserv.clases;
 
 import java.util.Date;
+
+import es.collectserv.collrequest.DailyServices;
 
 public class ProvisionalAppointment 
 	extends Request

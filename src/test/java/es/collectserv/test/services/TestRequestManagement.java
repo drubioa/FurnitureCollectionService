@@ -9,9 +9,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import es.collectserv.clases.CollectionRequest;
 import es.collectserv.clases.Furniture;
-import es.collectserv.collrequest.CollectionRequest;
-import es.collectserv.collrequest.ProvisionalAppointment;
+import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.collrequest.RequestManagement;
 import es.collectserv.collrequest.RequestManagementimp;
 
@@ -47,13 +47,15 @@ public class TestRequestManagement {
 		try {
 			validAppointmentList(
 					management
-					.getAppointmentToConfirm(phone, num_items,collectionPointId));
+					.getAppointmentToConfirm(phone, num_items,
+							collectionPointId));
 		} catch (Exception e) {
 			fail(e.toString());
 		}
 	}
 	
-	private void validAppointmentList(List<ProvisionalAppointment> appointments){
+	private void validAppointmentList(List<ProvisionalAppointment> 
+	appointments){
 		assertNotNull(appointments);
 		for(int i = 0;i < appointments.size();i++){
 			validAppointment(appointments.get(i));
@@ -79,10 +81,12 @@ public class TestRequestManagement {
 		int collectionPointId = 1;
 		try {
 			List<ProvisionalAppointment> list =
-					management.getAppointmentToConfirm(phone, num_items,collectionPointId);
+					management.getAppointmentToConfirm(phone,
+							num_items,collectionPointId);
 			validAppointmentList(list);
 			assertTrue(list.size() > 1);
-			assertTrue(list.get(0).getFch_collection() != list.get(1).getFch_collection());
+			assertTrue(list.get(0).getFch_collection() !=
+					list.get(1).getFch_collection());
 		} catch (Exception e) {
 			fail(e.toString());
 		}
@@ -101,11 +105,13 @@ public class TestRequestManagement {
 		try {
 			// Se obtiene una solicitud pendiente de confirmar
 			List<ProvisionalAppointment> list =
-					management.getAppointmentToConfirm(phone, num_items,collectionPointId);
+					management.getAppointmentToConfirm(phone, 
+							num_items,collectionPointId);
 			assertTrue(list.size() == 1);
 			validAppointmentList(list);
 			// Se confirma la solicitud
-			management.confirmProvisionalAppointmen(new CollectionRequest(list.get(0),furnitures));
+			management.confirmProvisionalAppointmen(
+					new CollectionRequest(list.get(0),furnitures));
 		} catch (Exception e) {
 			fail(e.toString());
 		}
@@ -124,7 +130,8 @@ public class TestRequestManagement {
 		try {
 			// Se obtiene una solicitud pendiente de confirmar
 			List<ProvisionalAppointment> list =
-					management.getAppointmentToConfirm(phone, num_items,collectionPointId);
+					management.getAppointmentToConfirm(phone,
+							num_items,collectionPointId);
 			assertTrue(list.size() > 1);
 			validAppointmentList(list);
 			// Se confirman las solicitudes

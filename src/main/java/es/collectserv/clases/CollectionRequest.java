@@ -1,11 +1,8 @@
-package es.collectserv.collrequest;
+package es.collectserv.clases;
 
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
-
-import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.Furniture;
 
 @XmlRootElement
 public class CollectionRequest extends Request{

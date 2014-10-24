@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
+import es.collectserv.clases.CollectionRequest;
+import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 
 public class RequestManagementimp implements RequestManagement{

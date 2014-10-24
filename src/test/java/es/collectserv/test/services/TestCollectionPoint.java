@@ -28,8 +28,12 @@ public class TestCollectionPoint {
 		target = new HttpHost("localhost", 8080, "http");			
 	}
 	
+	/**
+	 * Test if a valid request to find nearest collection 
+	 * point in urban area returns successful result.
+	 */
 	@Test
-	public void testGETPoitByValidLoc(){
+	public void testGETPoitByValidUrbanLocation(){
 		try {
 			CollectionPoint point =
 					obtainsCollectionPoint(36.536234,-6.193096,false);
@@ -41,13 +45,41 @@ public class TestCollectionPoint {
 		}
 	}
 	
+	/**
+	 * Try to get point by invalid location. This test must fail
+	 */
+	@Test
+	public void testGETPoitByInvalidUrbanLocation(){
+		try {
+			// lng lat 0,0 is a invalid position.
+			obtainsCollectionPoint(0,0,false);
+			fail("System return CollectionPoint, and it must throw Exception");
+		} catch (Exception e) {
+			if(e.getLocalizedMessage()
+					.contains("Failed : HTTP error code : 400")){
+				assertTrue(true);
+			}
+			else{
+				e.printStackTrace();
+				fail(e.toString());
+			}
+		}
+	}
+	
+	/**
+	 * @param lat lattitude
+	 * @param lng longite
+	 * @param isRuralArea if is RuralArea or UrbanArea
+	 * @return Nearest collection point for point
+	 * @throws Exception cannot find nearest collection point.
+	 */
 	private CollectionPoint obtainsCollectionPoint(double lat,
-			double lng,boolean b) throws Exception{
+			double lng,boolean isRuralArea) throws Exception{
 		HttpGet getRequest = 
 				new HttpGet("/FurnitureCollectionService/resources/point"
 						+"?lat="+lat
 						+"&lng="+lng
-						+"&isRuralArea="+b);
+						+"&isRuralArea="+isRuralArea);
 		getRequest.setHeader("content-type", MediaType.APPLICATION_JSON);
 		HttpResponse httpResponse = 
 				httpclient.execute(target, getRequest);

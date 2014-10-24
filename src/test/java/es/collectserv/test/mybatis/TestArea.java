@@ -38,7 +38,7 @@ public class TestArea {
 	}
 	
 	/**
-	 * Try to load all collection points of uban area.
+	 * Try to load all collection points of urban area.
 	 */
 	@Test
 	public void testLoadUrbanArea(){

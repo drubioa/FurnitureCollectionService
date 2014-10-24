@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import es.collectserv.collrequest.ProvisionalAppointment;
+import es.collectserv.clases.ProvisionalAppointment;
 
 @RunWith(JUnit4.class)
 public class TestDailyAppointmentService {
@@ -33,8 +33,11 @@ public class TestDailyAppointmentService {
 		target = new HttpHost("localhost", 8080, "http");			
 	}
 
+	/**
+	 * Get a provisional appointment
+	 */
 	@Test
-	public void testGetProvisionalAppintments(){
+	public void testGetProvisionalAppointments(){
 		try{
 			HttpGet getRequest = 
 					new HttpGet("/FurnitureCollectionService/resources/appointment"
@@ -59,8 +62,10 @@ public class TestDailyAppointmentService {
 		}
 	}
 	
-	
-	
+	/**
+	 * Validate if the appointment is correct, and all these fields are in correct format.
+	 * @param apointmnet
+	 */
 	private void validAppointment(ProvisionalAppointment apointmnet){
 		assertNotNull(apointmnet.getTelephone());
 		assertTrue(apointmnet.getTelephone().charAt(0) == '6');

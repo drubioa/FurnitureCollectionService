@@ -1,75 +1,27 @@
 package es.collectserv.services;
 
-import java.io.IOException;
-import java.net.URI;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.ibatis.session.SqlSession;
-
 import es.collectserv.clases.User;
-import es.collectserv.factories.SimpleMyBatisSesFactory;
 
-@Path("/users")
-public class UserService {
-	
-	public UserService(){
-	}
-	
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response createNewUser(User user) {
-		try{
-			addNewUser(user);
-			return Response.created(URI.create("/users/"+
-					user.getPhone_number())).build();
-		}
-		catch(Exception e){
-			return Response.status(500).entity(e.toString()).build();
-		}
-	}
+/**
+ * 
+ * @author Diego Rubio Abujas
+ *
+ */
+public interface UserService {
 	
 	/**
-	 * Se agrega un nuevo usuario al sistema.
+	 * Add new user numbe to db
 	 * @param user
-	 * @throws IOException
+	 * @return return URI, if the user exists or a error occur return a error 500.
 	 */
-	private void addNewUser(User user) throws IOException{
-		SqlSession session =
-				new SimpleMyBatisSesFactory().getOpenSqlSesion();
-		session.insert("UserMapper.insertUser", user);
-		session.commit();
-		session.close();		
-	}
+	public Response createNewUser(User user);
 	
-	@GET
-	@Path("{phone_number}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public User getUserByPhoneNumber(@PathParam("phone_number") 
-		String phone_number){
-		User usuario;
-		try{
-			SqlSession session = 
-					new SimpleMyBatisSesFactory().getOpenSqlSesion();
-			usuario = session.selectOne("UserMapper.selectUser", 
-					phone_number);
-			session.close();
-		}catch(Exception e){
-			throw new WebApplicationException( 
-					Response.Status.INTERNAL_SERVER_ERROR);
-		}
-		if(usuario == null){
-			throw new WebApplicationException(Response.Status.NOT_ACCEPTABLE);
-		}
-		return usuario;
-	}
-	
+	/**
+	 * Get user name and number by phone, or indicate if the user doesn't exists.
+	 * @param phone_number
+	 * @return
+	 */
+	public User getUserByPhoneNumber(String phone_number);
 }
