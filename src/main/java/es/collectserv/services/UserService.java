@@ -2,7 +2,7 @@ package es.collectserv.services;
 
 import javax.ws.rs.core.Response;
 
-import es.collectserv.clases.User;
+import es.collectserv.model.User;
 
 /**
  * 

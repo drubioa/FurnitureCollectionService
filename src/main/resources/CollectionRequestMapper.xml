@@ -6,25 +6,26 @@
   <mapper namespace="CollectionRequestMapper">
       
       <resultMap id="collectionRequestMap" 
-          type="es.collectserv.clases.CollectionRequest">
+          type="es.collectserv.model.CollectionRequest">
           <id property="id" column="id_solicitud_pk"/>
           <result property="fch_request" column="fch_solicitud_nn"/>
           <result property="fch_collection" column="fch_recogida_nn"/>
           <result property="telephone" column="telephone_nn"/>
+          
           <result property="num_furnitures" column="num_enseres"/>
           <association property="collectionPoint" 
           	column="punto_recogida_nn" 
-            javaType="es.collectserv.clases.CollectionPoint"
+            javaType="es.collectserv.model.CollectionPoint"
             select="selectCollectionPoint"/> 
            <collection property="furnitures" 
            	 javaType="ArrayList"
-          	 ofType="es.collectserv.clases.Furniture"
+          	 ofType="es.collectserv.model.Furniture"
           	 select="selectFurniture" 
           	 column="id_solicitud_pk"/> 
       </resultMap>
       
       <select id="selectCollectionPoint" 
-  	    resultType="es.collectserv.clases.CollectionPoint">
+  	    resultType="es.collectserv.model.CollectionPoint">
   		  SELECT id_punto_recogida_pk AS pointId,
           	lon_nn AS longitude,
        	  	lat_nn AS latitude,
@@ -35,7 +36,7 @@
 	  </select>
 
       <select id="selectFurniture" 
-          resultType="es.collectserv.clases.Furniture">
+          resultType="es.collectserv.model.Furniture">
           SELECT 
           id_furniture_nn AS id,
           cantidad_ck AS cantidad 
@@ -58,8 +59,8 @@
 	  </select>
       
       <select id="selectFurnituresByDay" parameterType="Date" resultType="Integer">
-          SELECT coalesce(SUM(num_total_enseres_ck),0) AS result 
-          FROM servrecog_solicitudes
+          SELECT coalesce(SUM(num_enseres),0) AS result 
+          FROM servrecog_muebles_solicitud_view
 		  WHERE fch_solicitud_nn = #{id}
       </select>
       
@@ -76,9 +77,9 @@
           useGeneratedKeys="true" keyColumn="id_solicitud_pk"
            keyProperty="id">
      	INSERT INTO servrecog_solicitudes(
-			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn,num_total_enseres_ck) 
+			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn) 
 			VALUES (#{fch_request},#{fch_collection},
-			#{telephone},#{collectionPointId},#{num_furnitures}) 
+			#{telephone},#{collectionPointId}) 
       </insert>
       
       <insert id="insertFurnituresInRequest">

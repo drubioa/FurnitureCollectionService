@@ -3,10 +3,11 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
     http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>es.uca</groupId>
+  <groupId>es.recicloid</groupId>
   <artifactId>FurnitureCollectionService</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
+  <name>FurnitureCollectionService</name> 
    
   <repositories>
 		<repository>
@@ -30,14 +31,7 @@
 		<artifactId>jersey-server</artifactId>
 		<version>2.0-m04</version>
 	</dependency>
-  	
-  	
-  	<dependency>
-		<groupId>com.sun.jersey</groupId>
-		<artifactId>jersey-bundle</artifactId>
-		<version>1.10-b01</version>
-	</dependency>
-  	
+
  	<dependency>
 		<groupId>com.sun.jersey</groupId>
 		<artifactId>jersey-server</artifactId>
@@ -48,6 +42,12 @@
 	    <groupId>org.glassfish.jersey.media</groupId>
 	    <artifactId>jersey-media-moxy</artifactId>
 	    <version>2.8</version>
+	</dependency>
+ 
+ 	<dependency>
+		<groupId>com.sun.grizzly</groupId>
+		<artifactId>grizzly-servlet-webserver</artifactId>
+		<version>1.9.18-m</version>
 	</dependency>
  	
 	<dependency>
@@ -77,10 +77,6 @@
   	
   </dependencies>
   
-  <name>FurnitureCollectionService</name>
-  <description>Services to use in a Tomcat server with psql db for the management 
-  sof furniture collection service.</description>
-  
   <dependencyManagement>
   	<dependencies>
   		<dependency>
@@ -90,4 +86,21 @@
   		</dependency>
   	</dependencies>
   </dependencyManagement>
+  
+  <properties>
+        <project.mainClass>es.collectionserv.services.MyApplication</project.mainClass>
+  </properties>
+  
+  <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
 </project>

@@ -8,9 +8,9 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
+import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.ProvisionalAppointment;
 
 public class RequestManagementimp implements RequestManagement{
 	private static boolean inUse;
@@ -30,7 +30,6 @@ public class RequestManagementimp implements RequestManagement{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 	public synchronized boolean userGotPreviosRequest(String phone) 
@@ -62,7 +61,7 @@ public class RequestManagementimp implements RequestManagement{
 		notifyAll();
 		return existRequest;
 	}
-	
+
 	private boolean existPreviousRequest(String phone,SqlSession session){
 		return session.selectList("CollectionRequestMapper"+
 				".selectPendingRequestByPhone",phone).size() > 0;
@@ -123,7 +122,8 @@ public class RequestManagementimp implements RequestManagement{
 	 * @throws Exception
 	 */
 	private List<ProvisionalAppointment> createNewServiceDaysForAppointment(
-			int itemsRequest, String phone_number,int collectionPointId) throws Exception {
+			int itemsRequest, String phone_number,int collectionPointId) 
+					throws Exception {
 		List<ProvisionalAppointment> appointment_list = 
 				new ArrayList<ProvisionalAppointment>();
 		Date last_day = obtainsFirstCollectionDay(appointment_list);
@@ -220,7 +220,7 @@ public class RequestManagementimp implements RequestManagement{
 	private DailyServices findDailyService(Date fch_collection) {
 		DailyServices day = null;
 		for(int i = 0;i < days.size() && day == null;i++){
-			if(days.get(i).getDay() == fch_collection){
+			if(days.get(i).getNextValidServiceDay() == fch_collection){
 				day = days.get(i);
 			}
 		}

@@ -11,12 +11,17 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
-import es.collectserv.clases.Area;
-import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.Point;
-import es.collectserv.clases.User;
+import es.collectserv.model.Area;
+import es.collectserv.model.CollectionPoint;
+import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.Point;
+import es.collectserv.model.User;
 
+/**
+ * 
+ * @author Diego Rubio Abujas
+ *
+ */
 public class TestCollectionRequest extends MyBatisConfigurator{
 	private Area urban;
 
@@ -29,27 +34,28 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		session.close();
 	}
 	
+	/**
+	 * Se introduce una solicitud de recogida pendiente de confirmar y se comprueba
+	 * que se ha introducido correctamente.
+	 */
 	@Test
 	public void testInsertCollectionRequest(){
 		String name = "Diego";
 		String phone_number = "615690926";
-		User user = new User(name,phone_number);
-		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelephone(phone_number);
-		solicitud.setFch_collection(new Date());
-		solicitud.setFch_request(new Date());
 		SqlSession session = sqlSesionFac.openSession();
 		try{
 			// Inserts new example user
-			session.insert("UserMapper.insertUser", user);
+			session.insert("UserMapper.insertUser", new User(name,phone_number));
 			// Find some collection point
 			Point currentPoint = new Point(36.5363800,-6.1930940); 
 			CollectionPoint point = 
 					urban.nearestCollectionPoint(currentPoint); 
-			solicitud.setCollectionPoint(point);
+			CollectionRequest solicitud = createExampleRequest(name,phone_number,point);
+			// At the moment request id is 0 because it doesn't introduced in the system.
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
+			// When the request was introduced in the system, this id change
 			assertTrue(solicitud.getId() > 0);
 		}
 		catch(Exception e){
@@ -60,8 +66,21 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 	}
 	
+	private CollectionRequest createExampleRequest
+		(String name,String phone_number, CollectionPoint point){
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelephone(phone_number);
+		solicitud.setFch_collection(new Date());
+		solicitud.setFch_request(new Date());
+		solicitud.setCollectionPoint(point);
+		return solicitud;
+	}
+	
+	/**
+	 * Se crea una nueva solicitud de recogida y se inserta en el sistema. 
+	 */
 	@Test
-	public void testInsertAndSelectCollectionRequest(){
+	public void testinsertCollectionRequestAndSelectCollectionRequest(){
 		String name = "Diego";
 		String phone_number = "615690926";
 		User user = new User(name,phone_number);

@@ -9,8 +9,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 
-import es.collectserv.clases.Area;
-import es.collectserv.clases.CollectionPoint;
+import es.collectserv.model.Area;
+import es.collectserv.model.CollectionPoint;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -41,7 +41,7 @@ public class TestArea {
 	 * Try to load all collection points of urban area.
 	 */
 	@Test
-	public void testLoadUrbanArea(){
+	public void testSelectUrbanAreaPoints(){
 		try{
 			SqlSession session = sqlSesionFac.openSession();
 			List<CollectionPoint> puntos = 
@@ -63,7 +63,7 @@ public class TestArea {
 	 * Try to load all collection points of rural area.
 	 */
 	@Test
-	public void testLoadRuralArea(){
+	public void testSelectRuralPoints(){
 		try{
 			SqlSession session = sqlSesionFac.openSession();
 			List<CollectionPoint> puntos = 

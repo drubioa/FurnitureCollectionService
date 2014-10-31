@@ -9,8 +9,8 @@ import java.util.concurrent.Executors;
 
 import org.apache.ibatis.session.SqlSession;
 
-import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
+import es.collectserv.model.ProvisionalAppointment;
 
 /**
  * Esta clase representa el servicio de recogida diario. Dentro del servicio diario
@@ -140,7 +140,7 @@ public class DailyServicesImp implements DailyServices{
 	} 
 	
 	
-	public Date getDay(){
+	public Date getNextValidServiceDay(){
 		return this.day;
 	}
 
@@ -154,7 +154,8 @@ public class DailyServicesImp implements DailyServices{
 		inUse = false;
 		notifyAll();
 		if(appointment == null){
-			throw new Exception("Appointment not correspond to this service day for this phone number("+phone+").");
+			throw new Exception("Appointment not correspond to this service day for "
+					+ "this phone number("+phone+").");
 		}
 		else{
 			requestToConfirmation.remove(appointment);

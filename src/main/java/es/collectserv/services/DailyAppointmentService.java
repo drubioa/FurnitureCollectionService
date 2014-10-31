@@ -2,8 +2,8 @@ package es.collectserv.services;
 
 import java.util.List;
 
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.ProvisionalAppointment;
+import es.collectserv.converter.ProvisionalAppointmentConverter;
+import es.collectserv.model.CollectionRequest;
 
 /**
  * This service manage the Daily Appointments for Collection of Furnitures.
@@ -19,7 +19,7 @@ public interface DailyAppointmentService {
 	 * @param collection_point_id id of point where the furniture will collected
 	 * @return A list of Provisional Appointments (Must be confirmed by user later).
 	 */
-	public List<ProvisionalAppointment> getProvisionalAppintments(
+	public List<ProvisionalAppointmentConverter> getProvisionalAppintments(
 			String phone_number,int itemsRequest,int collection_point_id);
 	
 	/**

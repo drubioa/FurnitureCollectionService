@@ -1,13 +1,21 @@
-package es.collectserv.clases;
+package es.collectserv.model;
 
 import java.util.Date;
 
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import es.collectserv.collrequest.DailyServices;
 
+@XmlRootElement
 public class ProvisionalAppointment 
 	extends Request
 	implements Runnable{
-	static final int SLEEP_TIME = 5000; // Time which the appointment stays in the system before user confirm that,in milliseconds
+	@XmlTransient
+	static final int SLEEP_TIME = 5000; 
+	// Time which the appointment stays in the system before user confirm that,
+	// in milliseconds
+	@XmlTransient
 	private DailyServices refDailyServices;
 	
 	public ProvisionalAppointment(){
@@ -18,7 +26,8 @@ public class ProvisionalAppointment
 		refDailyServices = day;
 	}
 	
-	public ProvisionalAppointment(int num_furnitures,String telephone,int collectionPointId,Date fch_collection) throws Exception{
+	public ProvisionalAppointment(int num_furnitures,String telephone,
+			int collectionPointId,Date fch_collection) throws Exception{
 		super(num_furnitures,telephone,collectionPointId,fch_collection);
 	}
 

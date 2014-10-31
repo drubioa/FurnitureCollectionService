@@ -1,7 +1,10 @@
-package es.collectserv.clases;
+package es.collectserv.model;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class Area {
 	
 	public static int DIST_MAX = 200;

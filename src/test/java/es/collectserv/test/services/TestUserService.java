@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import es.collectserv.clases.User;
+import es.collectserv.model.User;
 
 
 @RunWith(JUnit4.class)

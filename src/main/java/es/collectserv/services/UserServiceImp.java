@@ -15,8 +15,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.ibatis.session.SqlSession;
 
-import es.collectserv.clases.User;
 import es.collectserv.factories.SimpleMyBatisSesFactory;
+import es.collectserv.model.User;
 
 @Path("/users")
 public class UserServiceImp implements UserService{

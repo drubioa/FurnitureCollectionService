@@ -6,7 +6,7 @@
   <mapper namespace="CollectionPointMapper">
     
   	<select id="selectUrbanAreaPoints" 
-  	    resultType="es.collectserv.clases.CollectionPoint">
+  	    resultType="es.collectserv.model.CollectionPoint">
 		SELECT lon_nn AS longitude,
 			   lat_nn AS latitude,
 			   direccion AS direction,
@@ -16,7 +16,7 @@
 	</select>
 	
 	<select id="selectRuralPoints" 
-  	    resultType="es.collectserv.clases.CollectionPoint">
+  	    resultType="es.collectserv.model.CollectionPoint">
 		SELECT lon_nn AS longitude,
 			   lat_nn AS latitude,
 			   direccion AS direction,

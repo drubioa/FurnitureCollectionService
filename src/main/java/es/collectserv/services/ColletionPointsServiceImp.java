@@ -18,9 +18,9 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.Point;
-import es.collectserv.clases.Area;
+import es.collectserv.model.Area;
+import es.collectserv.model.CollectionPoint;
+import es.collectserv.model.Point;
 
 @Path("/point")
 public class ColletionPointsServiceImp implements ColletionPointsService{

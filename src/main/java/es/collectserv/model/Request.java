@@ -1,4 +1,4 @@
-package es.collectserv.clases;
+package es.collectserv.model;
 
 import java.util.Date;
 
@@ -14,7 +14,8 @@ public abstract class Request {
 		
 	}
 
-	public Request(int num_furnitures,String telephone,int collectionPointId,Date fch_collection) throws Exception{
+	public Request(int num_furnitures,String telephone,int collectionPointId,
+			Date fch_collection) throws Exception{
 		setNumFurnitures(num_furnitures);
 		this.telephone = telephone;
 		this.fch_collection = fch_collection;

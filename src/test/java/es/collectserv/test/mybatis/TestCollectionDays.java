@@ -11,11 +11,11 @@ import java.util.List;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
-import es.collectserv.clases.Area;
-import es.collectserv.clases.CollectionPoint;
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.Point;
-import es.collectserv.clases.User;
+import es.collectserv.model.Area;
+import es.collectserv.model.CollectionPoint;
+import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.Point;
+import es.collectserv.model.User;
 
 public class TestCollectionDays extends MyBatisConfigurator{
 
@@ -36,6 +36,9 @@ public class TestCollectionDays extends MyBatisConfigurator{
 		}
 	}
 	
+	/**
+	 * Se introduce una nueva solicitud de recogida y se realiza la consulta Select.
+	 */
 	@Test
 	public void testSelectAllCollectionDays(){
 		String name = "Diego";
@@ -52,8 +55,10 @@ public class TestCollectionDays extends MyBatisConfigurator{
 			// Inserts new example user
 			session.insert("UserMapper.insertUser", user);
 			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			Area zone = session.selectOne("ZoneMapper.selectZone", 3);
+			Point currentPoint = new Point(36.5363800,-6.1930940);
+			List<CollectionPoint> puntos = 
+					session.selectList("CollectionPointMapper.selectUrbanAreaPoints");
+			Area zone = new Area(puntos);
 			CollectionPoint point = 
 					zone.nearestCollectionPoint(currentPoint); 
 			solicitud.setCollectionPoint(point);

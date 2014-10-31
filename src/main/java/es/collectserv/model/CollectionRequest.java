@@ -1,4 +1,4 @@
-package es.collectserv.clases;
+package es.collectserv.model;
 
 import java.util.List;
 

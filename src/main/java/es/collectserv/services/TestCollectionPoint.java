@@ -1,4 +1,4 @@
-package es.collectserv.test.services;
+package es.collectserv.services;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import es.collectserv.clases.CollectionPoint;
+import es.collectserv.model.CollectionPoint;
 
 
 @RunWith(JUnit4.class)

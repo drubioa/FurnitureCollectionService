@@ -2,8 +2,8 @@ package es.collectserv.collrequest;
 
 import java.util.List;
 
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.ProvisionalAppointment;
+import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.ProvisionalAppointment;
 
 /**
  * Dicha clase representa un gestor de solicitudes que se encargará de proporcionar

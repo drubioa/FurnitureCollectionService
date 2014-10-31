@@ -6,7 +6,7 @@ import static org.junit.Assert.fail;
 import org.apache.ibatis.session.SqlSession;
 import org.junit.Test;
 
-import es.collectserv.clases.User;
+import es.collectserv.model.User;
 
 public class TestUserMapper extends MyBatisConfigurator{
 	
@@ -35,4 +35,25 @@ public class TestUserMapper extends MyBatisConfigurator{
 		}
 	}
 
+	@Test
+	/**
+	 * Try to add a same user twice.
+	 */
+	public void testInserTwoUserWithSamePhone(){
+		String name = "Diego";
+		String phone_number = "699323216";
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			User user = new User(name,phone_number);
+			// Insert the user twice.
+			session.insert("UserMapper.insertUser", user);
+			session.insert("UserMapper.insertUser", user);
+			fail("Two users with same number wew introduced.");
+		}catch(Exception e){
+			assertTrue(true);
+		}finally{
+			session.close();
+		}
+	}
+	
 }

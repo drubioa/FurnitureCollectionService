@@ -1,6 +1,6 @@
 package es.collectserv.services;
 
-import es.collectserv.clases.CollectionPoint;
+import es.collectserv.model.CollectionPoint;
 
 
 /**

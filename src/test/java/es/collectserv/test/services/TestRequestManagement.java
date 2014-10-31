@@ -9,11 +9,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import es.collectserv.clases.CollectionRequest;
-import es.collectserv.clases.Furniture;
-import es.collectserv.clases.ProvisionalAppointment;
 import es.collectserv.collrequest.RequestManagement;
 import es.collectserv.collrequest.RequestManagementimp;
+import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.Furniture;
+import es.collectserv.model.ProvisionalAppointment;
 
 @RunWith(JUnit4.class)
 public class TestRequestManagement {
@@ -37,7 +37,7 @@ public class TestRequestManagement {
 	}
 	
 	/** 
-	 * Se crea una solicitud pendiente de confirmar para 1 item 
+	 * Se crea una solicitud pendiente de confirmar para 1 item.
 	 **/
 	@Test
 	public void testGetAppointmentToConfirm1Item(){
@@ -50,10 +50,14 @@ public class TestRequestManagement {
 					.getAppointmentToConfirm(phone, num_items,
 							collectionPointId));
 		} catch (Exception e) {
-			fail(e.toString());
+			fail(e.getMessage());
 		}
 	}
 	
+	/**
+	 * Se valida el formato de todas las citas de un listado.
+	 * @param appointments
+	 */
 	private void validAppointmentList(List<ProvisionalAppointment> 
 	appointments){
 		assertNotNull(appointments);
@@ -62,6 +66,11 @@ public class TestRequestManagement {
 		}
 	}
 	
+	/**
+	 * Se comprueba que todos los campos de una cita no sean nulos 
+	 * y tengan un formato valido.
+	 * @param apointmnet
+	 */
 	private void validAppointment(ProvisionalAppointment apointmnet){
 		assertNotNull(apointmnet.getTelephone());
 		assertTrue(apointmnet.getTelephone().charAt(0) == '6');

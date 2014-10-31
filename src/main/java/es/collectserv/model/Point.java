@@ -1,8 +1,5 @@
-package es.collectserv.clases;
+package es.collectserv.model;
 
-import javax.xml.bind.annotation.XmlRootElement;
-
-@XmlRootElement
 public class Point {
 	private double longitude,latitude;
 	private String direction;

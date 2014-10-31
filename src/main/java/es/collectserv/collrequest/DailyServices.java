@@ -2,7 +2,7 @@ package es.collectserv.collrequest;
 
 import java.util.Date;
 
-import es.collectserv.clases.ProvisionalAppointment;
+import es.collectserv.model.ProvisionalAppointment;
 
 public interface DailyServices {
 	
@@ -38,7 +38,7 @@ public interface DailyServices {
 	 * Devuelve el día al que corresponde dicho servicio diario
 	 * @return
 	 */
-	public Date getDay();
+	public Date getNextValidServiceDay();
 	
 	/**
 	 * Confirma una solicitud pendiente de confirmar. Esta es registrada en la base de datos
