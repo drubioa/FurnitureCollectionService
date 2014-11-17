@@ -1,6 +1,7 @@
 package es.collectserv.test.mybatis;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.apache.ibatis.session.SqlSession;
@@ -17,15 +18,11 @@ public class TestUserMapper extends MyBatisConfigurator{
 	 */
 	public void testInserAndDeleteUser(){
 		String name = "Diego";
-		String phone_number = "699390216";
+		String phone_number = "699390256";
 		SqlSession session = sqlSesionFac.openSession();
 		try{
 			User user1 = new User(name,phone_number);
 			session.insert("UserMapper.insertUser", user1);
-			User user2 = (User) session.selectOne("UserMapper.selectUser", 
-					phone_number);
-			assertTrue(user2.getName().equals(name));
-			assertTrue(user2.getPhone_number().equals(phone_number));
 			session.delete("UserMapper.deleteUser", phone_number);
 			session.rollback();
 		}catch(Exception e){
@@ -51,6 +48,27 @@ public class TestUserMapper extends MyBatisConfigurator{
 			fail("Two users with same number wew introduced.");
 		}catch(Exception e){
 			assertTrue(true);
+		}finally{
+			session.close();
+		}
+	}
+	
+	/**
+	 * Se verifica la consulta select para comprobar que un usuario no tiene solicitudes
+	 * previas.
+	 */
+	@Test
+	public void testUserNotGotPrevRequest(){
+		String phone_number = "699323216";
+		SqlSession session = sqlSesionFac.openSession();
+		try{
+			boolean existPreviousRequest = 
+					session.selectOne("UserMapper.selectIfUserGotPreviousRequest", 
+					phone_number);
+			assertFalse(existPreviousRequest);
+		}catch(Exception e){
+			fail();
+			e.printStackTrace();
 		}finally{
 			session.close();
 		}

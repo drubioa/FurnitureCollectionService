@@ -46,6 +46,6 @@ public interface RequestManagement {
 	 * Una vez registrada es eliminada del listado de citas pendientes de confirmar.
 	 * @param collectionRequest
 	 */
-	public void confirmProvisionalAppointmen(CollectionRequest collectionRequest);
+	public void confirmProvisionalAppointment(CollectionRequest collectionRequest);
 	
 }

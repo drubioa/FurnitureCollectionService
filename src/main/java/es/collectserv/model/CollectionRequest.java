@@ -3,11 +3,13 @@ package es.collectserv.model;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
 public class CollectionRequest extends Request{
 	private int id;
 	private List<Furniture> furnitures;
+	@XmlTransient
 	private CollectionPoint collectionPoint;
 	
 	public CollectionRequest(){

@@ -14,7 +14,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 public class MyBatisConfigurator {
 	private String configFile;
 	private InputStream is;
-	protected SqlSessionFactory sqlSesionFac;
+	protected static SqlSessionFactory sqlSesionFac;
 	
 	public MyBatisConfigurator(){
 		configFile = "mybatis-config.xml";

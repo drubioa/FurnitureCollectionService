@@ -1,4 +1,4 @@
-package es.collectserv.test.services;
+package es.collectserv.test;
 
 import static org.junit.Assert.*;
 

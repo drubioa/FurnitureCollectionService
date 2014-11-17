@@ -1,6 +1,7 @@
 package es.collectserv.test.mybatis;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -9,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import es.collectserv.model.Area;
@@ -23,15 +26,59 @@ import es.collectserv.model.User;
  *
  */
 public class TestCollectionRequest extends MyBatisConfigurator{
-	private Area urban;
-
-	public TestCollectionRequest(){
-		SqlSession session = sqlSesionFac.openSession();
+	private  Area urban;
+	private  CollectionRequest solicitud;
+	private  String name = "Diego";
+	private  String phone_number = "699390219";
+	private  CollectionPoint point;
+	private  SqlSession session = sqlSesionFac.openSession();
+	
+	public TestCollectionRequest() throws Exception{
+		session = sqlSesionFac.openSession();
 		List<CollectionPoint> puntos = 
 				session.selectList(
 						"CollectionPointMapper.selectUrbanAreaPoints");
 		urban = new Area(puntos);
+		Point currentPoint = new Point(36.5363800,-6.1930940);
+		point = urban.nearestCollectionPoint(currentPoint);
 		session.close();
+	}
+	
+	/**
+	 * Se crea una solicitud de ejemplo.
+	 */
+	@Before 
+	public void setUp(){
+		session = sqlSesionFac.openSession();
+		session.insert("UserMapper.insertUser", new User(name,phone_number));
+		solicitud = createExampleRequest(name,phone_number,point);
+	}
+	
+	/**
+	 * Se realiza rollback y se cierra la conexión con la base de datos.
+	 */
+	@After
+	public void tearDown(){
+		session.rollback();
+		session.close();
+	}
+	
+	@Test
+	public void testInsertAndSelectRequestByUser(){
+		try{		
+			// Inicialmente no se ha introducido la solicitud por lo que el usuario
+			//no tiene ninguna solicitud pendiente.
+			assertNull(session.selectOne("CollectionRequestMapper"+
+					".selectRequestByUser",solicitud.getTelephone()));
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			// Una vez el usuario la ha introducido se localiza la solicitud.
+			assertNotNull(session.selectOne("CollectionRequestMapper"+
+					".selectRequestByUser",solicitud.getTelephone()));
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}		
 	}
 	
 	/**
@@ -40,17 +87,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	 */
 	@Test
 	public void testInsertCollectionRequest(){
-		String name = "Diego";
-		String phone_number = "615690926";
-		SqlSession session = sqlSesionFac.openSession();
-		try{
-			// Inserts new example user
-			session.insert("UserMapper.insertUser", new User(name,phone_number));
-			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			CollectionPoint point = 
-					urban.nearestCollectionPoint(currentPoint); 
-			CollectionRequest solicitud = createExampleRequest(name,phone_number,point);
+		try{		
 			// At the moment request id is 0 because it doesn't introduced in the system.
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
@@ -60,43 +97,17 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 		catch(Exception e){
 			fail(e.toString());
-		}finally{
-			session.rollback();
-			session.close();
 		}
 	}
 	
-	private CollectionRequest createExampleRequest
-		(String name,String phone_number, CollectionPoint point){
-		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelephone(phone_number);
-		solicitud.setFch_collection(new Date());
-		solicitud.setFch_request(new Date());
-		solicitud.setCollectionPoint(point);
-		return solicitud;
-	}
+
 	
 	/**
 	 * Se crea una nueva solicitud de recogida y se inserta en el sistema. 
 	 */
 	@Test
 	public void testinsertCollectionRequestAndSelectCollectionRequest(){
-		String name = "Diego";
-		String phone_number = "615690926";
-		User user = new User(name,phone_number);
-		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelephone(phone_number);
-		solicitud.setFch_collection(new Date());
-		solicitud.setFch_request(new Date());
-		SqlSession session = sqlSesionFac.openSession();
 		try{
-			// Inserts new example user
-			session.insert("UserMapper.insertUser", user);
-			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940);
-			CollectionPoint point = 
-					urban.nearestCollectionPoint(currentPoint); 
-			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
@@ -108,32 +119,12 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 		catch(Exception e){
 			fail(e.toString());
-		}finally{
-			session.rollback();
-			session.close();
-		}		
+		}
 	}
 	
 	@Test
 	public void testSelectAllCollectionRequests(){
-		String name = "Diego";
-		String phone_number = "615690926";
-		User user = new User(name,phone_number);
-		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelephone(phone_number);
-		Calendar gc = Calendar.getInstance(); 
-		gc.add(Calendar.DATE, 1);
-		solicitud.setFch_collection(gc.getTime());
-		solicitud.setFch_request(new Date());
-		SqlSession session = sqlSesionFac.openSession();
 		try{
-			// Inserts new example user
-			session.insert("UserMapper.insertUser", user);
-			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940);
-			CollectionPoint point = 
-					urban.nearestCollectionPoint(currentPoint); 
-			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
@@ -149,15 +140,11 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 		catch(Exception e){
 			fail(e.toString());
-		}finally{
-			session.rollback();
-			session.close();
-		}		
+		}	
 	}
 	
 	@Test
 	public void testSelectEmptyPendingResquestByPhone(){
-		SqlSession session = sqlSesionFac.openSession();
 		try{
 			assertTrue(
 					session.selectList("CollectionRequestMapper"+
@@ -165,32 +152,12 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 		catch(Exception e){
 			fail(e.toString());
-		}finally{
-			session.rollback();
-			session.close();
 		}		
 	}
 	
 	@Test
 	public void testSelectPendingRequestByPhone(){
-		String name = "Diego";
-		String phone_number = "615690926";
-		User user = new User(name,phone_number);
-		CollectionRequest solicitud = new CollectionRequest();
-		solicitud.setTelephone(phone_number);
-		Calendar gc = Calendar.getInstance(); 
-		gc.add(Calendar.DATE, 1);
-		solicitud.setFch_collection(gc.getTime());
-		solicitud.setFch_request(new Date());
-		SqlSession session = sqlSesionFac.openSession();
 		try{
-			// Inserts new example user
-			session.insert("UserMapper.insertUser", user);
-			// Find some collection point
-			Point currentPoint = new Point(36.5363800,-6.1930940); 
-			CollectionPoint point = 
-					urban.nearestCollectionPoint(currentPoint); 
-			solicitud.setCollectionPoint(point);
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
@@ -204,10 +171,45 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		}
 		catch(Exception e){
 			fail(e.toString());
-		}finally{
-			session.rollback();
-			session.close();
-		}		
+		}	
 	}
 	
+	/**
+	 * Se inserta y elimina una solicitud de recogida. 
+	 */
+	@Test
+	public void testInsertAndDeleteCollectionRequest(){
+		try{
+			assertTrue(solicitud.getId() == 0);
+			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			assertTrue(solicitud.getId() > 0);
+			// Select inserted request in db
+			assertNotNull(
+					session.selectList("CollectionRequestMapper"+
+			".selectPendingRequest"));
+			assertTrue(session.selectList("CollectionRequestMapper"+
+					".selectPendingRequest").size() == 1);
+			session.delete("CollectionRequestMapper.deleteFurnituresFromCollReq",
+					solicitud);
+			session.delete("CollectionRequestMapper.deleteCollectionRequest",
+					solicitud);
+			assertTrue(session.selectList("CollectionRequestMapper"+
+					".selectPendingRequest").size() == 0);			
+		}
+		catch(Exception e){
+			fail(e.toString());
+		}			
+	}
+	
+	private CollectionRequest createExampleRequest
+		(String name,String phone_number, CollectionPoint point){
+		CollectionRequest solicitud = new CollectionRequest();
+		solicitud.setTelephone(phone_number);
+		Calendar gc = Calendar.getInstance(); 
+		gc.add(Calendar.DATE, 1);
+		solicitud.setFch_collection(gc.getTime());
+		solicitud.setFch_request(new Date());
+		return solicitud;
+	}
 }

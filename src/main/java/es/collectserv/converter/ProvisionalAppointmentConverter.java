@@ -19,6 +19,9 @@ public class ProvisionalAppointmentConverter {
 		  this.entity = entity;
 	  }
 	  
+	  public ProvisionalAppointment getProvisionalAppointment(){
+		  return entity;
+	  }
 	  
 	  @XmlElement
 	  public int getNumFurnitures(){

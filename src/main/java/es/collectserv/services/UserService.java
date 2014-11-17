@@ -12,16 +12,21 @@ import es.collectserv.model.User;
 public interface UserService {
 	
 	/**
-	 * Add new user numbe to db
+	 * Add new user number to db
 	 * @param user
 	 * @return return URI, if the user exists or a error occur return a error 500.
 	 */
 	public Response createNewUser(User user);
 	
 	/**
-	 * Get user name and number by phone, or indicate if the user doesn't exists.
-	 * @param phone_number
-	 * @return
+	 * Check if the user got pending collection request in the system.
+	 * @return OK or NOT_FOUND
 	 */
-	public User getUserByPhoneNumber(String phone_number);
+	public Response userGotPrendingRequest(String phone_number);
+	
+	/**
+	 * Remove a current user to db.
+	 * @return 
+	 */
+	public Response deleteUser(String phone_number);
 }

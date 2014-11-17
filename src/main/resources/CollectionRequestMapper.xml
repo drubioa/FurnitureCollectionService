@@ -53,6 +53,11 @@
   		WHERE fch_recogida_nn == #{day}
 	  </select>
 
+	  <select id="selectRequestByUser" resultMap="collectionRequestMap">
+	  SELECT * FROM servrecog_muebles_solicitud_view 
+  		WHERE telephone_nn = #{telephone}
+	  </select>
+
       <select id="selectPendingRequest" resultMap="collectionRequestMap">
   		SELECT * FROM servrecog_muebles_solicitud_view 
   		WHERE fch_recogida_nn > now()
@@ -91,5 +96,13 @@
           #{item.id},#{id},#{item.cantidad}
         </foreach>
       </insert>
+      
+      <delete id="deleteFurnituresFromCollReq">
+      		DELETE FROM servrecog_muebles_solicitud  WHERE id_solicitud_nn = #{id}
+      </delete>
+      
+      <delete id="deleteCollectionRequest">
+      		DELETE FROM servrecog_solicitudes 	WHERE id_solicitud_pk = #{id}
+      </delete>
      
   </mapper>

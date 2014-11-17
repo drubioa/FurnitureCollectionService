@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.joda.time.DateMidnight;
 
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 import es.collectserv.model.CollectionRequest;
@@ -184,10 +185,11 @@ public class RequestManagementimp implements RequestManagement{
 		return appintment_list;
 	}
 
-	public synchronized void confirmProvisionalAppointmen(CollectionRequest request) {
+	public synchronized void confirmProvisionalAppointment(CollectionRequest request) {
 		DailyServices dailyService = findDailyService(request.getFch_collection());
 		if(dailyService == null){
-			throw new RuntimeException("Appointment to Confirm cannot be localized");
+			throw new RuntimeException("Appointment to Confirm cannot be localized \n"+
+					"collection day: "+request.getFch_collection());
 		}
 		try {
 			// Se registra la solicitud y se elimina la cita pen diente de confirmar
@@ -219,8 +221,10 @@ public class RequestManagementimp implements RequestManagement{
 	 */
 	private DailyServices findDailyService(Date fch_collection) {
 		DailyServices day = null;
+		DateMidnight b = new DateMidnight(fch_collection);
 		for(int i = 0;i < days.size() && day == null;i++){
-			if(days.get(i).getNextValidServiceDay() == fch_collection){
+			DateMidnight a = new DateMidnight(days.get(i).getNextValidServiceDay());
+			if(a.isEqual(b)){
 				day = days.get(i);
 			}
 		}

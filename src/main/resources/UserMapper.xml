@@ -11,7 +11,17 @@
   	</resultMap>
   	
   	<select id="selectUser" resultMap="userResultMap">
-  		SELECT * FROM servrecog_usuarios WHERE telephone_pk = #{phone_number}
+		SELECT * FROM servrecog_usuarios WHERE telephone_pk = #{phone_number}
+	</select>
+  	
+  	<select id="selectIfUserGotPreviousRequest" resultType="boolean" >
+	  	SELECT CASE WHEN EXISTS (
+	    	SELECT *
+	    	FROM servrecog_users_with_pending_request
+	    	WHERE telephone_nn = #{phone_number}) 
+	    	THEN 
+	    		CAST(1 AS BIT) 
+	    		ELSE CAST(0 AS BIT) END
   	</select>
   	
   	<insert id="insertUser">

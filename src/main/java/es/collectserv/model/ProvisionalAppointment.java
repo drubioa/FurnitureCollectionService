@@ -12,7 +12,7 @@ public class ProvisionalAppointment
 	extends Request
 	implements Runnable{
 	@XmlTransient
-	static final int SLEEP_TIME = 5000; 
+	static final int SLEEP_TIME = 50000; // 5 minutes
 	// Time which the appointment stays in the system before user confirm that,
 	// in milliseconds
 	@XmlTransient

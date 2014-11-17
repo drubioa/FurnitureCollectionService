@@ -45,7 +45,8 @@ public class TestArea {
 		try{
 			SqlSession session = sqlSesionFac.openSession();
 			List<CollectionPoint> puntos = 
-					session.selectList("CollectionPointMapper.selectUrbanAreaPoints");
+					session.selectList("CollectionPointMapper"
+							+ ".selectUrbanAreaPoints");
 			session.close();
 			assertNotNull(puntos);
 			assertTrue(puntos.size() > 0);
@@ -67,7 +68,8 @@ public class TestArea {
 		try{
 			SqlSession session = sqlSesionFac.openSession();
 			List<CollectionPoint> puntos = 
-					session.selectList("CollectionPointMapper.selectRuralPoints");
+					session.selectList("CollectionPointMapper"
+							+ ".selectRuralPoints");
 			session.close();
 			assertNotNull(puntos);
 			assertTrue(puntos.size() > 0);

@@ -70,11 +70,12 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
 		}
 		try{
-			manager.confirmProvisionalAppointmen(collectionRequest);
+			manager.confirmProvisionalAppointment(collectionRequest);
 		}
 		catch(Exception ex){
 			System.out.println("ERROR: "+ex.getMessage());
-			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
 		}
 	}
 }

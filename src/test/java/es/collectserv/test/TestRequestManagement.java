@@ -1,4 +1,4 @@
-package es.collectserv.test.services;
+package es.collectserv.test;
 
 import static org.junit.Assert.*;
 
@@ -119,7 +119,7 @@ public class TestRequestManagement {
 			assertTrue(list.size() == 1);
 			validAppointmentList(list);
 			// Se confirma la solicitud
-			management.confirmProvisionalAppointmen(
+			management.confirmProvisionalAppointment(
 					new CollectionRequest(list.get(0),furnitures));
 		} catch (Exception e) {
 			fail(e.toString());
@@ -144,9 +144,9 @@ public class TestRequestManagement {
 			assertTrue(list.size() > 1);
 			validAppointmentList(list);
 			// Se confirman las solicitudes
-			management.confirmProvisionalAppointmen(
+			management.confirmProvisionalAppointment(
 					new CollectionRequest(list.get(0),furnitures1));
-			management.confirmProvisionalAppointmen(
+			management.confirmProvisionalAppointment(
 						new CollectionRequest(list.get(1),furnitures1));
 		} catch (Exception e) {
 			fail(e.toString());
