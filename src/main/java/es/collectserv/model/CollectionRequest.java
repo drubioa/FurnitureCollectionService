@@ -43,10 +43,46 @@ public class CollectionRequest extends Request{
 	public CollectionPoint getCollectionPoint() {
 		return collectionPoint;
 	}
-
+	
 	public void setCollectionPoint(CollectionPoint collectionPoint) {
 		this.collectionPoint = collectionPoint;
 		super.setCollectionPointId(collectionPoint.getPointId());
 	}
+	
 
+	public int getNumFurnitures(){
+		int totalFurnitures = 0;
+		for(Furniture furniture : furnitures){
+			totalFurnitures = totalFurnitures + furniture.getCantidad();
+		}
+		return totalFurnitures;
+	}
+
+	/**
+	 * Comprueba que todos los campos estan correctamente.
+	 * @return
+	 */
+	public boolean checkCorrectRequest(){
+		boolean isCorrect = true;
+		if(this.furnitures.size() == 0  
+				|| this.getFch_collection() == null || this.getFch_request() == null ||
+				getNumFurnitures() <= 0 ||this.getTelephone().isEmpty()){
+			isCorrect = false;
+		}
+		return isCorrect;
+	}
+	
+	@Override
+	public String toString(){
+		String cad = "Telephone: "+this.getTelephone()+"\n"+
+				"numFurnitures"+this.getNumFurnitures()+"\n"+
+				"fch_Collection"+this.getFch_collection()+"\n"+
+				"fch_request"+this.getFch_request()+"\n"+
+				"collectionPointId"+this.getCollectionPointId()+"\n";
+		for(Furniture furniture : this.getFurnitures()){
+			cad = cad + furniture.toString();
+		}
+		return cad;
+	}
+	
 }

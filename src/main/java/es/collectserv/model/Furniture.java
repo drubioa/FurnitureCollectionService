@@ -31,4 +31,10 @@ public class Furniture {
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}
+	
+	@Override
+	public String toString(){
+		return "furnitures id: "+id+"\n"+
+				"cantidad: "+cantidad+"\n";
+	}
 }

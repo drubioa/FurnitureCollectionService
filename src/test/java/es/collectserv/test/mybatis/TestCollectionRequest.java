@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,7 @@ import org.junit.Test;
 import es.collectserv.model.Area;
 import es.collectserv.model.CollectionPoint;
 import es.collectserv.model.CollectionRequest;
+import es.collectserv.model.Furniture;
 import es.collectserv.model.Point;
 import es.collectserv.model.User;
 
@@ -72,6 +74,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 					".selectRequestByUser",solicitud.getTelephone()));
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
+					solicitud);
 			// Una vez el usuario la ha introducido se localiza la solicitud.
 			assertNotNull(session.selectOne("CollectionRequestMapper"+
 					".selectRequestByUser",solicitud.getTelephone()));
@@ -92,6 +96,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
+					solicitud);
 			// When the request was introduced in the system, this id change
 			assertTrue(solicitud.getId() > 0);
 		}
@@ -111,6 +117,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
+					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db
 			assertNotNull(
@@ -126,6 +134,8 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	public void testSelectAllCollectionRequests(){
 		try{
 			assertTrue(solicitud.getId() == 0);
+			int numberOfPendingRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequest").size();
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
@@ -136,7 +146,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 					session.selectList("CollectionRequestMapper"+
 			".selectPendingRequest"));
 			assertTrue(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequest").size() == 2);
+					".selectPendingRequest").size() ==  numberOfPendingRequests + 2);
 		}
 		catch(Exception e){
 			fail(e.toString());
@@ -161,7 +171,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			assertTrue(solicitud.getId() == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
-			session.insert("CollectionRequestMapper.insertCollectionRequest",
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
 					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db by phone
@@ -181,7 +191,11 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	public void testInsertAndDeleteCollectionRequest(){
 		try{
 			assertTrue(solicitud.getId() == 0);
+			int pendingRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequest").size();;
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
+					solicitud);
+			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
 					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db
@@ -189,13 +203,13 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 					session.selectList("CollectionRequestMapper"+
 			".selectPendingRequest"));
 			assertTrue(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequest").size() == 1);
+					".selectPendingRequest").size() == pendingRequests + 1);
 			session.delete("CollectionRequestMapper.deleteFurnituresFromCollReq",
 					solicitud);
 			session.delete("CollectionRequestMapper.deleteCollectionRequest",
 					solicitud);
 			assertTrue(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequest").size() == 0);			
+					".selectPendingRequest").size() == pendingRequests);			
 		}
 		catch(Exception e){
 			fail(e.toString());
@@ -206,10 +220,15 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		(String name,String phone_number, CollectionPoint point){
 		CollectionRequest solicitud = new CollectionRequest();
 		solicitud.setTelephone(phone_number);
+		solicitud.setCollectionPointId(point.getPointId());
 		Calendar gc = Calendar.getInstance(); 
 		gc.add(Calendar.DATE, 1);
 		solicitud.setFch_collection(gc.getTime());
 		solicitud.setFch_request(new Date());
+		List<Furniture> furnitures = new ArrayList<Furniture>();
+		furnitures.add(new Furniture(1,2));
+		furnitures.add(new Furniture(2,1));	
+		solicitud.setFurnitures(furnitures);
 		return solicitud;
 	}
 }

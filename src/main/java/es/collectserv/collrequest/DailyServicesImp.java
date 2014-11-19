@@ -28,18 +28,18 @@ public class DailyServicesImp implements DailyServices{
 	private int furniteres_per_day;
 	private boolean inUse; // By control of concurrency
 	
-	public DailyServicesImp(Date day) throws Exception{
-		if(day.before(Calendar.getInstance().getTime())){
+	public DailyServicesImp(java.util.Date last_day) throws Exception{
+		if(last_day.before(Calendar.getInstance().getTime())){
 			throw new Exception("invalid day, it must "
-					+ "be later than the current day ("+day.toString()+")");
+					+ "be later than the current day ("+last_day.toString()+")");
 		}
 		inUse = false;
 		requestToConfirmation = new ArrayList<ProvisionalAppointment>();
-		this.day = day;
+		this.day = last_day;
 		SqlSession session = new SimpleMyBatisSesFactory().getOpenSqlSesion();
 		furniteres_per_day = 
 				session.selectOne("CollectionRequestMapper"
-					+".selectFurnituresByDay",day);
+					+".selectFurnituresByDay",last_day);
 		if(furniteres_per_day > MAX_FUNRITNURES_PER_DAY){
 			throw new Exception("Invalid number of furnirutre request for this day");
 		}

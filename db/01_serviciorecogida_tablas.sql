@@ -1,6 +1,9 @@
 -- BD para el servidor del servicio de recogida de muebles y enseres
-CREATE DATABASE servrecog;
+-- DROP DATABASE servrecog;
+-- CREATE DATABASE servrecog;
 
+DROP VIEW servrecog_area_urbana_view;
+DROP VIEW servrecog_area_rural_view;
 DROP VIEW servrecog_muebles_solicitud_view;
 DROP TABLE servrecog_muebles_solicitud;
 DROP TABLE servrecog_solicitudes;
@@ -12,8 +15,12 @@ DROP SEQUENCE servrecog_id_zone_seq;
 DROP TABLE servrecog_furnitures;
 DROP SEQUENCE servrecog_id_furniture_seq;
 DROP TABLE servrecog_categories;
-DROP SEQUENCE servrecog_id_category_seq;
 DROP TABLE servrecog_usuarios;
+
+----------------------------------------------------------------------------
+-- TABLAS
+----------------------------------------------------------------------------
+
 
 -- TABLA USUARIOS DEL SERVICIO DE RECOGIDA DE MUEBLES Y ENSERES
 CREATE TABLE servrecog_usuarios	(
@@ -65,9 +72,8 @@ CREATE TABLE servrecog_solicitudes(
 	fch_solicitud_nn		date NOT NULL,
 	fch_recogida_nn			date NOT NULL,
 	telephone_nn			varchar(12)	REFERENCES servrecog_usuarios(telephone_pk) NOT NULL,
-	punto_recogida_nn		int REFERENCES servrecog_puntos_recogida(id_punto_recogida_pk) NOT NULL,
-	num_total_enseres_ck	int DEFAULT 0 CHECK(cantidad_ck <= 4 and cantidad_ck > 0), 
-);	
+	punto_recogida_nn		int REFERENCES servrecog_puntos_recogida(id_punto_recogida_pk) NOT NULL	
+);
 
 -- TABLA DE ENSERES ASOCIADOS A LAS SOLICITUDES 
 CREATE TABLE servrecog_muebles_solicitud (
@@ -77,6 +83,10 @@ CREATE TABLE servrecog_muebles_solicitud (
 	CHECK(cantidad_ck <= 4 and cantidad_ck > 0), 
 	PRIMARY KEY(id_furniture_nn,id_solicitud_nn)
 );
+
+----------------------------------------------------------------------------
+-- VISTAS
+----------------------------------------------------------------------------
 
 -- VISTA DE SOLICITUD CON EL TOTAL DE ENSERES SOLICITADOS
 CREATE VIEW servrecog_muebles_solicitud_view AS
@@ -90,5 +100,21 @@ SELECT  id_solicitud_pk,
 		WHERE servrecog_muebles_solicitud.id_solicitud_nn = id_solicitud_pk) 
 		AS num_enseres
 	FROM servrecog_solicitudes;
+
+-- VISTA DE SOLICITUDES PENDIENTES
+CREATE VIEW servrecog_users_with_pending_request AS 
+ SELECT servrecog_solicitudes.telephone_nn
+   FROM servrecog_solicitudes
+  WHERE servrecog_solicitudes.fch_recogida_nn < now();
+
+-- VISTA DE AREAS URBANAS
+CREATE VIEW servrecog_area_urbana_view AS
+SELECT * FROM servrecog_puntos_recogida
+WHERE zone != (SELECT id_zone_pk FROM servrecog_zones WHERE nombre_uk = 'Zonas Rurales'); 
+
+-- VISTA DE AREAS URBANAS
+CREATE VIEW servrecog_area_rural_view AS
+SELECT * FROM servrecog_puntos_recogida
+WHERE zone = (SELECT id_zone_pk FROM servrecog_zones WHERE nombre_uk = 'Zonas Rurales' );
 
 COMMIT;

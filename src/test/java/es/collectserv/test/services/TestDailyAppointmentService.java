@@ -9,15 +9,19 @@ import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import es.collectserv.conector.DailyAppointmentServiceConector;
 import es.collectserv.conector.DailyAppointmentServiceConectorImp;
+import es.collectserv.conector.UserServiceConector;
+import es.collectserv.conector.UserServiceConectorImp;
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.Furniture;
 import es.collectserv.model.ProvisionalAppointment;
+import es.collectserv.model.User;
 
 @RunWith(JUnit4.class)
 public class TestDailyAppointmentService {
@@ -25,10 +29,15 @@ public class TestDailyAppointmentService {
 	private DailyAppointmentServiceConector mAppointmentService;
 	
 	public TestDailyAppointmentService(){
-		mAppointmentService = new DailyAppointmentServiceConectorImp
-				("localhost", 8080, "http");			
+	
 	}
 
+	@Before
+	public void setUp(){
+		mAppointmentService = new DailyAppointmentServiceConectorImp
+				("localhost", 8080, "http");				
+	}
+	
 	@After 
 	public void tearDown(){
 		try {
@@ -43,7 +52,7 @@ public class TestDailyAppointmentService {
 	 */
 	@Test
 	public void testGetProvisionalAppointments(){
-		final String phoneNumber = "604300014";
+		final String phoneNumber = "604300314";
 		final int num_furnitures = 1;
 		final int collectionPointID = 1; 
 		try{
@@ -64,7 +73,7 @@ public class TestDailyAppointmentService {
 	 */
 	@Test
 	public void testGet2ProvisionalAppointments(){
-		final String phoneNumber = "604300014";
+		final String phoneNumber = "604320014";
 		final int num_furnitures = 1;
 		final int collectionPointID = 1; 
 		try{
@@ -85,11 +94,20 @@ public class TestDailyAppointmentService {
 	 */
 	@Test
 	public void testGetAndConfirmAppointment(){
+		final String userName = "Paco";
+		final String userPhoneNumber = "621130153";
+		final UserServiceConector conector = 
+				new UserServiceConectorImp("localhost",8080,"http");
+		final User user = new User(userName,userPhoneNumber);
+		
 		try{
-			
+			// First we must add new user
+			HttpResponse response = conector.addUser(user);
+			assertTrue(response.getStatusLine().getStatusCode() == 201);
 			List<ProvisionalAppointment> appointments =
 					mAppointmentService.getProvisionalAppointments(
-							"604300014",5,2);
+							userPhoneNumber,5,2);
+			assertNotNull(appointments);
 			assertTrue(appointments.size() > 1);
 			validAppointment(appointments);
 			ProvisionalAppointment appointment = appointments.get(0);
@@ -99,23 +117,26 @@ public class TestDailyAppointmentService {
 			furnitures.add(new Furniture(2,1));
 			CollectionRequest req =
 					new CollectionRequest(appointment,furnitures);
-			confirmProvisionalAppointment(req);
-			
+			req.setNumFurnitures(3);
+			assertTrue(req.checkCorrectRequest());
+			mAppointmentService.confirmAppointment(req);
 		}
 		catch(Exception e){
 			fail(e.toString());
 		}		
+		finally{
+			HttpResponse response;
+			try {
+				response = conector.deleteUser(user);
+				assertTrue(response.getStatusLine().getStatusCode() == 200);
+			} catch (Exception e) {
+				fail(e.toString());
+				e.printStackTrace();
+			}
+		}
 	}
 	
 
-	private void confirmProvisionalAppointment(CollectionRequest appointment) 
-			throws Exception{
-		HttpResponse response = mAppointmentService.confirmAppointment(appointment);
-		assertTrue(response.getStatusLine().getStatusCode() == 201);
-	}
-
-	
-	
 	private void validAppointment(List<ProvisionalAppointment> appointments){
 		for(ProvisionalAppointment appointment : appointments){
 			validAppointment(appointment);
@@ -127,6 +148,7 @@ public class TestDailyAppointmentService {
 	 * @param appointment
 	 */
 	private void validAppointment(ProvisionalAppointment appointment){
+		assertNotNull(appointment);
 		assertNotNull(appointment.getTelephone());
 		assertTrue(appointment.getTelephone().charAt(0) == '6');
 		assertTrue(appointment.getNumFurnitures() > 0);

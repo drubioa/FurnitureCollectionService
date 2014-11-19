@@ -91,9 +91,8 @@
 		INSERT INTO servrecog_muebles_solicitud(
 			id_furniture_nn,id_solicitud_nn,cantidad_ck) 
 			VALUES 
-        <foreach collection="furnitures" item="item" 	
-            open="(" close=")" separator=",">
-          #{item.id},#{id},#{item.cantidad}
+        <foreach collection="furnitures" item="item" separator=",">
+          (#{item.id},#{id},#{item.cantidad})
         </foreach>
       </insert>
       

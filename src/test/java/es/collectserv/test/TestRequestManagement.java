@@ -54,30 +54,9 @@ public class TestRequestManagement {
 		}
 	}
 	
-	/**
-	 * Se valida el formato de todas las citas de un listado.
-	 * @param appointments
-	 */
-	private void validAppointmentList(List<ProvisionalAppointment> 
-	appointments){
-		assertNotNull(appointments);
-		for(int i = 0;i < appointments.size();i++){
-			validAppointment(appointments.get(i));
-		}
-	}
-	
-	/**
-	 * Se comprueba que todos los campos de una cita no sean nulos 
-	 * y tengan un formato valido.
-	 * @param apointmnet
-	 */
-	private void validAppointment(ProvisionalAppointment apointmnet){
-		assertNotNull(apointmnet.getTelephone());
-		assertTrue(apointmnet.getTelephone().charAt(0) == '6');
-		assertTrue(apointmnet.getNumFurnitures() > 0);
-		assertNotNull(apointmnet.getFch_collection());
-		assertNotNull(apointmnet.getFch_request());
-		assertNotNull(apointmnet.getCollectionPointId());
+	@Test
+	public void testGot1AppointmentAndConfirm(){
+		
 	}
 	
 	/**
@@ -150,6 +129,32 @@ public class TestRequestManagement {
 						new CollectionRequest(list.get(1),furnitures1));
 		} catch (Exception e) {
 			fail(e.toString());
+		}
+	}
+
+	/**
+	 * Se comprueba que todos los campos de una cita no sean nulos 
+	 * y tengan un formato valido.
+	 * @param apointmnet
+	 */
+	private void validAppointment(ProvisionalAppointment apointmnet){
+		assertNotNull(apointmnet.getTelephone());
+		assertTrue(apointmnet.getTelephone().charAt(0) == '6');
+		assertTrue(apointmnet.getNumFurnitures() > 0);
+		assertNotNull(apointmnet.getFch_collection());
+		assertNotNull(apointmnet.getFch_request());
+		assertNotNull(apointmnet.getCollectionPointId());
+	}
+
+	/**
+	 * Se valida el formato de todas las citas de un listado.
+	 * @param appointments
+	 */
+	private void validAppointmentList(List<ProvisionalAppointment> 
+	appointments){
+		assertNotNull(appointments);
+		for(int i = 0;i < appointments.size();i++){
+			validAppointment(appointments.get(i));
 		}
 	}
 	

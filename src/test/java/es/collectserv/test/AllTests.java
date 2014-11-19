@@ -4,7 +4,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
-import es.collectserv.services.TestCollectionPoint;
 import es.collectserv.test.mybatis.TestArea;
 import es.collectserv.test.mybatis.TestCollectionDays;
 import es.collectserv.test.mybatis.TestCollectionRequest;

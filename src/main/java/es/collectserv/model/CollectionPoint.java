@@ -27,4 +27,9 @@ public class CollectionPoint extends Point{
 		this.pointId = pointId;
 	}
 	
+	@Override
+	public String toString(){
+		return "pointId: "+pointId+"\n"+
+				"zone"+zone+"\n";
+	}
 }

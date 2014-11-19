@@ -3,6 +3,7 @@ package es.collectserv.test.services;
 import static org.junit.Assert.*;
 
 import org.apache.http.HttpResponse;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -15,8 +16,9 @@ import es.collectserv.model.User;
 @RunWith(JUnit4.class)
 public class TestUserService {
 	private UserServiceConector conector;
-	
-	public TestUserService(){
+
+	@Before
+	public void setUp(){
 		conector = new UserServiceConectorImp("localhost",8080,"http");
 	}
 	
@@ -28,7 +30,7 @@ public class TestUserService {
 	@Test
 	public void testPOSTAndDeleteUser(){
 		try{
-			final User user = new User("Diego","631933533");
+			final User user = new User("Diego","631933433");
 			HttpResponse response = conector.addUser(user);
 			assertTrue(response.getStatusLine().getStatusCode() == 201);
 			// Delete User
@@ -43,7 +45,7 @@ public class TestUserService {
 	
 	@Test
 	public void testPOST2equalUsers(){
-		final User user = new User("Paco","609301031");
+		final User user = new User("Paco","605301031");
 		try{
 			// Add User
 			HttpResponse response = conector.addUser(user);
@@ -72,7 +74,7 @@ public class TestUserService {
 	@Test
 	public void testGETPhoneNoHaveReq(){
 		try{
-			final String nobodiesPhoneNumber = "9031533456";
+			final String nobodiesPhoneNumber = "9031533156";
 			assertFalse(conector.checkIfUserGotPendingReq(nobodiesPhoneNumber)); 
 		}
 		catch (Exception e) {

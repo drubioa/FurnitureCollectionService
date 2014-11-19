@@ -19,7 +19,9 @@ public abstract class Request {
 		setNumFurnitures(num_furnitures);
 		this.telephone = telephone;
 		this.fch_collection = fch_collection;
-		this.fch_request = new Date();
+		java.util.Date utilDate = new java.util.Date(); //fecha actual
+		long lnMilisegundos = utilDate.getTime();
+		this.fch_request = new Date(lnMilisegundos);
 		this.collectionPointId = collectionPointId;
 	}
 	

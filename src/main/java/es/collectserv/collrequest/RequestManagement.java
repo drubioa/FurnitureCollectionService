@@ -2,6 +2,8 @@ package es.collectserv.collrequest;
 
 import java.util.List;
 
+import javax.naming.ServiceUnavailableException;
+
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
 
@@ -45,7 +47,9 @@ public interface RequestManagement {
 	 * Se confirma una cita pendiente de confirmar y se registra en la base de datos.
 	 * Una vez registrada es eliminada del listado de citas pendientes de confirmar.
 	 * @param collectionRequest
+	 * @throws ServiceUnavailableException 
 	 */
-	public void confirmProvisionalAppointment(CollectionRequest collectionRequest);
+	public void confirmProvisionalAppointment(CollectionRequest collectionRequest) 
+			throws ServiceUnavailableException;
 	
 }
