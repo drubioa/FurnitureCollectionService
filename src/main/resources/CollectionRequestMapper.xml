@@ -75,7 +75,8 @@
 	  </select>
       
       <select id="selectAllCollectionDays" resultType="Date">
-          SELECT DISTINCT(fch_recogida_nn) FROM servrecog_solicitudes
+          SELECT DISTINCT(fch_recogida_nn) FROM servrecog_solicitudes 
+          WHERE fch_recogida_nn > now()
       </select>	  
       
       <insert id="insertCollectionRequest"

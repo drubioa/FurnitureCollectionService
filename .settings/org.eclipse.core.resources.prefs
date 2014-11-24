@@ -1,8 +1,5 @@
 eclipse.preferences.version=1
 encoding//src/main/java/es/collectserv/collrequest/DailyServices.java=UTF-8
-encoding//src/main/java/es/collectserv/collrequest/DailyServicesImp.java=UTF-8
-encoding//src/main/java/es/collectserv/collrequest/RequestManagement.java=UTF-8
-encoding//src/main/java/es/collectserv/collrequest/RequestManagementimp.java=UTF-8
 encoding//src/main/java/es/collectserv/model/Area.java=UTF-8
 encoding//src/main/java/es/collectserv/model/CollectionRequest.java=UTF-8
 encoding//src/main/java/es/collectserv/model/Request.java=UTF-8

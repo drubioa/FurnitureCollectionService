@@ -2,6 +2,8 @@ package es.collectserv.services;
 
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+
 import es.collectserv.converter.ProvisionalAppointmentConverter;
 import es.collectserv.model.CollectionRequest;
 
@@ -29,4 +31,11 @@ public interface DailyAppointmentService {
 	 */
 	public void confirmCollectionRequest(
 			CollectionRequest collectionRequest);
+	
+	/**
+	 * All pending collection request of user must be remove.
+	 * @param phone_number
+	 * @return 
+	 */
+	public Response deletePendingRequest(String phone_number);
 }

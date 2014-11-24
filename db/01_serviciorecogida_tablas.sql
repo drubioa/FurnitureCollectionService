@@ -2,20 +2,28 @@
 -- DROP DATABASE servrecog;
 -- CREATE DATABASE servrecog;
 
-DROP VIEW servrecog_area_urbana_view;
-DROP VIEW servrecog_area_rural_view;
+----------------------------------------------------------------------------
+-- DROP ALL TABLES,VIEWS AND SEQUENCES
+----------------------------------------------------------------------------
+
+
 DROP VIEW servrecog_muebles_solicitud_view;
 DROP TABLE servrecog_muebles_solicitud;
+DROP VIEW servrecog_users_with_pending_request;
 DROP TABLE servrecog_solicitudes;
 DROP SEQUENCE servrecog_id_solicitud_seq;
+DROP VIEW servrecog_area_urbana_view;
+DROP VIEW servrecog_area_rural_view;
 DROP TABLE servrecog_puntos_recogida;
 DROP SEQUENCE servrecog_id_puntos_recogida_seq;
 DROP TABLE servrecog_zones;
-DROP SEQUENCE servrecog_id_zone_seq;
+DROP SEQUENCE servrecog_id_zone_seq CASCADE;
 DROP TABLE servrecog_furnitures;
 DROP SEQUENCE servrecog_id_furniture_seq;
 DROP TABLE servrecog_categories;
 DROP TABLE servrecog_usuarios;
+COMMIT;
+
 
 ----------------------------------------------------------------------------
 -- TABLAS

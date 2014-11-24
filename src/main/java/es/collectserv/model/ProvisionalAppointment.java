@@ -27,7 +27,7 @@ public class ProvisionalAppointment
 	}
 	
 	public ProvisionalAppointment(int num_furnitures,String telephone,
-			int collectionPointId,Date fch_collection) throws Exception{
+			int collectionPointId,Date fch_collection){
 		super(num_furnitures,telephone,collectionPointId,fch_collection);
 	}
 

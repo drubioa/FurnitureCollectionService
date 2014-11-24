@@ -2,7 +2,7 @@
 INSERT INTO servrecog_zones(nombre_uk) 
 	VALUES ('Centro');
 INSERT INTO servrecog_zones(nombre_uk) 
-	VALUES ('Río San Pedro');
+	VALUES ('Rio San Pedro');
 INSERT INTO servrecog_zones(nombre_uk) 
 	VALUES ('las Canteras');
 INSERT INTO servrecog_zones(nombre_uk) 
@@ -16,14 +16,14 @@ INSERT INTO servrecog_zones(nombre_uk)
 				
 -- Centro
 
---Río San Pedro
+--Rio San Pedro
 
 --las Canteras
 INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
 	VALUES(36.536233,-6.193095,'Calle Sol',
 		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'las Canteras'));
 INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
-	VALUES(36.536090,-6.191984,'Calle Géminis',
+	VALUES(36.536090,-6.191984,'Calle Geminis',
 		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'las Canteras'));
 INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
 	VALUES(36.536159,-6.190359,'Calle Leo',
@@ -129,35 +129,35 @@ INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 	VALUES(20,'doublebed',3);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(20,'bedroom_table',3);
+	VALUES(21,'bedroom_table',3);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(21,'bedside_table',3);
+	VALUES(22,'bedside_table',3);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(22,'bedroom_chair',3);
+	VALUES(23,'bedroom_chair',3);
 -- VALUES OF FURNITURE OUTSIDE
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(23,'garden_table',4);
+	VALUES(24,'garden_table',4);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(24,'barbacue',4);
+	VALUES(25,'barbacue',4);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(25,'garden_chair',4);
+	VALUES(26,'garden_chair',4);
 -- VALUES OF LIVINGROOM
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(26,'sofa',5);
+	VALUES(27,'sofa',5);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(27,'living_chair',5);
+	VALUES(28,'living_chair',5);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(28,'living_table',5);
+	VALUES(29,'living_table',5);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(29,'armchair',5);
+	VALUES(30,'armchair',5);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(30,'living_furniture',5);
+	VALUES(31,'living_furniture',5);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(31,'living_shelf',5);
+	VALUES(32,'living_shelf',5);
 -- VALUES OF GENERAL
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(32,'desk',6);
+	VALUES(33,'desk',6);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(33,'door',6);
+	VALUES(34,'door',6);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(34,'heater',6);
+	VALUES(35,'heater',6);

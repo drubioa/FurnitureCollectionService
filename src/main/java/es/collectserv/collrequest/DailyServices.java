@@ -1,57 +1,283 @@
 package es.collectserv.collrequest;
 
+import java.rmi.NotBoundException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import es.collectserv.model.ProvisionalAppointment;
+import es.collectserv.sqlconector.SqlConector;
+import es.collectserv.sqlconector.SqlConectorImp;
 
-public interface DailyServices {
+/**
+ * Esta clase representa el servicio de recogida diario. Dentro del servicio diario
+ * se establecen un máximo muebles que peuden ser recogidos al día, y un límite
+ * de enseres solicitados por usuarios. 
+ * @author Diego Rubio Abujas
+ * @version 1.0
+ */
+public class DailyServices implements Comparable<DailyServices> {
+	private final Date mDate;
+	private static final int MAX_FUNRITNURES_PER_DAY = 24;
+	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
+	private List<ProvisionalAppointment> mRequestToConfirmation;
+	private ExecutorService poolOfThreads = 
+			Executors.newFixedThreadPool(MAX_FUNRITNURES_PER_DAY);
+	private int mFurniteres_per_day;
+	private AtomicBoolean inUse; // By control of concurrency
+	private static SqlConector sesion;
 	
+	public DailyServices(Date last_day) throws Exception{
+		if(last_day.before(Calendar.getInstance().getTime())){
+			throw new Exception("invalid day, it must "
+					+ "be later than the current day ("+last_day.toString()+")");
+		}
+		sesion = new SqlConectorImp();
+		inUse = new AtomicBoolean(false);
+		mRequestToConfirmation = new ArrayList<ProvisionalAppointment>();
+		this.mDate = last_day;
+		mFurniteres_per_day = sesion.selectFurnituresByDay(last_day);
+		if(mFurniteres_per_day > MAX_FUNRITNURES_PER_DAY){
+			throw new Exception(
+					"Invalid number of furnirutre request for this day");
+		}
+	}	
+	
+
 	/**
-	 * Para los parametros indicados obtiene una solicitud de recogida pendiente de confirmar
+	 * Se obtiene una solicitud pendiente de confirmar para este dia de servicio de recogida.
 	 * @param phone
 	 * @param num_furnitures
 	 * @param pointId
-	 * @return
-	 * @throws Exception el número de muebles debe ser inferior al máximo permitido 
-	 * por la organización
+	 * @return ProvisionalAppointment
+	 * @throws InterruptedException 
+	 * @throws NotBoundException 
+	 * @throws Exception el usuario no debe tener solicitudes pendientes de confirmar.
 	 */
-	public ProvisionalAppointment getAppointment(String phone,
-			int num_furnitures,int pointId) throws Exception;
+	public synchronized ProvisionalAppointment getProvisionalAppointment(String phone,
+			int num_furnitures,int pointId) throws IllegalArgumentException, InterruptedException, NotBoundException{
+		if(findAppointment(phone) != null){
+			throw new IllegalArgumentException("User got pending request in this date.");
+		}
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		if((calculateRealizablePetitions() < num_furnitures)
+				|| findPreviousRequest(phone)
+				|| ((num_furnitures + mFurniteres_per_day) > MAX_FUNRITNURES_PER_DAY)){
+			inUse.set(false);
+			notifyAll();
+			throw new NotBoundException("Resquest is not realizable.");
+		}
+		ProvisionalAppointment requestToConfirmation = 
+				new ProvisionalAppointment(num_furnitures,phone,pointId,mDate);
+		mFurniteres_per_day += num_furnitures;
+		mRequestToConfirmation.add(requestToConfirmation);
+		requestToConfirmation.setRequestManagement(this);
+		poolOfThreads.execute(requestToConfirmation);
+		inUse.set(false); 
+		notifyAll();
+		return requestToConfirmation;
+	}
 	
 	/**
-	 * Obtiene el número de enseres que el servicio puere recoger para un día especifico.
-	 * @return int número de enseres que se pueden solicitar dicho día en función
-	 * de las peticiones previamente realizadas
+	 * 
+	 * @return amount of request realizables of current day
+	 */
+	private int calculateRealizablePetitions(){
+		int realizables = 0; // By default 
+		if(MAX_FUNRITNURES_PER_DAY == mFurniteres_per_day){
+			realizables = 0;
+		}
+		else if((MAX_FUNRITNURES_PER_DAY - mFurniteres_per_day) >= 
+			MAX_FURNIUTRES_PER_DAY_USER){
+				realizables = MAX_FURNIUTRES_PER_DAY_USER;
+		}
+		else{
+			realizables = MAX_FUNRITNURES_PER_DAY - mFurniteres_per_day;
+		}
+		return realizables;
+	} 
+	
+	/**
+	 * Devuelve el número de enseres que se pueden solicitar para dicho dia de servicio
 	 * @throws InterruptedException 
 	 */
-	public int obtainRealizablePeticions() throws InterruptedException;
-	
+	public synchronized int obtainRealizablePeticions(String phone_number) 
+			throws InterruptedException{
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		int realizables;
+		if(findPreviousRequest(phone_number)){
+			realizables = 0;
+		}
+		else{
+			realizables = calculateRealizablePetitions();
+		}
+		inUse.set(false);
+		notifyAll();
+		return realizables;
+	} 
+
 	/**
 	 * Comprueba si el usuario con dicho número de teléfono tiene una solicitud previa
 	 * @param phone
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public boolean userGotPreviousRequest(String phone) throws InterruptedException;
+	public synchronized boolean userGotPreviousRequest(String phone) 
+			throws InterruptedException{
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		boolean exists = findPreviousRequest(phone);
+		inUse.set(false);
+		notifyAll();
+		return exists;
+	}
 
 	/**
-	 * Devuelve el día al que corresponde dicho servicio diario
+	 * Busca las solicitudes anteriores para un numero de teléfono, devuelve null 
+	 * en caso de no poder localizarla.
+	 * @param phone
 	 * @return
 	 */
-	public Date getNextValidServiceDay();
+	private boolean findPreviousRequest(String phone){
+		boolean exists = false;
+		for(int i = 0;i < mRequestToConfirmation.size();i++){
+			if(mRequestToConfirmation.get(i).getTelephone().equals(phone)){
+				exists = true;
+				break;
+			}
+		}
+		return exists;
+	} 
+	
+	
+	public Date getServiceDate(){
+		return this.mDate;
+	}
+
+
+	public synchronized void confirmProvisionalAppointment(String phone) 
+			throws InterruptedException, UnsupportedOperationException {
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		ProvisionalAppointment appointment = findAppointment(phone);
+		if(appointment == null){
+			inUse.set(false);
+			notifyAll();
+			throw new UnsupportedOperationException("Appointment not correspond to this service day for "
+					+ "this phone number("+phone+").");
+		}
+		else{
+			mRequestToConfirmation.remove(appointment);
+			inUse.set(false);
+			notifyAll();
+		}
+	}
 	
 	/**
-	 * Confirma una solicitud pendiente de confirmar. Esta es registrada en la base de datos
-	 * y e liminada del listado de solicitudes pendientes de confirmar.
-	 * @param phone telefono del usuario
-	 */
-	public void confirmProvisionalAppointment(String phone) throws Exception;
-
-	/**
-	 * Remove provisional appointment an uppdate furniteres_per_day.
-	 * @param appointment
+	 * Localiza la solicitud pendiente de confirmar para el telefono indicado
+	 * @param phone
+	 * @return la solicitud pendiente de localizar o nulo.
 	 * @throws InterruptedException 
 	 */
-	public void removeUnconfirmedAppointment(ProvisionalAppointment appointment) 
-			throws InterruptedException;
+	private ProvisionalAppointment findAppointment(String phone){
+		ProvisionalAppointment appointment = null;
+		for(int i = 0;i < mRequestToConfirmation.size() && appointment == null;i++){
+			if(mRequestToConfirmation.get(i).getTelephone() == phone){
+				appointment = mRequestToConfirmation.get(i);
+			}
+		}
+		return appointment;
+	}
+	
+	/** Obtiene el numero de mueble solicitados para recoger en dicho dia */
+	public int getmFurniteres_per_day(){
+		return mFurniteres_per_day;
+	}
+
+	public synchronized void removeAppointment(String phone) throws InterruptedException{
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		for(ProvisionalAppointment a : mRequestToConfirmation){
+			if(a.getTelephone() == phone){
+				mFurniteres_per_day -= a.getNumFurnitures();
+				mRequestToConfirmation.remove(a);
+				break;
+			}
+		}
+	}
+
+	/**
+	 * Se elimina una solicitud pendiente de confirmar.
+	 * @param appointment
+	 * @throws InterruptedException
+	 */
+	public synchronized void removeUnconfirmedAppointment(
+			ProvisionalAppointment appointment) 
+			throws InterruptedException {
+		int num = appointment.getNumFurnitures();
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		// if remove appointment, update the realizable collection value
+		if(mRequestToConfirmation.remove(appointment)){
+			this.mFurniteres_per_day -= num;
+		}
+		inUse.set(false);
+		notifyAll();
+	}
+
+	/**
+	 * Se agrega un numero de muebles que se pueden recoger en dicho dia de servicio 
+	 * debido a una cancelacion de una solicitud confirmada.
+	 * @param n
+	 * @throws InterruptedException
+	 */
+	public synchronized void addFurnituresPerDayFromCanceledRequest(int n) 
+			throws InterruptedException {
+		// Check arguments
+		while(inUse.get()){
+			wait();
+		}
+		inUse.set(true);
+		if(n + mFurniteres_per_day > MAX_FUNRITNURES_PER_DAY || 
+				n > MAX_FURNIUTRES_PER_DAY_USER){
+			throw new IllegalArgumentException("invalid number of "
+					+ " for dayly service");
+		}
+		mFurniteres_per_day += n;
+		inUse.set(false);
+		notifyAll();
+	}
+
+	/**
+	 * 
+	 * @return fecha correspondientes al dia de servicio.
+	 */
+	public Date getDateTime(){
+		return mDate;
+	}
+
+	public int compareTo(DailyServices o) {
+		if (getDateTime() == null || o.getDateTime() == null){
+		      return 0;
+		}
+		return getDateTime().compareTo(o.getDateTime());
+	}
 }

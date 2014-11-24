@@ -25,7 +25,7 @@ import es.collectserv.model.User;
 
 @RunWith(JUnit4.class)
 public class TestDailyAppointmentService {
-	static final int SLEEP_TIME = 5000; 
+	private static final int SLEEP_TIME = 5000; 
 	private DailyAppointmentServiceConector mAppointmentService;
 	
 	public TestDailyAppointmentService(){
@@ -52,7 +52,7 @@ public class TestDailyAppointmentService {
 	 */
 	@Test
 	public void testGetProvisionalAppointments(){
-		final String phoneNumber = "604300314";
+		final String phoneNumber = "6533067426";
 		final int num_furnitures = 1;
 		final int collectionPointID = 1; 
 		try{
@@ -95,7 +95,7 @@ public class TestDailyAppointmentService {
 	@Test
 	public void testGetAndConfirmAppointment(){
 		final String userName = "Paco";
-		final String userPhoneNumber = "621130153";
+		final String userPhoneNumber = "691167179";
 		final UserServiceConector conector = 
 				new UserServiceConectorImp("localhost",8080,"http");
 		final User user = new User(userName,userPhoneNumber);

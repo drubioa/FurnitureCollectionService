@@ -1,4 +1,4 @@
-package es.collectserv.test;
+package es.collectserv.test.collectserv;
 
 import static org.junit.Assert.*;
 
@@ -10,11 +10,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import es.collectserv.collrequest.DailyServices;
-import es.collectserv.collrequest.DailyServicesImp;
 
 /**
  * Conjunto de pruebas para testear la funcionalidad de que el servidor elimine de 
- * forma automática las peticiones de recogida no confirmadas tras un SLEEP_TIME.
+ * forma autom??tica las peticiones de recogida no confirmadas tras un SLEEP_TIME.
  * @author Diego Rubio Abujas
  *
  */
@@ -24,11 +23,11 @@ public class TestRemoveUnconfirmedAppointment {
 	
 	@Before
 	public void setUp() throws Exception {	
-		service_day = new DailyServicesImp(nextDay(new Date()));
+		service_day = new DailyServices(nextDay(new Date()));
 	}
 	
 	/**
-	 * Añade una peticion de recogida, espera el sleep time y comprueba si la solicitud
+	 * A??ade una peticion de recogida, espera el sleep time y comprueba si la solicitud
 	 * se ha eliminado automaticamente del sistema.
 	 */
 	@Test
@@ -50,16 +49,16 @@ public class TestRemoveUnconfirmedAppointment {
 	public void testAdd24NewProvAppointmentAndWaitSleepTime(){
 		String phone = "6000000";
 		try {
-			assertTrue(service_day.obtainRealizablePeticions() == 4);
+			assertTrue(service_day.obtainRealizablePeticions(phone) == 4);
 			for(int i = 0;i < 24;i++){
 				make1ExampleAppointment(phone+i);
 			}
-			assertTrue(service_day.obtainRealizablePeticions() == 0);
+			assertTrue(service_day.obtainRealizablePeticions(phone) == 0);
 			Thread.sleep(SLEEP_TIME*3);
 			for(int i = 0;i < 24;i++){
 				assertTrue(!service_day.userGotPreviousRequest(phone+i));
 			}
-			assertTrue(service_day.obtainRealizablePeticions() == 4);
+			assertTrue(service_day.obtainRealizablePeticions(phone) == 4);
 		} catch (InterruptedException e) {
 			fail(e.getMessage());
 		}
@@ -85,7 +84,7 @@ public class TestRemoveUnconfirmedAppointment {
 		int num_furnitures = 1;
 		int pointId = 1;
 		try {
-			assertNotNull(service_day.getAppointment(phone, num_furnitures, pointId));
+			assertNotNull(service_day.getProvisionalAppointment(phone, num_furnitures, pointId));
 		} catch (Exception e) {
 			fail(e.toString());
 		}

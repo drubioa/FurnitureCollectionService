@@ -4,6 +4,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import es.collectserv.test.collectserv.TestCollectionPoint;
+import es.collectserv.test.collectserv.TestRemoveUnconfirmedAppointment;
+import es.collectserv.test.collectserv.TestRequestManagement;
 import es.collectserv.test.mybatis.TestArea;
 import es.collectserv.test.mybatis.TestCollectionDays;
 import es.collectserv.test.mybatis.TestCollectionRequest;

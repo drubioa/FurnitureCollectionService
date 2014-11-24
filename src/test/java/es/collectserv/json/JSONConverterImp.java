@@ -28,6 +28,7 @@ public class JSONConverterImp implements JSONConverter{
 
 	public CollectionPoint JSONtoCollectionPoint(JSONObject respJSON) 
 			throws JSONException{
+		System.out.println(respJSON.toString());
 		CollectionPoint collectionPoint = new CollectionPoint();
 		collectionPoint.setDirection(respJSON.getString("direction"));
 		collectionPoint.setLatitude(respJSON.getDouble("latitude"));

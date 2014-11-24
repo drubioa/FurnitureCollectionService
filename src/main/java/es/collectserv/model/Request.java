@@ -15,7 +15,7 @@ public abstract class Request {
 	}
 
 	public Request(int num_furnitures,String telephone,int collectionPointId,
-			Date fch_collection) throws Exception{
+			Date fch_collection){
 		setNumFurnitures(num_furnitures);
 		this.telephone = telephone;
 		this.fch_collection = fch_collection;
@@ -54,9 +54,10 @@ public abstract class Request {
 		return num_furnitures;
 	}
 
-	public void setNumFurnitures(int furnitures) throws Exception{
+	public void setNumFurnitures(int furnitures) throws IllegalArgumentException{
 		if(furnitures > MAX_FURNITURES || furnitures == 0){
-			throw new Exception("Invalid number of furnitres in this request");
+			throw new IllegalArgumentException("Invalid number of furnitres in"
+					+ " this request");
 		}
 		this.num_furnitures = furnitures;
 	}
