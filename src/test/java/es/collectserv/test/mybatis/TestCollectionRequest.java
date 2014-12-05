@@ -7,10 +7,10 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -57,7 +57,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	}
 	
 	/**
-	 * Se realiza rollback y se cierra la conexión con la base de datos.
+	 * Se realiza rollback y se cierra la conexi��n con la base de datos.
 	 */
 	@After
 	public void tearDown(){
@@ -223,8 +223,9 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 		solicitud.setCollectionPointId(point.getPointId());
 		Calendar gc = Calendar.getInstance(); 
 		gc.add(Calendar.DATE, 1);
-		solicitud.setFch_collection(gc.getTime());
-		solicitud.setFch_request(new Date());
+		LocalDate day = new LocalDate();
+		solicitud.setFch_collection(day.plusDays(1));
+		solicitud.setFch_request(day);
 		List<Furniture> furnitures = new ArrayList<Furniture>();
 		furnitures.add(new Furniture(1,2));
 		furnitures.add(new Furniture(2,1));	

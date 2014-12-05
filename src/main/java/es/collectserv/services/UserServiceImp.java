@@ -17,7 +17,7 @@ import es.collectserv.model.User;
 import es.collectserv.sqlconector.SqlConector;
 import es.collectserv.sqlconector.SqlConectorImp;
 
-@Path("/users")
+@Path("users")
 public class UserServiceImp implements UserService{
 	private static SqlConector session ;
 	

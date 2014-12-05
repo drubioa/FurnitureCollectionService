@@ -2,7 +2,10 @@ package es.collectserv.test.collectserv;
 
 import static org.junit.Assert.*;
 
-import org.joda.time.DateTime;
+import java.io.IOException;
+
+import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,22 +18,26 @@ import es.collectserv.test.concurrent.PhoneNumberGenerator;
 @RunWith(JUnit4.class)
 public class TestDailyServices {
 	private static DailyServices mDailyService;
+	private static LocalDate date = new LocalDate();
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private PhoneNumberGenerator mPhoneGenerator;
 	
 	public TestDailyServices() throws Exception{
-		java.util.Date dt = new java.util.Date();
-		DateTime dtOrg = new DateTime(dt);
-		DateTime dtPlusOne = dtOrg.plusDays(1);
-		mDailyService = new DailyServices(dtPlusOne.toDate());
 		mPhoneGenerator = new PhoneNumberGenerator();
 	}
 	
 	@Before
-	public void setUp(){
-		mPhoneGenerator.resetValue();
+	public void setUp() throws IllegalArgumentException, IOException{
+		date = date.plusDays(1);
+		mDailyService = new DailyServices(date);
 	}
 
+	@After 
+	public void tearDown(){
+		mPhoneGenerator.resetValue();
+		mDailyService = null;
+	}
+	
 	@Test
 	public void testObtainRealizablePeticions(){
 		String phone = mPhoneGenerator.generate_phoneNumber();

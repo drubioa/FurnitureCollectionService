@@ -4,11 +4,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
+import org.joda.time.LocalDate;
 import org.junit.Test;
 
 import es.collectserv.model.Area;
@@ -23,7 +22,7 @@ public class TestCollectionDays extends MyBatisConfigurator{
 	public void testSelectAllEmptyCollectionDays(){
 		SqlSession session = sqlSesionFac.openSession();
 		try{
-			List<Date> days = session.selectList("CollectionRequestMapper"+
+			List<LocalDate> days = session.selectList("CollectionRequestMapper"+
 					".selectAllCollectionDays");
 			assertNotNull(days);
 			assertTrue(days.size() == 0);
@@ -46,10 +45,9 @@ public class TestCollectionDays extends MyBatisConfigurator{
 		User user = new User(name,phone_number);
 		CollectionRequest solicitud = new CollectionRequest();
 		solicitud.setTelephone(phone_number);
-		Calendar gc = Calendar.getInstance(); 
-		gc.add(Calendar.DATE, 1);
-		solicitud.setFch_collection(gc.getTime());
-		solicitud.setFch_request(new Date());
+		LocalDate day = new LocalDate();
+		solicitud.setFch_collection(day.plusDays(1));
+		solicitud.setFch_request(day);
 		SqlSession session = sqlSesionFac.openSession();
 		try{
 			// Inserts new example user
@@ -69,7 +67,7 @@ public class TestCollectionDays extends MyBatisConfigurator{
 					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db
-			List<Date> days = session.selectList("CollectionRequestMapper"+
+			List<LocalDate> days = session.selectList("CollectionRequestMapper"+
 					".selectAllCollectionDays");
 			assertNotNull(days);
 		}

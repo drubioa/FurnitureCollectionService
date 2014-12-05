@@ -10,9 +10,9 @@ import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.Furniture;
 import es.collectserv.model.ProvisionalAppointment;
 
-public class TestRequestManagementUtilities {
+public class TestingRequestManagUtilities {
 	
-	public TestRequestManagementUtilities(){
+	public TestingRequestManagUtilities(){
 		
 	}
 	

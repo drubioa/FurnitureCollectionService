@@ -15,20 +15,16 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import es.collectserv.json.JSONConverter;
-import es.collectserv.json.JSONConverterImp;
 import es.collectserv.model.CollectionPoint;
 
 public class CollectionPointServiceConectorImp 
 	implements CollectionPointServiceConector{
 	private HttpHost mTarget;
 	private DefaultHttpClient mHttpclient;
-	private JSONConverter mConverter;
-	
 	
 	public CollectionPointServiceConectorImp(){
 		mHttpclient = new DefaultHttpClient();
-		mTarget = new HttpHost("localhost", 8080, "http");	
-		mConverter = new JSONConverterImp();
+		mTarget = new HttpHost("66.85.153.171", 8080, "http");	
 	}
 	
 	/**
@@ -60,7 +56,7 @@ public class CollectionPointServiceConectorImp
 					 + httpResponse.getStatusLine().getStatusCode());	
 		}
 		JSONObject respJSON = new JSONObject(respStr);
-		return mConverter.JSONtoCollectionPoint(respJSON);
+		return JSONConverter.JSONtoCollectionPoint(respJSON);
 	}
 
 	

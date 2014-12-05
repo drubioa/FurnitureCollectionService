@@ -19,8 +19,8 @@ import es.collectserv.test.concurrent.PhoneNumberGenerator;
 
 @RunWith(JUnit4.class)
 public class TestRequestManagement {
-	private static TestRequestManagementUtilities utilities = 
-			new TestRequestManagementUtilities();
+	private static TestingRequestManagUtilities utilities = 
+			new TestingRequestManagUtilities();
 	private static RequestManagementSingletonImp mManagement;
 	private static final PhoneNumberGenerator mNumberGenerator 
 		= new PhoneNumberGenerator();;

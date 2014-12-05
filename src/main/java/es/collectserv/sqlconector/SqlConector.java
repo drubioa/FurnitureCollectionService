@@ -1,8 +1,9 @@
 package es.collectserv.sqlconector;
 
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
+
+import org.joda.time.LocalDate;
 
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.User;
@@ -36,11 +37,11 @@ public interface SqlConector {
 	
 	/**
 	 * El numero de muebles que se han solicitado recoger en una fecha.
-	 * @param day
+	 * @param last_day
 	 * @return
 	 * @throws IOException
 	 */
-	public int selectFurnituresByDay(Date day) throws IOException;
+	public int selectFurnituresByDay(LocalDate last_day) throws IOException;
 	
 	/**
 	 * Se establece una sesion sql para introducir la solicitud de recogida.
@@ -70,5 +71,5 @@ public interface SqlConector {
 	 * @return todas las fechas en las que hay previstas peticiones de recogida.
 	 * @throws IOException
 	 */
-	public List<Date> selectAllCollectionDays() throws IOException;
+	public List<LocalDate> selectAllCollectionDays() throws IOException;
 }

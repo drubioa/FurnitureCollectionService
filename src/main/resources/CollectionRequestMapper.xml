@@ -8,8 +8,10 @@
       <resultMap id="collectionRequestMap" 
           type="es.collectserv.model.CollectionRequest">
           <id property="id" column="id_solicitud_pk"/>
-          <result property="fch_request" column="fch_solicitud_nn"/>
-          <result property="fch_collection" column="fch_recogida_nn"/>
+          <result property="fch_request" column="fch_solicitud_nn"
+          	javaType="org.joda.time.LocalDate"/>
+          <result property="fch_collection" column="fch_recogida_nn"
+          	javaType="org.joda.time.LocalDate"/>
           <result property="telephone" column="telephone_nn"/>
           
           <result property="num_furnitures" column="num_enseres"/>

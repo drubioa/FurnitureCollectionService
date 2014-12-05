@@ -2,21 +2,26 @@ package es.collectserv.conector;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 import es.collectserv.json.JSONConverter;
-import es.collectserv.json.JSONConverterImp;
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
 
@@ -24,17 +29,16 @@ public class DailyAppointmentServiceConectorImp
 	implements DailyAppointmentServiceConector{
 	private HttpHost mTarget;
 	private DefaultHttpClient mHttpclient;
-	private JSONConverter mConverter;
 	
 	public DailyAppointmentServiceConectorImp(String host,int port,String scheme){
 		mHttpclient = new DefaultHttpClient();
 		mTarget = new HttpHost(host, port, scheme);	
-		mConverter = new JSONConverterImp();
 	}
 		
 	public List<ProvisionalAppointment> getProvisionalAppointments(
 	String phone,int num_furnitures,int collection_point_id) 
-	throws Exception{
+		throws URISyntaxException, HttpException, IOException, JSONException, 
+			ParseException{
 		HttpGet getRequest =  
 				new HttpGet("/FurnitureCollectionService/resources/appointment"
 						+"?phone_number="+phone
@@ -52,26 +56,55 @@ public class DailyAppointmentServiceConectorImp
 		if( httpResponse.getEntity() != null ) {
 			httpResponse.getEntity().consumeContent();
 	    }
-		return mConverter.JSONtoProvisionalAppointment(respJSON);
+		return JSONConverter.JSONtoProvisionalAppointment(respJSON);
 	}
 	
 	public HttpResponse confirmAppointment(CollectionRequest appointment) 
-	throws Exception{
+			throws URISyntaxException, HttpException, IOException, JSONException{
 		assertNotNull(appointment);
 		HttpPost post  = new
 				HttpPost("/FurnitureCollectionService/resources/appointment");
 		post.setHeader("content-type", MediaType.APPLICATION_JSON);
-		JSONObject dato = mConverter.CollectionRequestToJSON(appointment);
-		assertNotNull(dato);
+		if(!(appointment.getFch_collection()).isAfter(appointment.getFch_request())){
+			throw new RuntimeException("Bad dates of appointment");
+		}
+		JSONObject dato;
+		try {
+			dato = JSONConverter.CollectionRequestToJSON(appointment);
+			assertNotNull(dato);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		System.out.println(dato.toString());
+
 		StringEntity entity = new StringEntity(dato.toString());
 		post.setEntity(entity);
 		HttpResponse resp = mHttpclient.execute(mTarget, post);
 		assertNotNull(resp);
-		if (resp.getStatusLine().getStatusCode() != 201) {					
+		if (resp.getStatusLine().getStatusCode() != 200) {					
 			throw new RuntimeException("Failed : HTTP error code : "
 			 + resp.getStatusLine().getStatusCode());
 		}
 		if( resp.getEntity() != null ) {
+			resp.getEntity().consumeContent();
+	    }
+		return resp;
+	}
+	
+	public HttpResponse deletePendingAppointments(String phone_number) 
+			throws URISyntaxException, HttpException, IOException{
+
+		HttpDelete deleteRestues = new
+				HttpDelete("/FurnitureCollectionService/resources/appointment"
+						+"?phone_number="+phone_number);
+		deleteRestues.setHeader("content-type", MediaType.APPLICATION_JSON);
+		HttpResponse resp = mHttpclient.execute(mTarget, deleteRestues);
+		if (resp.getStatusLine().getStatusCode() != 200) {
+			throw new RuntimeException("Failed : HTTP error code : "
+			 + resp.getStatusLine().getStatusCode());
+		}
+		if(resp.getEntity() != null) {
 			resp.getEntity().consumeContent();
 	    }
 		return resp;

@@ -4,11 +4,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,11 +24,13 @@ import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.Furniture;
 import es.collectserv.model.ProvisionalAppointment;
 import es.collectserv.model.User;
+import es.collectserv.test.collectserv.AppointmentValidator;
 
 @RunWith(JUnit4.class)
 public class TestDailyAppointmentService {
-	private static final int SLEEP_TIME = 5000; 
-	private DailyAppointmentServiceConector mAppointmentService;
+	private static DailyAppointmentServiceConector mAppointmentService;
+	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
+	private int mExpectedValueOfNumberAppointments;
 	
 	public TestDailyAppointmentService(){
 	
@@ -38,91 +42,141 @@ public class TestDailyAppointmentService {
 				("localhost", 8080, "http");				
 	}
 	
-	@After 
-	public void tearDown(){
-		try {
-			Thread.sleep(SLEEP_TIME);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	/**
 	 * Get a provisional appointment.
 	 */
 	@Test
-	public void testGetProvisionalAppointments(){
-		final String phoneNumber = "6533067426";
+	public void testGet1ProvisionalAppointments(){
+		final String phoneNumber = "600400314";
 		final int num_furnitures = 1;
 		final int collectionPointID = 1; 
-		try{
-			List<ProvisionalAppointment> appointments = 
-					mAppointmentService.getProvisionalAppointments(
-							phoneNumber,num_furnitures,collectionPointID);
-			assertNotNull(appointments);
-			assertTrue(appointments.size() == 1);
-			validAppointment(appointments);
-		}
-		catch(Exception e){
-			fail(e.toString());
-		}
+		mExpectedValueOfNumberAppointments = 1;
+		createExampleRequest(phoneNumber,num_furnitures,collectionPointID);
+		deleteAllRequestsOf(phoneNumber);
 	}
-	
+			
 	/**
 	 * Get a provisional appointment for 2 days.
 	 */
 	@Test
 	public void testGet2ProvisionalAppointments(){
-		final String phoneNumber = "604320014";
-		final int num_furnitures = 1;
+		final String phoneNumber = "600320016";
+		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER + 1;
 		final int collectionPointID = 1; 
+		mExpectedValueOfNumberAppointments = 2;
+		createExampleRequest(phoneNumber,num_furnitures,collectionPointID);
+		deleteAllRequestsOf(phoneNumber);
+	}
+	
+	@Test
+	public void testGet3ProvisionalAppointments(){
+		final String phoneNumber = "60132016";
+		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER * 2 + 1;
+		final int collectionPointID = 1; 
+		mExpectedValueOfNumberAppointments = 3;
+		createExampleRequest(phoneNumber,num_furnitures,collectionPointID);
+		deleteAllRequestsOf(phoneNumber);
+	}
+
+	private void createExampleRequest(String phoneNumber, int num_furnitures, int collectionPointID){
 		try{
-			List<ProvisionalAppointment> appointments =
+			List<ProvisionalAppointment> appointments = 
 					mAppointmentService.getProvisionalAppointments(
 							phoneNumber,num_furnitures,collectionPointID);
-			assertTrue(appointments.size() > 1);
-			validAppointment(appointments);
+			assertNotNull(appointments);
+			assertTrue(appointments.size() >= mExpectedValueOfNumberAppointments);
+			AppointmentValidator.validAppointment(appointments);
 		}
 		catch(Exception e){
 			fail(e.toString());
 		}
-	}	
+	}
+	
+	private void deleteAllRequestsOf(String phoneNumber){
+		try {
+			mAppointmentService.deletePendingAppointments(phoneNumber);
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			fail(e.toString());
+		} catch (HttpException e) {
+			e.printStackTrace();
+			fail(e.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+			fail(e.toString());
+		}
+	}
 	
 	/**
 	 * Get a provisional appointment, later confirm it.
 	 *  Finally cancel this appointment.
+	 * @throws Exception 
 	 */
 	@Test
-	public void testGetAndConfirmAppointment(){
+	public void testGetAndConfirm1Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "691167179";
+		final String userPhoneNumber = "622010126";
+		final int num_furnitures = 2;
+		final int collectionPointId = 1;
+		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
+				collectionPointId);
+	}
+	
+	/**
+	 * Get a provisional appointment, later confirm it.
+	 *  Finally cancel this appointment.
+	 * @throws Exception 
+	 */
+	@Test
+	public void testGetAndConfirm2Appointment() throws Exception{
+		final String userName = "Paco";
+		final String userPhoneNumber = "622010121";
+		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER + 1;
+		final int collectionPointId = 1;
+		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
+				collectionPointId);
+	}
+	
+	@Test
+	public void testGetAndConfirm3Appointment() throws Exception{
+		final String userName = "Paco";
+		final String userPhoneNumber = "622010121";
+		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER * 2 + 1;
+		final int collectionPointId = 1;
+		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
+				collectionPointId);
+	}
+	
+	public static void getAndConfirm1Appointment(String userName, String userPhoneNumber, 
+			int num_furnitures, int collectionPointId) throws Exception{
 		final UserServiceConector conector = 
 				new UserServiceConectorImp("localhost",8080,"http");
 		final User user = new User(userName,userPhoneNumber);
-		
 		try{
-			// First we must add new user
 			HttpResponse response = conector.addUser(user);
 			assertTrue(response.getStatusLine().getStatusCode() == 201);
+			// First get a provisional appointment
 			List<ProvisionalAppointment> appointments =
 					mAppointmentService.getProvisionalAppointments(
-							userPhoneNumber,5,2);
+							userPhoneNumber,num_furnitures,collectionPointId);
 			assertNotNull(appointments);
-			assertTrue(appointments.size() > 1);
-			validAppointment(appointments);
-			ProvisionalAppointment appointment = appointments.get(0);
-			// Add furnitures to collection request
-			List<Furniture> furnitures = new ArrayList<Furniture>();
-			furnitures.add(new Furniture(1,1));
-			furnitures.add(new Furniture(2,1));
-			CollectionRequest req =
-					new CollectionRequest(appointment,furnitures);
-			req.setNumFurnitures(3);
-			assertTrue(req.checkCorrectRequest());
-			mAppointmentService.confirmAppointment(req);
+			assertTrue(appointments.size() == ((num_furnitures - 1) 
+					/ MAX_FURNIUTRES_PER_DAY_USER)+1);
+			AppointmentValidator.validAppointment(appointments);
+			for(ProvisionalAppointment appointment: appointments){
+				List<Furniture> furnitures = createExampleFurnitureList(
+						appointment.getNumFurnitures());
+				CollectionRequest req =
+						new CollectionRequest(appointment,furnitures);
+				assertTrue(req.checkCorrectRequest());
+				mAppointmentService.confirmAppointment(req);
+				
+			}
+			mAppointmentService.deletePendingAppointments(userPhoneNumber);
 		}
 		catch(Exception e){
 			fail(e.toString());
+			throw e;
 		}		
 		finally{
 			HttpResponse response;
@@ -133,27 +187,20 @@ public class TestDailyAppointmentService {
 				fail(e.toString());
 				e.printStackTrace();
 			}
-		}
-	}
-	
-
-	private void validAppointment(List<ProvisionalAppointment> appointments){
-		for(ProvisionalAppointment appointment : appointments){
-			validAppointment(appointment);
-		}
+		}	
 	}
 	
 	/**
-	 * Validate if the appointment is correct, and all these fields are in correct format.
-	 * @param appointment
+	 * Crea una lista de ejemplo de muebles distintos.
+	 * @param num_furnitures
+	 * @return 
 	 */
-	private void validAppointment(ProvisionalAppointment appointment){
-		assertNotNull(appointment);
-		assertNotNull(appointment.getTelephone());
-		assertTrue(appointment.getTelephone().charAt(0) == '6');
-		assertTrue(appointment.getNumFurnitures() > 0);
-		assertNotNull(appointment.getFch_collection());
-		assertNotNull(appointment.getFch_request());
-		assertNotNull(appointment.getCollectionPointId());
+	public static List<Furniture> createExampleFurnitureList(int num_furnitures){			
+		List<Furniture> furnitures = new ArrayList<Furniture>();
+		for(int i = 1;i <= num_furnitures;i++){
+			furnitures.add(new Furniture(i,1));
+		}
+		return furnitures;
 	}
+
 }

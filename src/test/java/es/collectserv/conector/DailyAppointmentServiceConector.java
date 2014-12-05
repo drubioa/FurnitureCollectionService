@@ -1,7 +1,10 @@
 package es.collectserv.conector;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 
 import es.collectserv.model.CollectionRequest;
@@ -33,4 +36,14 @@ public interface DailyAppointmentServiceConector {
 	 */
 	public HttpResponse confirmAppointment(CollectionRequest appointment) 
 	throws Exception;
+	
+	/**
+	 * 
+	 * @param phone_number
+	 * @return
+	 * @throws URISyntaxException 
+	 * @throws IOException 
+	 * @throws HttpException 
+	 */
+	public HttpResponse deletePendingAppointments(String phone_number) throws URISyntaxException, HttpException, IOException;
 }

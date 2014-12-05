@@ -5,7 +5,8 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,6 +14,7 @@ import org.junit.runners.JUnit4;
 
 import es.collectserv.collrequest.DailyServices;
 import es.collectserv.model.ProvisionalAppointment;
+import es.collectserv.test.services.TestDailyAppointmentService;
 
 @RunWith(JUnit4.class)
 public class TestConcurrenceInDailyServices {
@@ -20,12 +22,11 @@ public class TestConcurrenceInDailyServices {
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private PhoneNumberGenerator phoneGenerator;
+	private static LocalDate today = new LocalDate();
 	
 	public TestConcurrenceInDailyServices() throws Exception{
-		java.util.Date dt = new java.util.Date();
-		DateTime dtOrg = new DateTime(dt);
-		DateTime dtPlusOne = dtOrg.plusDays(1);
-		mDailyService = new DailyServices(dtPlusOne.toDate());
+		today = today.plusDays(1);
+		mDailyService = new DailyServices(today);
 		phoneGenerator = new PhoneNumberGenerator();
 	}
 	
@@ -35,6 +36,17 @@ public class TestConcurrenceInDailyServices {
 	@Before
 	public void setUp(){
 		phoneGenerator.resetValue();
+		today.plusDays(1);
+	}
+	
+	@After
+	public void tearDown(){
+		// Se espera para no saturar al servidor de peticiones entre prueba y prueba
+		try {
+		    Thread.sleep(5000);   //5000 milliseconds is one second.
+		} catch(InterruptedException ex) {
+		    Thread.currentThread().interrupt();
+		}
 	}
 	
 	/**
@@ -91,14 +103,12 @@ public class TestConcurrenceInDailyServices {
 		@Override
 		public void run(){
 			try {
-				ProvisionalAppointment a = mDailyService.getProvisionalAppointment(
-						mPhone, mNumFurnitures, mPointId);
-				assertNotNull(a);
-				assertTrue(a.getTelephone().equals(mPhone));
-				mDailyService.confirmProvisionalAppointment(mPhone);
+				TestDailyAppointmentService.getAndConfirm1Appointment("Anonymous",
+						mPhone,mNumFurnitures,mPointId);
 				success = true;
-			} catch (Exception e) {
+			}catch (Exception e) {
 				e.printStackTrace();
+				success = false;
 				fail();
 			}
 		}
@@ -308,15 +318,14 @@ public class TestConcurrenceInDailyServices {
 	}
 	
 	@Test 
-	public void getAndConfirmProvisionalAppointment(){
+	public void getAndConfirm1ProvisionalAppointment(){
 		try {
-			int N = MAX_FUNRITNURES_PER_DAY; // numero de solicitudes
+			int N = 1; // numero de solicitudes
 			List<AppointmentGetAndConfirmSolicitor> solicitors = 
 					new ArrayList<AppointmentGetAndConfirmSolicitor>();
 			for(int i = 0; i < N;i ++ ){
 				AppointmentGetAndConfirmSolicitor a = new AppointmentGetAndConfirmSolicitor(
 						phoneGenerator.generate_phoneNumber(),1,1);
-				solicitors.add(a);
 				a.start();
 			}
 			for(AppointmentGetAndConfirmSolicitor a : solicitors){
@@ -328,9 +337,49 @@ public class TestConcurrenceInDailyServices {
 		}			
 	}
 	
+	@Test 
+	public void getAndConfirm1ProvisionalAppointmentWith12Furnitures(){
+		try {
+			int N = 1; // numero de solicitudes
+			List<AppointmentGetAndConfirmSolicitor> solicitors = 
+					new ArrayList<AppointmentGetAndConfirmSolicitor>();
+			for(int i = 0; i < N;i ++ ){
+				AppointmentGetAndConfirmSolicitor a = new AppointmentGetAndConfirmSolicitor(
+						phoneGenerator.generate_phoneNumber(),12,1);
+				a.start();
+			}
+			for(AppointmentGetAndConfirmSolicitor a : solicitors){
+				a.join();
+				assertTrue(a.success);
+			}			
+		} catch (Exception e) {
+			assertTrue(e.getMessage().contains("Resquest is not realizable"));
+		}			
+	}
+	
+	@Test 
+	public void getAndConfirm25ProvisionalAppointmentWith12Furnitures(){
+		try {
+			int N = 25; // numero de solicitudes
+			List<AppointmentGetAndConfirmSolicitor> solicitors = 
+					new ArrayList<AppointmentGetAndConfirmSolicitor>();
+			for(int i = 0; i < N;i ++ ){
+				AppointmentGetAndConfirmSolicitor a = new AppointmentGetAndConfirmSolicitor(
+						phoneGenerator.generate_phoneNumber(),12,1);
+				a.start();
+			}
+			for(AppointmentGetAndConfirmSolicitor a : solicitors){
+				a.join();
+				assertTrue(a.success);
+			}			
+		} catch (Exception e) {
+			fail(e.toString());
+		}			
+	}
+	
 	@Test
-	public void testObtainRealizablePeticionsFor1000Req(){
-		int N = 1000;
+	public void testObtainRealizablePeticionsFor50Req(){
+		int N = 50;
 		runAndTestObtainRealizablePeticionsSolicitor(N,MAX_FURNIUTRES_PER_DAY_USER);
 		testGetAllAppointmentoOfMaxFurnitures();
 		runAndTestObtainRealizablePeticionsSolicitor(N,0);

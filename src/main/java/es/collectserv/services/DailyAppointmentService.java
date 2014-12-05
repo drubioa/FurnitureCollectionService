@@ -28,8 +28,9 @@ public interface DailyAppointmentService {
 	 * The user sends the collectionRequest and confirms the request. It is 
 	 * saved in the system, to future collection.
 	 * @param collectionRequest
+	 * @return 
 	 */
-	public void confirmCollectionRequest(
+	public Response confirmCollectionRequest(
 			CollectionRequest collectionRequest);
 	
 	/**

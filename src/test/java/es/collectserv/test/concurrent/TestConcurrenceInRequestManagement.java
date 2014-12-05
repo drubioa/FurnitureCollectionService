@@ -18,19 +18,19 @@ import es.collectserv.model.ProvisionalAppointment;
 import es.collectserv.model.User;
 import es.collectserv.sqlconector.SqlConector;
 import es.collectserv.sqlconector.SqlConectorImp;
-import es.collectserv.test.collectserv.TestRequestManagementUtilities;
+import es.collectserv.test.collectserv.TestingRequestManagUtilities;
 
 @RunWith(JUnit4.class)
 public class TestConcurrenceInRequestManagement {
 	public static RequestManagementSingletonImp mManagement;
 	private static PhoneNumberGenerator mPhoneGenerator;
-	private static TestRequestManagementUtilities utilities;
+	private static TestingRequestManagUtilities utilities;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	
 	public TestConcurrenceInRequestManagement(){
 		mPhoneGenerator = new PhoneNumberGenerator();
-		utilities = new TestRequestManagementUtilities();
+		utilities = new TestingRequestManagUtilities();
 	}
 	
 	@Before

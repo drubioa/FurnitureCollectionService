@@ -20,10 +20,10 @@ public class JAXBContextResolver implements ContextResolver< JAXBContext > {
         this.context = 
         	new JSONJAXBContext(JSONConfiguration.mapped()
         			.arrays("provisionalAppointment").build(),types);
+        
     }
 
     public JAXBContext getContext(Class<?> objectType) {
-        System.out.println("TUG CALL");
         for (@SuppressWarnings("rawtypes") Class type : types) {
             if (type == objectType) {
                 return context;

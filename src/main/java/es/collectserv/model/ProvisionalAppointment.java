@@ -1,9 +1,9 @@
 package es.collectserv.model;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+
+import org.joda.time.LocalDate;
 
 import es.collectserv.collrequest.DailyServices;
 
@@ -12,7 +12,7 @@ public class ProvisionalAppointment
 	extends Request
 	implements Runnable{
 	@XmlTransient
-	static final int SLEEP_TIME = 50000; // 5 minutes
+	static final int SLEEP_TIME = 100000; // 10 minutes
 	// Time which the appointment stays in the system before user confirm that,
 	// in milliseconds
 	@XmlTransient
@@ -27,8 +27,8 @@ public class ProvisionalAppointment
 	}
 	
 	public ProvisionalAppointment(int num_furnitures,String telephone,
-			int collectionPointId,Date fch_collection){
-		super(num_furnitures,telephone,collectionPointId,fch_collection);
+			int collectionPointId,LocalDate fch_collection){
+		super(num_furnitures,telephone,collectionPointId,fch_collection,new LocalDate());
 	}
 
 	public void run() {

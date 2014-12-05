@@ -1,43 +1,101 @@
 package es.collectserv.model;
 
-import java.util.Date;
+import org.joda.time.LocalDate;
+
 
 public abstract class Request {
 	private String telephone;
 	private int collectionPointId;
-	private Date fch_request;
-	private Date fch_collection;
+	protected int collectionDay,collectionMonth,collectionYear;
+	protected int requestDay,requestMonth,requestYear;
+	private LocalDate fch_collection;
+	private LocalDate fch_request;
 	private int num_furnitures;
-	private static final int MAX_FURNITURES = 4;
 	
 	public Request(){
 		
 	}
-
+	
 	public Request(int num_furnitures,String telephone,int collectionPointId,
-			Date fch_collection){
+			LocalDate fch_collection,LocalDate fch_request){
 		setNumFurnitures(num_furnitures);
 		this.telephone = telephone;
 		this.fch_collection = fch_collection;
-		java.util.Date utilDate = new java.util.Date(); //fecha actual
-		long lnMilisegundos = utilDate.getTime();
-		this.fch_request = new Date(lnMilisegundos);
+		this.fch_request = fch_request;
 		this.collectionPointId = collectionPointId;
-	}
-	
-	public Date getFch_request() {
-		return fch_request;
-	}
-
-	public void setFch_request(Date fch_request) {
 		this.fch_request = fch_request;
 	}
-
-	public Date getFch_collection() {
+	
+	public LocalDate getFch_request() {
+		if(fch_request == null && requestDay != 0 && 
+				requestMonth != 0 && requestYear != 0){
+			fch_request = new LocalDate(requestYear,requestMonth,requestDay);
+		}
+		return fch_request;
+	}
+	
+	public LocalDate getFch_collection() {
+		if(fch_collection == null && collectionDay != 0 && 
+				collectionMonth != 0 && collectionYear != 0){
+			fch_collection = new LocalDate(collectionYear,collectionMonth,collectionDay);
+		}
 		return fch_collection;
 	}
 
-	public void setFch_collection(Date fch_collection) {
+	public void setCollectionDay(int day){
+		collectionDay = day;
+	}
+	
+	public int getCollectionDay(){
+		return collectionDay;
+	}
+	
+	public void setCollectionMonth(int month){
+		collectionMonth = month;
+	}
+	
+	public int getCollectionMonth(){
+		return collectionMonth;
+	}
+
+	public void setCollectionYear(int year){
+		collectionYear = year;
+	}
+	
+	public int getCollectionYear(){
+		return collectionYear;
+	}
+	
+	public void setRequestDay(int day){
+		requestDay = day;
+	}
+	
+	public int getRequestDay(){
+		return requestDay;
+	}
+	
+	public void setRequestMonth(int month){
+		requestMonth = month;
+	}
+
+	public int getRequestMonth(){
+		return requestMonth;
+	}
+	
+	public void setRequestYear(int year){
+		requestYear = year;
+	}
+	
+	public int getRequestYear(){
+		return requestYear;
+	}
+	
+	
+	public void setFch_request(LocalDate fch_request) {
+		this.fch_request = fch_request;
+	}
+
+	public void setFch_collection(LocalDate fch_collection) {
 		this.fch_collection = fch_collection;
 	}
 
@@ -55,10 +113,6 @@ public abstract class Request {
 	}
 
 	public void setNumFurnitures(int furnitures) throws IllegalArgumentException{
-		if(furnitures > MAX_FURNITURES || furnitures == 0){
-			throw new IllegalArgumentException("Invalid number of furnitres in"
-					+ " this request");
-		}
 		this.num_furnitures = furnitures;
 	}
 

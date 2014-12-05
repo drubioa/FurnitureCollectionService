@@ -1,13 +1,14 @@
 package es.collectserv.collrequest;
 
+import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.joda.time.LocalDate;
 
 import es.collectserv.model.ProvisionalAppointment;
 import es.collectserv.sqlconector.SqlConector;
@@ -21,7 +22,8 @@ import es.collectserv.sqlconector.SqlConectorImp;
  * @version 1.0
  */
 public class DailyServices implements Comparable<DailyServices> {
-	private final Date mDate;
+	private static LocalDate LAST_DATE;
+	private final LocalDate mDate;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private List<ProvisionalAppointment> mRequestToConfirmation;
@@ -31,20 +33,27 @@ public class DailyServices implements Comparable<DailyServices> {
 	private AtomicBoolean inUse; // By control of concurrency
 	private static SqlConector sesion;
 	
-	public DailyServices(Date last_day) throws Exception{
-		if(last_day.before(Calendar.getInstance().getTime())){
-			throw new Exception("invalid day, it must "
+	public DailyServices(LocalDate last_day) throws IllegalArgumentException, IOException{
+		final LocalDate today = new LocalDate();
+		if(last_day.isBefore(today)){
+			throw new IllegalArgumentException("invalid day, it must "
 					+ "be later than the current day ("+last_day.toString()+")");
+		}
+		if(LAST_DATE == null){
+			LAST_DATE = last_day;
+		}
+		else if(!last_day.isAfter(LAST_DATE)){
+			throw new IllegalArgumentException("invalid day "+last_day+", it must "
+					+ "be later than the last service day ("+LAST_DATE+")");
+		}
+		else{
+			LAST_DATE = last_day;
 		}
 		sesion = new SqlConectorImp();
 		inUse = new AtomicBoolean(false);
 		mRequestToConfirmation = new ArrayList<ProvisionalAppointment>();
 		this.mDate = last_day;
 		mFurniteres_per_day = sesion.selectFurnituresByDay(last_day);
-		if(mFurniteres_per_day > MAX_FUNRITNURES_PER_DAY){
-			throw new Exception(
-					"Invalid number of furnirutre request for this day");
-		}
 	}	
 	
 
@@ -68,7 +77,7 @@ public class DailyServices implements Comparable<DailyServices> {
 		}
 		inUse.set(true);
 		if((calculateRealizablePetitions() < num_furnitures)
-				|| findPreviousRequest(phone)
+				|| userGotProvisionalAppointment(phone)
 				|| ((num_furnitures + mFurniteres_per_day) > MAX_FUNRITNURES_PER_DAY)){
 			inUse.set(false);
 			notifyAll();
@@ -115,7 +124,7 @@ public class DailyServices implements Comparable<DailyServices> {
 		}
 		inUse.set(true);
 		int realizables;
-		if(findPreviousRequest(phone_number)){
+		if(userGotProvisionalAppointment(phone_number)){
 			realizables = 0;
 		}
 		else{
@@ -132,13 +141,13 @@ public class DailyServices implements Comparable<DailyServices> {
 	 * @return
 	 * @throws InterruptedException 
 	 */
-	public synchronized boolean userGotPreviousRequest(String phone) 
+	public synchronized boolean checkIfuserGotPreviousRequest(String phone) 
 			throws InterruptedException{
 		while(inUse.get()){
 			wait();
 		}
 		inUse.set(true);
-		boolean exists = findPreviousRequest(phone);
+		boolean exists = userGotProvisionalAppointment(phone);
 		inUse.set(false);
 		notifyAll();
 		return exists;
@@ -150,10 +159,10 @@ public class DailyServices implements Comparable<DailyServices> {
 	 * @param phone
 	 * @return
 	 */
-	private boolean findPreviousRequest(String phone){
+	private boolean userGotProvisionalAppointment(String phone){
 		boolean exists = false;
-		for(int i = 0;i < mRequestToConfirmation.size();i++){
-			if(mRequestToConfirmation.get(i).getTelephone().equals(phone)){
+		for(ProvisionalAppointment a : mRequestToConfirmation){
+			if(a.getTelephone().equals(phone)){
 				exists = true;
 				break;
 			}
@@ -162,7 +171,7 @@ public class DailyServices implements Comparable<DailyServices> {
 	} 
 	
 	
-	public Date getServiceDate(){
+	public LocalDate getServiceDate(){
 		return this.mDate;
 	}
 
@@ -195,9 +204,10 @@ public class DailyServices implements Comparable<DailyServices> {
 	 */
 	private ProvisionalAppointment findAppointment(String phone){
 		ProvisionalAppointment appointment = null;
-		for(int i = 0;i < mRequestToConfirmation.size() && appointment == null;i++){
-			if(mRequestToConfirmation.get(i).getTelephone() == phone){
-				appointment = mRequestToConfirmation.get(i);
+		for(ProvisionalAppointment a : mRequestToConfirmation){
+			if(a.getTelephone().contains(phone)){
+				appointment = a;
+				break;
 			}
 		}
 		return appointment;
@@ -208,18 +218,20 @@ public class DailyServices implements Comparable<DailyServices> {
 		return mFurniteres_per_day;
 	}
 
-	public synchronized void removeAppointment(String phone) throws InterruptedException{
+	public synchronized void removeAppointment(String phone) 
+			throws InterruptedException{
 		while(inUse.get()){
 			wait();
 		}
 		inUse.set(true);
-		for(ProvisionalAppointment a : mRequestToConfirmation){
-			if(a.getTelephone() == phone){
-				mFurniteres_per_day -= a.getNumFurnitures();
-				mRequestToConfirmation.remove(a);
-				break;
-			}
+		if(userGotProvisionalAppointment(phone)){
+			inUse.set(true);
+			ProvisionalAppointment a = findAppointment(phone);
+			mFurniteres_per_day -= a.getNumFurnitures();
+			mRequestToConfirmation.remove(a);
 		}
+		inUse.set(false);
+		notifyAll();
 	}
 
 	/**
@@ -230,14 +242,13 @@ public class DailyServices implements Comparable<DailyServices> {
 	public synchronized void removeUnconfirmedAppointment(
 			ProvisionalAppointment appointment) 
 			throws InterruptedException {
-		int num = appointment.getNumFurnitures();
 		while(inUse.get()){
 			wait();
 		}
 		inUse.set(true);
 		// if remove appointment, update the realizable collection value
 		if(mRequestToConfirmation.remove(appointment)){
-			this.mFurniteres_per_day -= num;
+			mFurniteres_per_day -= appointment.getNumFurnitures();
 		}
 		inUse.set(false);
 		notifyAll();
@@ -270,14 +281,14 @@ public class DailyServices implements Comparable<DailyServices> {
 	 * 
 	 * @return fecha correspondientes al dia de servicio.
 	 */
-	public Date getDateTime(){
+	public LocalDate getDate(){
 		return mDate;
 	}
 
 	public int compareTo(DailyServices o) {
-		if (getDateTime() == null || o.getDateTime() == null){
+		if (getDate() == null || o.getDate() == null){
 		      return 0;
 		}
-		return getDateTime().compareTo(o.getDateTime());
+		return getDate().compareTo(o.getDate());
 	}
 }

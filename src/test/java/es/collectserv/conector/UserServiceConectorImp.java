@@ -11,25 +11,23 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.codehaus.jettison.json.JSONObject;
 
-import es.collectserv.json.JSONConverterImp;
+import es.collectserv.json.JSONConverter;
 import es.collectserv.model.User;
 
 public class UserServiceConectorImp implements UserServiceConector{
 	private static HttpHost mTarget;
 	private static DefaultHttpClient mHttpclient;
-	private JSONConverterImp mConverter;
 	
 	public UserServiceConectorImp(String host,int port,String scheme){
 		mHttpclient = new DefaultHttpClient();
 		mTarget = new HttpHost(host, port, scheme);	
-		mConverter = new JSONConverterImp();
 	}
 
 	public HttpResponse addUser(User user) throws Exception{
 		HttpPost post  = new
 				HttpPost("/FurnitureCollectionService/resources/users");
 		post.setHeader("content-type", MediaType.APPLICATION_JSON);
-		JSONObject dato = mConverter.userToJSON(user);
+		JSONObject dato = JSONConverter.userToJSON(user);
 		StringEntity entity = new StringEntity(dato.toString());
 		post.setEntity(entity);
 		HttpResponse resp = mHttpclient.execute(mTarget, post);

@@ -1,13 +1,15 @@
 package es.collectserv.sqlconector;
 
 import java.io.IOException;
-import java.util.Date;
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import org.apache.ibatis.session.SqlSession;
+import org.joda.time.LocalDate;
 
 import es.collectserv.factories.SimpleMyBatisSesFactory;
 import es.collectserv.model.CollectionRequest;
@@ -70,11 +72,11 @@ public class SqlConectorImp implements SqlConector{
 		session.close();		
 	}
 
-	public int selectFurnituresByDay(Date day) throws IOException {
+	public int selectFurnituresByDay(LocalDate day) throws IOException {
 		session = new SimpleMyBatisSesFactory().getOpenSqlSesion();
 		int mFurniteres_per_day = 
 				session.selectOne("CollectionRequestMapper"
-					+".selectFurnituresByDay",day);
+					+".selectFurnituresByDay",day.toDate());
 		session.close();
 		return mFurniteres_per_day;
 	}
@@ -96,13 +98,17 @@ public class SqlConectorImp implements SqlConector{
 		session.close();
 	}
 
-	public List<Date> selectAllCollectionDays() throws IOException {
+	public List<LocalDate> selectAllCollectionDays() throws IOException {
 		session = new SimpleMyBatisSesFactory()
-		.getOpenSqlSesion();
+			.getOpenSqlSesion();
 		List<Date> dates = session.selectList(
 			"CollectionRequestMapper.selectAllCollectionDays");
 		session.close();
-		return dates;
+		List<LocalDate> localdates = new ArrayList<LocalDate>();
+		for(Date d: dates){
+			localdates.add(new LocalDate(d));
+		}
+		return localdates;
 	}
 
 	public List<CollectionRequest> getPendingCollectionRequest(String phone) 

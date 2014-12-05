@@ -20,7 +20,9 @@ public class CollectionRequest extends Request{
 		super(appointment.getNumFurnitures(),
 				appointment.getTelephone(),
 				appointment.getCollectionPointId(),
-				appointment.getFch_collection());
+				appointment.getFch_collection(),
+				appointment.getFch_request());
+		super.setNumFurnitures(furnitures.size());
 		this.furnitures = furnitures;
 	}
 	
@@ -29,6 +31,7 @@ public class CollectionRequest extends Request{
 	}
 
 	public void setFurnitures(List<Furniture> furnitures) {
+		super.setNumFurnitures(furnitures.size());
 		this.furnitures = furnitures;
 	}
 
@@ -57,6 +60,8 @@ public class CollectionRequest extends Request{
 		}
 		return totalFurnitures;
 	}
+	
+	
 
 	/**
 	 * Comprueba que todos los campos estan correctamente.
@@ -64,9 +69,13 @@ public class CollectionRequest extends Request{
 	 */
 	public boolean checkCorrectRequest(){
 		boolean isCorrect = true;
-		if(this.furnitures.size() == 0  
-				|| this.getFch_collection() == null || this.getFch_request() == null ||
-				getNumFurnitures() <= 0 ||this.getTelephone().isEmpty()){
+		if(furnitures.size() == 0  || 
+		getFch_collection() == null ||
+		getFch_request() == null ||
+		getNumFurnitures() <= 0 ||this.getTelephone().isEmpty()){
+			isCorrect = false;
+		}
+		if(!getFch_collection().isAfter(getFch_request())){
 			isCorrect = false;
 		}
 		return isCorrect;
@@ -75,14 +84,14 @@ public class CollectionRequest extends Request{
 	@Override
 	public String toString(){
 		String cad = "Telephone: "+this.getTelephone()+"\n"+
-				"numFurnitures"+this.getNumFurnitures()+"\n"+
-				"fch_Collection"+this.getFch_collection()+"\n"+
-				"fch_request"+this.getFch_request()+"\n"+
-				"collectionPointId"+this.getCollectionPointId()+"\n";
+				"numFurnitures: "+this.getNumFurnitures()+"\n"+
+				"fch_collection: "+this.getFch_collection()+"\n"+
+				"fch_request: "+this.getFch_request()+"\n"+
+				"collectionPointId: "+this.getCollectionPointId();
 		for(Furniture furniture : this.getFurnitures()){
 			cad = cad + furniture.toString();
 		}
 		return cad;
 	}
-	
+
 }

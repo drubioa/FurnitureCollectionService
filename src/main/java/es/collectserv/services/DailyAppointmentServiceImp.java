@@ -9,16 +9,16 @@ import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.LocalDate;
+
 import es.collectserv.collrequest.RequestManagementSingletonImp;
 import es.collectserv.converter.ProvisionalAppointmentConverter;
-import es.collectserv.exceptions.IlegalRequestException;
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
 
@@ -36,25 +36,9 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 			@QueryParam("phone_number") String phone_number,
 			@QueryParam("num_funritures") int itemsRequest,
 			@QueryParam("collection_point_id") int collection_point_id){
-		try {
-			if(manager.userGotPreviosRequest(phone_number)){
-				throw new IlegalRequestException("phone number got"
-						+ "previous pending request.");
+			if(checkIfUserGotPrevAppointment(phone_number)){
+				throw new WebApplicationException(Response.Status.BAD_REQUEST);
 			}
-		} catch (IlegalRequestException e) {
-			e.printStackTrace();
-			System.out.println(e.getMessage());
-			throw new WebApplicationException(Response.Status.
-					BAD_REQUEST);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status.
-					INTERNAL_SERVER_ERROR);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status.
-					INTERNAL_SERVER_ERROR);
-		}	
 			List<ProvisionalAppointment> appointment;
 		try {
 				appointment = manager.getAppointmentToConfirm(phone_number, 
@@ -79,9 +63,17 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 	
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void confirmCollectionRequest(
+	public Response confirmCollectionRequest(
 			CollectionRequest collectionRequest){
-		if(collectionRequest == null){
+		if(collectionRequest == null ||
+				collectionRequest.getFch_collection() == null){
+			System.out.println("Fecha o solicitud nula.");
+			System.out.println(collectionRequest.toString());
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
+		}
+		else if(!collectionRequest.getFch_collection().isAfter(new LocalDate())){
+			System.out.println("Fecha de solicitud posterior a hoy.");
+			System.out.println(collectionRequest.toString());
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
 		}
 		try{
@@ -93,11 +85,59 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 			throw new WebApplicationException(Response.Status
 					.INTERNAL_SERVER_ERROR);
 		}
+		return Response.ok().build();
 	}
 	
 	@DELETE
 	public Response deletePendingRequest(
-			@PathParam("phone_number")  String phone_number) {
-				return null;
+			@QueryParam("phone_number")  String phone_number) {
+		cancelPendingRequests(phone_number);
+		if(checkIfUserGotPrevAppointment(phone_number)){
+			System.out.println("Service cannot delete pending appointments.");
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
+		}
+		return Response.ok().build();
+	}
+	
+	private void cancelPendingRequests(String phone_number){
+		try {
+			if(manager.userGotPreviosRequest(phone_number)){
+				manager.cancelPeendingRequest(phone_number);
+			}else{
+				System.out.println("El usuario "+phone_number+
+						" no tiene peticiones previas.");
+				throw new WebApplicationException(
+						Response.Status.BAD_REQUEST);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
+		}	
+	}
+	
+	private boolean checkIfUserGotPrevAppointment(String phone_number){
+		try {
+			return manager.userGotPreviosRequest(phone_number);
+				
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status
+					.INTERNAL_SERVER_ERROR);
+		}	
 	}
 }
+
+

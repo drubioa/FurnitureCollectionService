@@ -1,16 +1,19 @@
 package es.collectserv.converter;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import es.collectserv.model.ProvisionalAppointment;
 
 @XmlRootElement(name = "provisionalAppointment")
 public class ProvisionalAppointmentConverter {
 	  private ProvisionalAppointment entity = null;
-	
+	  private static DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy-MM-dd");
+	  
 	  public ProvisionalAppointmentConverter(){
 		  entity = new ProvisionalAppointment();
 	  }
@@ -40,13 +43,15 @@ public class ProvisionalAppointmentConverter {
 	  }
 	  
 	  @XmlElement
-	  public Date getFch_collection(){
-		  return entity.getFch_collection();
+	  public String getFch_collection(){
+		  LocalDate date =  entity.getFch_collection();
+		  return dtfOut.print(date);
 	  }
 	  
 	  @XmlElement
-	  public Date getFch_request(){
-		  return entity.getFch_request();
+	  public String getFch_request(){
+		  LocalDate date =  entity.getFch_request();
+		  return dtfOut.print(date);
 	  }
 
 	  public void setNumFurnitures(int furnitures) throws Exception{
@@ -61,11 +66,11 @@ public class ProvisionalAppointmentConverter {
 		  entity.setCollectionPointId(collectionPointId);
 	  }
 	  
-	  public void setFch_collection(Date fch){
+	  public void setFch_collection(LocalDate fch){
 		  entity.setFch_collection(fch);
 	  }
 	  
-	  public void setFch_request(Date fch){
+	  public void setFch_request(LocalDate fch){
 		  entity.setFch_request(fch);
 	  }
 }

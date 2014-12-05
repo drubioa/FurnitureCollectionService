@@ -2,9 +2,7 @@ package es.collectserv.test.collectserv;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-import java.util.Date;
-
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +21,8 @@ public class TestRemoveUnconfirmedAppointment {
 	
 	@Before
 	public void setUp() throws Exception {	
-		service_day = new DailyServices(nextDay(new Date()));
+		LocalDate date = new LocalDate();
+		service_day = new DailyServices(date.plusDays(1));
 	}
 	
 	/**
@@ -34,11 +33,11 @@ public class TestRemoveUnconfirmedAppointment {
 	public void testAddNewProvAppointAndWaitSleepTime() {
 		String phone = "600000000";
 		try {
-			assertTrue(!service_day.userGotPreviousRequest(phone));
+			assertTrue(!service_day.checkIfuserGotPreviousRequest(phone));
 			make1ExampleAppointment(phone);
-			assertTrue(service_day.userGotPreviousRequest(phone));
+			assertTrue(service_day.checkIfuserGotPreviousRequest(phone));
 			Thread.sleep(SLEEP_TIME*2);
-			assertTrue(!service_day.userGotPreviousRequest(phone));
+			assertTrue(!service_day.checkIfuserGotPreviousRequest(phone));
 		} catch (InterruptedException e) {
 			fail(e.getMessage());
 		}
@@ -56,7 +55,7 @@ public class TestRemoveUnconfirmedAppointment {
 			assertTrue(service_day.obtainRealizablePeticions(phone) == 0);
 			Thread.sleep(SLEEP_TIME*3);
 			for(int i = 0;i < 24;i++){
-				assertTrue(!service_day.userGotPreviousRequest(phone+i));
+				assertTrue(!service_day.checkIfuserGotPreviousRequest(phone+i));
 			}
 			assertTrue(service_day.obtainRealizablePeticions(phone) == 4);
 		} catch (InterruptedException e) {
@@ -68,16 +67,6 @@ public class TestRemoveUnconfirmedAppointment {
 	@After
 	public void tearDown() throws Exception {
 		service_day = null;
-	}
-
-	/**
-	 * @param day
-	 * @return the following day
-	 */
-	private Date nextDay(Date day){
-		Calendar gc = Calendar.getInstance(); 
-		gc.add(Calendar.DATE, 1);
-		return gc.getTime();
 	}
 
 	private void make1ExampleAppointment(String phone ){

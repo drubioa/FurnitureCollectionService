@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.naming.ServiceUnavailableException;
 
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
@@ -22,7 +20,7 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 	private static RequestManagementSingletonImp INSTANCE = null;
 	private final int MAX_FURNITURES_PER_USER = 12;
 	private AtomicBoolean inUse;
-	private List<DailyServices> days;
+	private static List<DailyServices> days;
 	private static SqlConector session;
 	
 	private synchronized static void createInstance() {
@@ -43,8 +41,8 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		days = new ArrayList<DailyServices>();
 		session = new SqlConectorImp();
 		try {
-			List<Date> dates = session.selectAllCollectionDays();
-			for(Date d : dates){ //Add all current collection request
+			List<LocalDate> dates = session.selectAllCollectionDays();
+			for(LocalDate d : dates){ //Add all current collection request
 				days.add(new DailyServices(d));
 			}
 			Collections.sort(days);
@@ -61,8 +59,9 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		}
 		inUse.set(true);
 		try {
-			existRequest = checkIfUserGotPrevProvReq(phone) ||
-					checkIfExistPendingRequest(phone);
+			if(checkIfUserGotPrevProvReq(phone) || checkIfExistPendingRequest(phone)){
+				existRequest = true;
+			}
 		} catch (IOException e) {
 			inUse.set(false);
 			notifyAll();
@@ -93,7 +92,7 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			throws InterruptedException{
 		boolean existRequest = false;
 		for(DailyServices d : days){
-			existRequest = d.userGotPreviousRequest(phoneNumber);
+			existRequest = d.checkIfuserGotPreviousRequest(phoneNumber);
 			if(existRequest){
 				break;
 			}
@@ -120,7 +119,6 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			wait();
 		}
 		inUse.set(true);
-		// Se utilizan los actuales dias de servicio
 		appintment_list.addAll(
 				createProvisionalAppointments(itemsRequest,phone_number,collectionPointId));
 		// Fin de la exclusion mutua
@@ -178,34 +176,32 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 	private List<ProvisionalAppointment> createNewServiceDaysForAppointment(
 			int itemsRequest, String phone_number, int collectionPointId) 
 					throws Exception {
-		if(itemsRequest > MAX_FURNITURES_PER_USER){
-			throw new IllegalArgumentException("itemsRequest mus be equal or less than"+
-					MAX_FURNITURES_PER_USER);
-		}
 		List<ProvisionalAppointment> appointment_list = 
 				new ArrayList<ProvisionalAppointment>();
-		Collections.sort(days);
-		Date last_day;
+		LocalDate last_day;
 		if(days.isEmpty()){
-			last_day = new Date();
+			last_day = new LocalDate();
 		}else{
-			last_day = (days.get(days.size() - 1)).getDateTime();
+			Collections.sort(days);
+			last_day = (days.get(days.size() - 1)).getDate();
 		}
-		DailyServices day = new DailyServices(nextDay(last_day));
-		int furnitureRealizables = day.obtainRealizablePeticions(phone_number);
-		if(furnitureRealizables >= itemsRequest){
-			appointment_list.add(day.getProvisionalAppointment(phone_number,
-					itemsRequest,collectionPointId));
-			itemsRequest = 0;
+		while(itemsRequest > 0){
+			last_day = last_day.plusDays(1);
+			DailyServices day = new DailyServices(last_day);
+			int furnitureRealizables = day.obtainRealizablePeticions(phone_number);
+			if(furnitureRealizables >= itemsRequest){
+				appointment_list.add(day.getProvisionalAppointment(phone_number,
+						itemsRequest,collectionPointId));
+				itemsRequest = 0;
+			}
+			else{
+				appointment_list.add(day.getProvisionalAppointment(phone_number,
+						furnitureRealizables,collectionPointId));
+				itemsRequest -= furnitureRealizables;
+			}
+			System.out.println("Add day "+last_day);
+			days.add(day);
 		}
-		else{
-			appointment_list.add(day.getProvisionalAppointment(phone_number,
-					furnitureRealizables,collectionPointId));
-			itemsRequest -= furnitureRealizables;
-			appointment_list.addAll(createNewServiceDaysForAppointment(
-					itemsRequest,phone_number,collectionPointId));
-		}
-		days.add(day);
 		return appointment_list;
 	}
 
@@ -220,17 +216,29 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			throw new ServiceUnavailableException("Request got incorrect format. \n"+
 					request.toString());
 		}
-		final DailyServices dailyService = 
-				findDailyService(request.getFch_collection());
+		if(days.size() == 0){
+			throw new ServiceUnavailableException("DailyServices is empty");			
+		}
+		DailyServices dailyService = null;
+		for(DailyServices d : days){
+			if(d.getServiceDate().isEqual(request.getFch_collection())){
+				dailyService = d;
+				break;
+			}
+		}
+		if(dailyService == null){
+			throw new NotBoundException("dailyService not found for day "+
+						request.getFch_collection());
+		}
 		try {
 			if(inUse.get()){
 				wait();
 			}
 			inUse.set(true);
 			dailyService.confirmProvisionalAppointment(request.getTelephone());
-			session.registerRequestInDB(request);
 			inUse.set(false);
 			notifyAll();
+			session.registerRequestInDB(request);
 		} catch (IOException e) {
 			inUse.set(false);
 			notifyAll();
@@ -245,33 +253,6 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			throw e;
 		}
 	}
-	
-	/**
-	 * 
-	 * @param day
-	 * @return the next day
-	 */
-	private Date nextDay(final Date day){
-		DateTime dateTime = new DateTime(day);
-		return dateTime.plusDays(1).toDate();
-	}
-	
-	/**
-	 * Localiza el dia de servicio correspondiente a una fecha de recogida de enseres
-	 * @param fch_collection
-	 * @return
-	 */
-	private DailyServices findDailyService(final Date fch_collection) {
-		DailyServices day = null;
-		DateMidnight b = new DateMidnight(fch_collection);
-		for(DailyServices d : days ){
-			DateMidnight a = new DateMidnight(d.getServiceDate());
-			if(a.isEqual(b)){
-				day = d;
-			}
-		}
-		return day;
-	}
 
 	/**
 	 * Incrementa el numero de muebles que se pueden recoger debido a una solicitud
@@ -281,9 +262,9 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 	 * @throws InterruptedException 
 	 */
 	private void addDisponiblesCollectionFurnitures(int numFurnitures,
-			Date fch_collection) throws InterruptedException {
+			LocalDate fch_collection) throws InterruptedException {
 		for(DailyServices d : days){
-			if(d.getDateTime() == fch_collection){
+			if(d.getDate() == fch_collection){
 				d.addFurnituresPerDayFromCanceledRequest(numFurnitures);
 			}
 		}
@@ -294,16 +275,13 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		while(inUse.get()){
 			wait();
 		}
-		if(checkIfUserGotPrevProvReq(phone)){
-			removesUnconfirmedAppointments(phone);
-		}
+		inUse.set(true);
 		try {
 			if(checkIfExistPendingRequest(phone)){
-				for(CollectionRequest c : session.getPendingCollectionRequest(phone)){
-					session.removesPendingRequestFromBD(c);
-					addDisponiblesCollectionFurnitures(
-							c.getNumFurnitures(),c.getFch_collection());
-				}
+				removePendingCollectionRequest(phone);
+			}
+			else{
+				removesUnconfirmedAppointments(phone);
 			}
 		} catch (IOException e) {
 			inUse.set(false);
@@ -314,6 +292,14 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		notifyAll();	
 	}
 
+	private void removePendingCollectionRequest(String phone) throws IOException, InterruptedException{
+		for(CollectionRequest c : session.getPendingCollectionRequest(phone)){
+			session.removesPendingRequestFromBD(c);
+			addDisponiblesCollectionFurnitures(
+					c.getNumFurnitures(),c.getFch_collection());
+		}
+	}
+	
 	/**
 	 * Se eliminan todas las solicitudes pendientes de realizar del usuario.
 	 * @param phone
@@ -323,7 +309,7 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 	private void removesUnconfirmedAppointments(String phone) 
 			throws InterruptedException, IOException{
 		for(DailyServices day : days){
-			if(day.userGotPreviousRequest(phone)){
+			if(day.checkIfuserGotPreviousRequest(phone)){
 				day.removeAppointment(phone);
 			}
 		}
