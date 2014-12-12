@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +32,7 @@ public class TestDailyAppointmentService {
 	private static DailyAppointmentServiceConector mAppointmentService;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private int mExpectedValueOfNumberAppointments;
+	private static final String HOST = "66.85.153.171";
 	
 	public TestDailyAppointmentService(){
 	
@@ -39,7 +41,17 @@ public class TestDailyAppointmentService {
 	@Before
 	public void setUp(){
 		mAppointmentService = new DailyAppointmentServiceConectorImp
-				("localhost", 8080, "http");				
+				(HOST, 8080, "http");				
+	}
+	
+	@After
+	public void tearDown(){
+		// Wait 5 second after each test.
+		try {
+		    Thread.sleep(5000);   //5000 milliseconds is one second.
+		} catch(InterruptedException ex) {
+		    Thread.currentThread().interrupt();
+		}
 	}
 	
 	/**
@@ -115,7 +127,7 @@ public class TestDailyAppointmentService {
 	@Test
 	public void testGetAndConfirm1Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "622010126";
+		final String userPhoneNumber = "622928126";
 		final int num_furnitures = 2;
 		final int collectionPointId = 1;
 		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
@@ -147,10 +159,10 @@ public class TestDailyAppointmentService {
 				collectionPointId);
 	}
 	
-	public static void getAndConfirm1Appointment(String userName, String userPhoneNumber, 
+	private static void getAndConfirm1Appointment(String userName, String userPhoneNumber, 
 			int num_furnitures, int collectionPointId) throws Exception{
 		final UserServiceConector conector = 
-				new UserServiceConectorImp("localhost",8080,"http");
+				new UserServiceConectorImp(HOST,8080,"http");
 		final User user = new User(userName,userPhoneNumber);
 		try{
 			HttpResponse response = conector.addUser(user);
@@ -170,9 +182,7 @@ public class TestDailyAppointmentService {
 						new CollectionRequest(appointment,furnitures);
 				assertTrue(req.checkCorrectRequest());
 				mAppointmentService.confirmAppointment(req);
-				
 			}
-			mAppointmentService.deletePendingAppointments(userPhoneNumber);
 		}
 		catch(Exception e){
 			fail(e.toString());
@@ -181,11 +191,14 @@ public class TestDailyAppointmentService {
 		finally{
 			HttpResponse response;
 			try {
-				response = conector.deleteUser(user);
-				assertTrue(response.getStatusLine().getStatusCode() == 200);
+				mAppointmentService.deletePendingAppointments(userPhoneNumber);
 			} catch (Exception e) {
 				fail(e.toString());
 				e.printStackTrace();
+			}
+			finally{
+				response = conector.deleteUser(user);
+				assertTrue(response.getStatusLine().getStatusCode() == 200);
 			}
 		}	
 	}
@@ -195,7 +208,7 @@ public class TestDailyAppointmentService {
 	 * @param num_furnitures
 	 * @return 
 	 */
-	public static List<Furniture> createExampleFurnitureList(int num_furnitures){			
+	private static List<Furniture> createExampleFurnitureList(int num_furnitures){			
 		List<Furniture> furnitures = new ArrayList<Furniture>();
 		for(int i = 1;i <= num_furnitures;i++){
 			furnitures.add(new Furniture(i,1));

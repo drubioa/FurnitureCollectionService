@@ -34,7 +34,7 @@ public class DailyAppointmentServiceConectorImp
 		mHttpclient = new DefaultHttpClient();
 		mTarget = new HttpHost(host, port, scheme);	
 	}
-		
+	
 	public List<ProvisionalAppointment> getProvisionalAppointments(
 	String phone,int num_furnitures,int collection_point_id) 
 		throws URISyntaxException, HttpException, IOException, JSONException, 
@@ -76,8 +76,6 @@ public class DailyAppointmentServiceConectorImp
 			e.printStackTrace();
 			throw e;
 		}
-		System.out.println(dato.toString());
-
 		StringEntity entity = new StringEntity(dato.toString());
 		post.setEntity(entity);
 		HttpResponse resp = mHttpclient.execute(mTarget, post);
@@ -102,7 +100,7 @@ public class DailyAppointmentServiceConectorImp
 		HttpResponse resp = mHttpclient.execute(mTarget, deleteRestues);
 		if (resp.getStatusLine().getStatusCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
-			 + resp.getStatusLine().getStatusCode());
+			 + resp.getStatusLine().getStatusCode()+"\n"+resp.getParams());
 		}
 		if(resp.getEntity() != null) {
 			resp.getEntity().consumeContent();

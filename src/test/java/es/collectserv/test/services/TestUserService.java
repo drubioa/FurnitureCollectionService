@@ -19,7 +19,7 @@ public class TestUserService {
 
 	@Before
 	public void setUp(){
-		conector = new UserServiceConectorImp("localhost",8080,"http");
+		conector = new UserServiceConectorImp("66.85.153.171",8080,"http");
 	}
 	
 	/**

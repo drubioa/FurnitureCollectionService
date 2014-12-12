@@ -102,7 +102,7 @@ INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 	VALUES(7,'wc',1);
 --- VALUES OF FURNITURES KITCHEN
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
-	VALUES(8,'sink',2);
+	VALUES(8,'sink_kitchen	',2);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 	VALUES(9,'worktop',2);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
