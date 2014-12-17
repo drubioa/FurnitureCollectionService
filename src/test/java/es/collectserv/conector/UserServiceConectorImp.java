@@ -38,8 +38,7 @@ public class UserServiceConectorImp implements UserServiceConector{
 		}
 		return resp;
 	}
-	
-	
+
 	public HttpResponse deleteUser(User user) throws Exception{
 		HttpDelete deleteRestues = new
 				HttpDelete("/FurnitureCollectionService/resources/users"
@@ -48,7 +47,7 @@ public class UserServiceConectorImp implements UserServiceConector{
 		HttpResponse resp = mHttpclient.execute(mTarget, deleteRestues);
 		if (resp.getStatusLine().getStatusCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
-			 + resp.getStatusLine().getStatusCode());
+			 + resp.getStatusLine());
 		}
 		if( resp.getEntity() != null ) {
 			resp.getEntity().consumeContent();
@@ -77,5 +76,4 @@ public class UserServiceConectorImp implements UserServiceConector{
 			throw new Exception("Server error");
 		}
 	}
-
 }

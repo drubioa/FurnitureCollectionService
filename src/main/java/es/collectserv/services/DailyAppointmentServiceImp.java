@@ -91,35 +91,25 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 	@DELETE
 	public Response deletePendingRequest(
 			@QueryParam("phone_number")  String phone_number) {
-		cancelPendingRequests(phone_number);
+		if(!checkIfUserGotPrevAppointment(phone_number)){
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
+		}
+		try {
+			manager.cancelPeendingRequest(phone_number);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);		
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);	
+		}
 		if(checkIfUserGotPrevAppointment(phone_number)){
 			System.out.println("Service cannot delete pending appointments.");
-			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
+			throw new WebApplicationException(Response.Status.NOT_MODIFIED);			
 		}
 		return Response.ok().build();
 	}
-	
-	private void cancelPendingRequests(String phone_number){
-		try {
-			if(manager.userGotPreviosRequest(phone_number)){
-				manager.cancelPeendingRequest(phone_number);
-			}else{
-				System.out.println("El usuario "+phone_number+
-						" no tiene peticiones previas.");
-				throw new WebApplicationException(
-						Response.Status.BAD_REQUEST);
-			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status
-					.INTERNAL_SERVER_ERROR);
-		} catch (IOException e) {
-			e.printStackTrace();
-			throw new WebApplicationException(Response.Status
-					.INTERNAL_SERVER_ERROR);
-		}	
-	}
-	
+
 	private boolean checkIfUserGotPrevAppointment(String phone_number){
 		try {
 			return manager.userGotPreviosRequest(phone_number);

@@ -88,6 +88,7 @@ public class TestRequestManagement {
 			mManagement.confirmProvisionalAppointment(collectionResquest);
 			assertTrue(mManagement.userGotPreviosRequest(phone));
 			mManagement.cancelPeendingRequest(phone);
+			assertFalse(mManagement.userGotPreviosRequest(phone));
 		} catch (Exception e) {
 			connector.deleteUser(phone);
 			e.printStackTrace();
@@ -120,6 +121,47 @@ public class TestRequestManagement {
 			}
 			assertTrue(mManagement.userGotPreviosRequest(phone));
 			mManagement.cancelPeendingRequest(phone);
+			assertFalse(mManagement.userGotPreviosRequest(phone));
+		} catch (Exception e) {
+			connector.deleteUser(phone);
+			e.printStackTrace();
+			fail();
+		}
+		connector.deleteUser(phone);
+	}
+	
+	/**
+	 * Se prueba que el sistema no permite a un usuario con una solicitud
+	 * de recogida confirmada, realizar una nueva solicitud.
+	 * @throws IOException 
+	 */
+	@Test
+	public void testGetAppointmentWhenUserGotPrevConfirmAppointment() throws IOException{
+		String phone =  mNumberGenerator.generate_phoneNumber();
+		SqlConector connector = new SqlConectorImp();
+		connector.addNewUser(new User("anonymous",phone));
+		try {
+			List<ProvisionalAppointment> appointments = 
+					mManagement.getAppointmentToConfirm(phone, 12, 1);
+			assertNotNull(appointments);
+			assertTrue(appointments.size() == 3); // 12 / 4 = 3
+			for(ProvisionalAppointment appointmet : appointments){
+				assertTrue(appointmet.getTelephone() == phone);	
+				utilities.validAppointment(appointmet);
+				assertTrue(appointmet.getNumFurnitures() == 4);
+				CollectionRequest collectionResquest = 
+						utilities.createExampleCollectionRequest(appointmet);
+				mManagement.confirmProvisionalAppointment(collectionResquest);
+			}
+			assertTrue(mManagement.userGotPreviosRequest(phone));
+			try{
+				mManagement.getAppointmentToConfirm(phone, 12, 1);
+			}catch(IllegalArgumentException e){
+				assertTrue(true);
+			}finally{
+				mManagement.cancelPeendingRequest(phone);
+				assertFalse(mManagement.userGotPreviosRequest(phone));
+			}
 		} catch (Exception e) {
 			connector.deleteUser(phone);
 			e.printStackTrace();

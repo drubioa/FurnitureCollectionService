@@ -3,6 +3,7 @@ package es.collectserv.collrequest;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,7 +41,8 @@ public class DailyServices implements Comparable<DailyServices> {
 					+ "be later than the current day ("+last_day.toString()+")");
 		}
 		if(LAST_DATE == null){
-			LAST_DATE = last_day;
+			Calendar now = Calendar.getInstance();
+			LAST_DATE = new LocalDate(now);
 		}
 		else if(!last_day.isAfter(LAST_DATE)){
 			throw new IllegalArgumentException("invalid day "+last_day+", it must "

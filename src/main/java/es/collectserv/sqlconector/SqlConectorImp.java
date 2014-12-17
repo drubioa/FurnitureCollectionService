@@ -30,6 +30,24 @@ public class SqlConectorImp implements SqlConector{
 		session.close();		
 	}
 	
+	public boolean CheckIfUserExist(String phone_number) 
+		throws IOException{
+		boolean usereExist = false;
+		try {
+			session = 
+					new SimpleMyBatisSesFactory().getOpenSqlSesion();
+		} catch (IOException e) {
+			e.printStackTrace();
+			throw e;
+		}
+		if(session.selectOne("UserMapper.selectUser", 
+				phone_number) != null){
+			usereExist = true;
+		}
+		session.close();
+		return usereExist;
+	}
+	
 	public Boolean CheckIfUserGotPendingRequest(String phone_number) throws IOException{
 		try {
 			session = 

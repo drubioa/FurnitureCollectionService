@@ -127,11 +127,20 @@ public class TestDailyAppointmentService {
 	@Test
 	public void testGetAndConfirm1Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "622928126";
-		final int num_furnitures = 2;
+		final String userPhoneNumber = "600000002";
+		final int num_furnitures = 1;
 		final int collectionPointId = 1;
-		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
+		try{
+			createUser(userName,userPhoneNumber);
+			getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
 				collectionPointId);
+			deleteAllRequestsOf(userPhoneNumber);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		finally{
+			deleteUser(new User(userName,userPhoneNumber));
+		}
 	}
 	
 	/**
@@ -142,31 +151,54 @@ public class TestDailyAppointmentService {
 	@Test
 	public void testGetAndConfirm2Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "622010121";
+		final String userPhoneNumber = "622017121";
 		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER + 1;
 		final int collectionPointId = 1;
+		createUser(userName,userPhoneNumber);
 		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
 				collectionPointId);
+		try {
+			deleteAllRequestsOf(userPhoneNumber);
+		} catch (Exception e) {
+			fail(e.toString());
+			e.printStackTrace();
+		}
+		finally{
+			deleteUser(new User(userName,userPhoneNumber));
+		}
 	}
 	
 	@Test
 	public void testGetAndConfirm3Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "622010121";
+		final String userPhoneNumber = "666231241";
 		final int num_furnitures = MAX_FURNIUTRES_PER_DAY_USER * 2 + 1;
 		final int collectionPointId = 1;
+		createUser(userName,userPhoneNumber);
 		getAndConfirm1Appointment(userName,userPhoneNumber,num_furnitures,
 				collectionPointId);
+		try {
+			deleteAllRequestsOf(userPhoneNumber);
+		} catch (Exception e) {
+			fail(e.toString());
+			e.printStackTrace();
+		}
+		finally{
+			deleteUser(new User(userName,userPhoneNumber));
+		}
 	}
 	
-	private static void getAndConfirm1Appointment(String userName, String userPhoneNumber, 
-			int num_furnitures, int collectionPointId) throws Exception{
+	private void createUser(String userName, String userPhoneNumber) throws Exception{
 		final UserServiceConector conector = 
 				new UserServiceConectorImp(HOST,8080,"http");
 		final User user = new User(userName,userPhoneNumber);
+		HttpResponse response = conector.addUser(user);
+		assertTrue(response.getStatusLine().getStatusCode() == 201);
+	}
+	
+	public static void getAndConfirm1Appointment(String userName, String userPhoneNumber, 
+			int num_furnitures, int collectionPointId) throws Exception{
 		try{
-			HttpResponse response = conector.addUser(user);
-			assertTrue(response.getStatusLine().getStatusCode() == 201);
 			// First get a provisional appointment
 			List<ProvisionalAppointment> appointments =
 					mAppointmentService.getProvisionalAppointments(
@@ -187,20 +219,14 @@ public class TestDailyAppointmentService {
 		catch(Exception e){
 			fail(e.toString());
 			throw e;
-		}		
-		finally{
-			HttpResponse response;
-			try {
-				mAppointmentService.deletePendingAppointments(userPhoneNumber);
-			} catch (Exception e) {
-				fail(e.toString());
-				e.printStackTrace();
-			}
-			finally{
-				response = conector.deleteUser(user);
-				assertTrue(response.getStatusLine().getStatusCode() == 200);
-			}
-		}	
+		}
+	}
+	
+	private void deleteUser(User user) throws Exception{
+		UserServiceConector conector;
+		conector = new UserServiceConectorImp(HOST,8080,"http");
+		HttpResponse response = conector.deleteUser(user);
+		assertTrue(response.getStatusLine().getStatusCode() == 200);
 	}
 	
 	/**

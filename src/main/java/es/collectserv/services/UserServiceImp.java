@@ -12,6 +12,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import es.collectserv.model.User;
 import es.collectserv.sqlconector.SqlConector;
@@ -28,16 +29,18 @@ public class UserServiceImp implements UserService{
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createNewUser(User user) {
-		try{
-			session.addNewUser(user);
+			try {
+				if(session.CheckIfUserExist(user.getPhone_number())){
+					throw new WebApplicationException( 
+							Response.Status.BAD_REQUEST);	
+				}
+				session.addNewUser(user);
+			} catch (IOException e) {
+				throw new WebApplicationException(Response.status(Status.CONFLICT)
+		                .entity("No pudo crearse el nueve usuario.").build());
+			}
 			return Response.created(URI.create("/users/"+
 					user.getPhone_number())).build();
-		}
-		catch(Exception e){
-			e.printStackTrace();
-			throw new WebApplicationException( 
-					Response.Status.INTERNAL_SERVER_ERROR);
-		}
 	}
 	
 	
@@ -47,7 +50,8 @@ public class UserServiceImp implements UserService{
 		String phone_number){
 		try {
 			if(!session.CheckIfUserGotPendingRequest(phone_number)){
-				throw new WebApplicationException(404);
+				throw new WebApplicationException( 
+						Response.Status.BAD_REQUEST);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -61,7 +65,11 @@ public class UserServiceImp implements UserService{
 	@Path("{phone_number}")
 	public Response deleteUser(
 			@PathParam("phone_number")  String phone_number) {
-		try{
+		try{	
+			if(!session.CheckIfUserExist(phone_number)){
+				throw new WebApplicationException( 
+						Response.Status.BAD_REQUEST);	
+			}
 			session.deleteUser(phone_number);
 		}catch(Exception e){
 			e.printStackTrace();

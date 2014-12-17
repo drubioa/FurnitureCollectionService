@@ -3,6 +3,7 @@ package es.collectserv.collrequest;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -119,6 +120,13 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			wait();
 		}
 		inUse.set(true);
+		// If exist invalid services days they must be removes.
+		if(!AppointmentManteiner.isValidDailyServices(days)){
+			days = AppointmentManteiner.removeInvalidServiceDate(days);
+			inUse.set(false);
+			notifyAll();
+			getAppointmentToConfirm(phone_number,itemsRequest,collectionPointId);
+		}
 		appintment_list.addAll(
 				createProvisionalAppointments(itemsRequest,phone_number,collectionPointId));
 		// Fin de la exclusion mutua
@@ -180,7 +188,8 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 				new ArrayList<ProvisionalAppointment>();
 		LocalDate last_day;
 		if(days.isEmpty()){
-			last_day = new LocalDate();
+			Calendar now = Calendar.getInstance();
+			last_day = new LocalDate(now);
 		}else{
 			Collections.sort(days);
 			last_day = (days.get(days.size() - 1)).getDate();
@@ -199,7 +208,6 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 						furnitureRealizables,collectionPointId));
 				itemsRequest -= furnitureRealizables;
 			}
-			System.out.println("Add day "+last_day);
 			days.add(day);
 		}
 		return appointment_list;

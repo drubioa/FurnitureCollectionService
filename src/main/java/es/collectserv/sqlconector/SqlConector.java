@@ -18,6 +18,15 @@ public interface SqlConector {
 	public void addNewUser(User user) throws IOException;
 	
 	/**
+	 * Checks if user exist in system.
+	 * @param phone_number
+	 * @return true if exist in db, false in another case.
+	 * @throws IOException
+	 */
+	public boolean CheckIfUserExist(String phone_number) 
+			throws IOException;
+	
+	/**
 	 * Se comprueba si el usuario tiene alguna solicitud pendiente.
 	 * @param phone_number
 	 * @return

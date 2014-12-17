@@ -24,7 +24,7 @@ public class CollectionPointServiceConectorImp
 	
 	public CollectionPointServiceConectorImp(){
 		mHttpclient = new DefaultHttpClient();
-		mTarget = new HttpHost("66.85.153.171", 8080, "http");	
+		mTarget = new HttpHost("localhost", 8080, "http");	
 	}
 	
 	/**
