@@ -24,7 +24,7 @@ import es.collectserv.sqlconector.SqlConectorImp;
  */
 public class DailyServices implements Comparable<DailyServices> {
 	private static LocalDate LAST_DATE;
-	private final LocalDate mDate;
+	private LocalDate mDate;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
 	private List<ProvisionalAppointment> mRequestToConfirmation;
@@ -34,28 +34,39 @@ public class DailyServices implements Comparable<DailyServices> {
 	private AtomicBoolean inUse; // By control of concurrency
 	private static SqlConector sesion;
 	
-	public DailyServices(LocalDate last_day) throws IllegalArgumentException, IOException{
-		final LocalDate today = new LocalDate();
-		if(last_day.isBefore(today)){
-			throw new IllegalArgumentException("invalid day, it must "
-					+ "be later than the current day ("+last_day.toString()+")");
-		}
+	public DailyServices() throws IOException{
+		final LocalDate TODAY = new LocalDate();
 		if(LAST_DATE == null){
-			Calendar now = Calendar.getInstance();
-			LAST_DATE = new LocalDate(now);
-		}
-		else if(!last_day.isAfter(LAST_DATE)){
-			throw new IllegalArgumentException("invalid day "+last_day+", it must "
-					+ "be later than the last service day ("+LAST_DATE+")");
+			LAST_DATE = TODAY.plusDays(1);
+			mDate = LAST_DATE;
 		}
 		else{
-			LAST_DATE = last_day;
+			mDate =  LAST_DATE.plusDays(1);
 		}
 		sesion = new SqlConectorImp();
 		inUse = new AtomicBoolean(false);
 		mRequestToConfirmation = new ArrayList<ProvisionalAppointment>();
-		this.mDate = last_day;
-		mFurniteres_per_day = sesion.selectFurnituresByDay(last_day);
+		mFurniteres_per_day = sesion.selectFurnituresByDay(mDate);
+	}
+	
+	public DailyServices(LocalDate serviceDay) 
+			throws IllegalArgumentException, IOException{
+		final LocalDate TODAY = new LocalDate();
+		if(serviceDay.isBefore(TODAY)){
+			throw new IllegalArgumentException("invalid day, it must "
+					+ "be later than the current day ("+serviceDay.toString()+")");
+		}
+		if(LAST_DATE == null){
+			LAST_DATE = serviceDay;
+		}
+		else if(serviceDay.isAfter(LAST_DATE)){
+			LAST_DATE = serviceDay;
+		}
+		sesion = new SqlConectorImp();
+		inUse = new AtomicBoolean(false);
+		mRequestToConfirmation = new ArrayList<ProvisionalAppointment>();
+		mDate = serviceDay;
+		mFurniteres_per_day = sesion.selectFurnituresByDay(serviceDay);
 	}	
 	
 
@@ -285,6 +296,14 @@ public class DailyServices implements Comparable<DailyServices> {
 	 */
 	public LocalDate getDate(){
 		return mDate;
+	}
+	
+	/**
+	 * 
+	 * @return fecha correspondientes al dia de servicio.
+	 */
+	public void setDate(LocalDate newDate){
+		 mDate = newDate;
 	}
 
 	public int compareTo(DailyServices o) {

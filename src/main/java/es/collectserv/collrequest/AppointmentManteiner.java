@@ -6,11 +6,10 @@ import org.joda.time.LocalDate;
 
 /**
  * 
- * @author diegorubio
+ * @author Diego Rubio Abujas
  *
  */
 public abstract class AppointmentManteiner{
-	final static LocalDate TODAY = new LocalDate(); // System date
 
 	/**
 	 * Check if all DailyServices are after than current date.
@@ -20,7 +19,7 @@ public abstract class AppointmentManteiner{
 	 */
 	public static boolean isValidDailyServices(List<DailyServices> days){
 		for(DailyServices d : days){
-			if(isValidDailyServices(d)){
+			if(!isValidDailyServices(d)){
 				return false;
 			}
 		}
@@ -33,7 +32,8 @@ public abstract class AppointmentManteiner{
 	 * @return
 	 */
 	private static boolean isValidDailyServices(DailyServices d){
-		return d.getServiceDate().isBefore(TODAY);
+		final LocalDate today = new LocalDate();
+		return d.getServiceDate().isAfter(today);
 	}
 	
 	/**
@@ -41,7 +41,8 @@ public abstract class AppointmentManteiner{
 	 * @param days
 	 * @return
 	 */
-	public static List<DailyServices> removeInvalidServiceDate(List<DailyServices> days){
+	public static List<DailyServices> removeInvalidServiceDate(
+			List<DailyServices> days){
 		for(DailyServices d : days){
 			if(!isValidDailyServices(d)){
 				days.remove(d);
