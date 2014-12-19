@@ -198,7 +198,6 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			Calendar now = Calendar.getInstance();
 			last_day = new LocalDate(now);
 		}else{
-			Collections.sort(mDays);
 			last_day = (mDays.get(mDays.size() - 1)).getDate();
 		}
 		while(itemsRequest > 0){

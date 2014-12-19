@@ -3,7 +3,6 @@ package es.collectserv.collrequest;
 import java.io.IOException;
 import java.rmi.NotBoundException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
