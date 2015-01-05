@@ -57,7 +57,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	}
 	
 	/**
-	 * Se realiza rollback y se cierra la conexi��n con la base de datos.
+	 * Se realiza rollback y se cierra la conexion con la base de datos.
 	 */
 	@After
 	public void tearDown(){
@@ -67,15 +67,22 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	
 	@Test
 	public void testInsertAndSelectRequestByUser(){
-		try{		
+		try{
+			int numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
 			// Inicialmente no se ha introducido la solicitud por lo que el usuario
 			//no tiene ninguna solicitud pendiente.
+			assertTrue(numRequests == 0);
 			assertNull(session.selectOne("CollectionRequestMapper"+
 					".selectRequestByUser",solicitud.getTelephone()));
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
 			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
 					solicitud);
+			numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			
+			assertTrue(numRequests > 0);
 			// Una vez el usuario la ha introducido se localiza la solicitud.
 			assertNotNull(session.selectOne("CollectionRequestMapper"+
 					".selectRequestByUser",solicitud.getTelephone()));
@@ -131,7 +138,7 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	}
 	
 	@Test
-	public void testSelectAllCollectionRequests(){
+	public void testSelectAllPendingCollectionRequests(){
 		try{
 			assertTrue(solicitud.getId() == 0);
 			int numberOfPendingRequests = session.selectList("CollectionRequestMapper"+
@@ -169,15 +176,18 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	public void testSelectPendingRequestByPhone(){
 		try{
 			assertTrue(solicitud.getId() == 0);
+			int numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			assertTrue(numRequests == 0);
 			session.insert("CollectionRequestMapper.insertCollectionRequest",
 					solicitud);
 			session.insert("CollectionRequestMapper.insertFurnituresInRequest",
 					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db by phone
-			assertNotNull(
-					session.selectList("CollectionRequestMapper"+
-			".selectPendingRequestByPhone",phone_number));
+			numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			assertTrue(numRequests == 1);
 		}
 		catch(Exception e){
 			fail(e.toString());
@@ -190,6 +200,9 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 	@Test
 	public void testInsertAndDeleteCollectionRequest(){
 		try{
+			int numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			assertTrue(numRequests == 0);
 			assertTrue(solicitud.getId() == 0);
 			int pendingRequests = session.selectList("CollectionRequestMapper"+
 					".selectPendingRequest").size();;
@@ -199,23 +212,27 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 					solicitud);
 			assertTrue(solicitud.getId() > 0);
 			// Select inserted request in db
+			numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			assertTrue(numRequests >= 1);
 			assertNotNull(
 					session.selectList("CollectionRequestMapper"+
 			".selectPendingRequest"));
-			assertTrue(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequest").size() == pendingRequests + 1);
 			session.delete("CollectionRequestMapper.deleteFurnituresFromCollReq",
 					solicitud);
 			session.delete("CollectionRequestMapper.deleteCollectionRequest",
 					solicitud);
 			assertTrue(session.selectList("CollectionRequestMapper"+
-					".selectPendingRequest").size() == pendingRequests);			
+					".selectPendingRequest").size() == pendingRequests);
+			numRequests = session.selectList("CollectionRequestMapper"+
+					".selectPendingRequestByPhone",phone_number).size();
+			assertTrue(numRequests == 0);
 		}
 		catch(Exception e){
 			fail(e.toString());
 		}			
 	}
-	
+
 	private CollectionRequest createExampleRequest
 		(String name,String phone_number, CollectionPoint point){
 		CollectionRequest solicitud = new CollectionRequest();

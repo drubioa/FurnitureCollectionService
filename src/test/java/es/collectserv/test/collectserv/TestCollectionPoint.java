@@ -25,7 +25,7 @@ public class TestCollectionPoint {
 	
 	public TestCollectionPoint(){
 		httpclient = new DefaultHttpClient();
-		target = new HttpHost("66.85.153.171", 8080, "http");			
+		target = new HttpHost("localhost", 8080, "http");			
 	}
 	
 	/**

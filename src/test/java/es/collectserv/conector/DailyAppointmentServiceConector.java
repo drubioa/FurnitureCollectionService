@@ -2,10 +2,12 @@ package es.collectserv.conector;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.List;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.codehaus.jettison.json.JSONException;
 
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
@@ -27,6 +29,21 @@ public interface DailyAppointmentServiceConector {
 	 */
 	public List<ProvisionalAppointment> getProvisionalAppointments(String phone,
 			int num_furnitures,int collection_point_id) throws Exception;
+	
+	/**
+	 * Obtiene todas las solicitudes de recogida pendientes de realizar.
+	 * @param phone
+	 * @return
+	 * @throws HttpException 
+	 * @throws IOException 
+	 * @throws org.apache.http.ParseException 
+	 * @throws ParseException 
+	 * @throws JSONException 
+	 * @throws URISyntaxException 
+	 */
+	public List<CollectionRequest> getPendingCollectionRequest(String phone) 
+			throws URISyntaxException, JSONException, ParseException, org.apache.http.ParseException, 
+			IOException, HttpException;
 	
 	/**
 	 * 

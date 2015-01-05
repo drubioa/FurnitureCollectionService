@@ -1,7 +1,7 @@
 package es.collectserv.sqlconector;
 
 import java.io.IOException;
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -135,6 +135,16 @@ public class SqlConectorImp implements SqlConector{
 		.getOpenSqlSesion();
 		List<CollectionRequest> requests = session.selectList("CollectionRequestMapper"+
 				".selectPendingRequestByPhone",phone);
+		session.close();
+		return requests;	
+	}
+	
+	public List<CollectionRequest> getAllCollectionRequest(String phone) 
+			throws IOException{
+		session = new SimpleMyBatisSesFactory()
+		.getOpenSqlSesion();
+		List<CollectionRequest> requests = session.selectList("CollectionRequestMapper"+
+				".selectRequestByPhone",phone);
 		session.close();
 		return requests;	
 	}

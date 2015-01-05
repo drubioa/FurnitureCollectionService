@@ -19,7 +19,7 @@ public class TestUserService {
 
 	@Before
 	public void setUp(){
-		conector = new UserServiceConectorImp("66.85.153.171",8080,"http");
+		conector = new UserServiceConectorImp("localhost",8080,"http");
 	}
 	
 	/**
@@ -29,18 +29,26 @@ public class TestUserService {
 	 */
 	@Test
 	public void testPOSTAndDeleteUser(){
+		final String name = "Diego";
+		final String phone = "631933433";
+		final User user = new User(name,phone);
 		try{
-			final User user = new User("Diego","631933433");
+			// Add User
 			HttpResponse response = conector.addUser(user);
 			assertTrue(response.getStatusLine().getStatusCode() == 201);
-			// Delete User
-			response = conector.deleteUser(user);
-			assertTrue(response.getStatusLine().getStatusCode() == 200);
 		}
 		catch(Exception e){
-			e.printStackTrace();
 			fail(e.toString());
-		}	
+		}
+		finally{
+			try {
+				// Delete User
+				HttpResponse response = conector.deleteUser(user);
+				assertTrue(response.getStatusLine().getStatusCode() == 200);
+			} catch (Exception e) {
+				fail(e.toString());
+			}
+		}
 	}
 	
 	@Test
@@ -54,7 +62,7 @@ public class TestUserService {
 			response = conector.addUser(user);	
 		}
 		catch(Exception e){
-			assertTrue(e.getMessage().equals("Failed : HTTP error code : 500"));
+			assertTrue(e.getMessage().equals("Failed : HTTP error code : 400"));
 		}
 		
 		HttpResponse response;
@@ -74,7 +82,7 @@ public class TestUserService {
 	@Test
 	public void testGETPhoneNoHaveReq(){
 		try{
-			final String nobodiesPhoneNumber = "9031533156";
+			final String nobodiesPhoneNumber = "900010101";
 			assertFalse(conector.checkIfUserGotPendingReq(nobodiesPhoneNumber)); 
 		}
 		catch (Exception e) {

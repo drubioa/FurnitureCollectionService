@@ -19,22 +19,14 @@ public abstract class AppointmentManteiner{
 	 */
 	public static boolean isValidDailyServices(List<DailyServices> days){
 		for(DailyServices d : days){
-			if(!isValidDailyServices(d)){
+			final LocalDate TODAY = new LocalDate();
+			if(!d.getDate().isAfter(TODAY)){
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	/**
-	 * Check if daily service is after than current date.
-	 * @param d
-	 * @return
-	 */
-	private static boolean isValidDailyServices(DailyServices d){
-		final LocalDate today = new LocalDate();
-		return d.getServiceDate().isAfter(today);
-	}
 	
 	/**
 	 * Remove invalid dailyServicesDays.
@@ -43,8 +35,9 @@ public abstract class AppointmentManteiner{
 	 */
 	public static List<DailyServices> removeInvalidServiceDate(
 			List<DailyServices> days){
+		final LocalDate TODAY = new LocalDate();
 		for(DailyServices d : days){
-			if(!isValidDailyServices(d)){
+			if(!d.getDate().isAfter(TODAY)){
 				days.remove(d);
 			}
 		}

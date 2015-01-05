@@ -18,13 +18,8 @@ import es.collectserv.model.ProvisionalAppointment;
 
 @RunWith(JUnit4.class)
 public class TestAppointmentManteiner{
-	private static TestingRequestManagUtilities utilities = 
-			new TestingRequestManagUtilities();
 	private static RequestManagementSingletonImp mManagement;
-	private final LocalDate TOMORROW = new LocalDate().plusDays(1);
 	private final LocalDate TODAY = new LocalDate();
-	private final LocalDate YESTERDAY = new LocalDate().minusDays(1);
-	private DailyServices invalidServicesDay,validServicesDay;
 	
 	public TestAppointmentManteiner(){
 		mManagement = RequestManagementSingletonImp.getInstance();

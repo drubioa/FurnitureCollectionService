@@ -70,6 +70,11 @@
           FROM servrecog_muebles_solicitud_view
 		  WHERE fch_solicitud_nn = #{id}
       </select>
+ 
+       <select id="selectRequestByPhone" resultMap="collectionRequestMap">
+  		SELECT * FROM servrecog_muebles_solicitud_view 
+  		WHERE telephone_nn = #{id}
+	  </select>
       
       <select id="selectPendingRequestByPhone" resultMap="collectionRequestMap">
   		SELECT * FROM servrecog_muebles_solicitud_view 

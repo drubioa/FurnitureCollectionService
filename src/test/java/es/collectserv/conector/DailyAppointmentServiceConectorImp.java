@@ -90,6 +90,38 @@ public class DailyAppointmentServiceConectorImp
 		return resp;
 	}
 	
+	public List<CollectionRequest> getPendingCollectionRequest(String phone) 
+			throws URISyntaxException, JSONException, ParseException, 
+			org.apache.http.ParseException, IOException, HttpException{
+		if(phone == null){
+			throw new NullPointerException("Phone argument is null in getPendingCollectionRequest method");
+		}
+		HttpGet getRequest =  
+				new HttpGet("/FurnitureCollectionService/resources/collectionrequests"
+						+"?phone_number="+phone);
+		getRequest.setHeader("content-type", MediaType.APPLICATION_JSON);
+		HttpResponse httpResponse = 
+				mHttpclient.execute(mTarget, getRequest);
+		if(httpResponse == null){
+			throw new NullPointerException("httpResponse is null");
+		}
+		if(httpResponse.getStatusLine().getStatusCode() == 204){
+			throw new RuntimeException("Failed : HTTP error code : "
+					 + httpResponse.getStatusLine().getStatusCode());	
+		}
+		String respStr = EntityUtils.toString(httpResponse.getEntity());
+		if(httpResponse.getStatusLine().getStatusCode() != 200){
+			throw new RuntimeException("Failed : HTTP error code : "
+					 + httpResponse.getStatusLine().getStatusCode());	
+		}
+		JSONObject respJSON = new JSONObject(respStr);
+		if( httpResponse.getEntity() != null ) {
+			httpResponse.getEntity().consumeContent();
+	    }
+		return JSONConverter.JSONtoCollectionRequest(respJSON);
+		
+	}
+	
 	public HttpResponse deletePendingAppointments(String phone_number) 
 			throws URISyntaxException, HttpException, IOException{
 

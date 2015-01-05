@@ -24,7 +24,7 @@ public abstract class AppointmentValidator {
 		assertNotNull(appointment.getFch_request());
 		LocalDate request_date = appointment.getFch_request();
 		assertTrue(collection_date.isAfter(request_date));
-		assertTrue(request_date.isEqual(new LocalDate()));
+		assertTrue(collection_date.isAfter(new LocalDate()));
 		assertNotNull(appointment.getCollectionPointId());
 	}
 	

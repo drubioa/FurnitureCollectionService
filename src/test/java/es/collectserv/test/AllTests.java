@@ -4,6 +4,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
+import es.collectserv.test.collectserv.TestAppointmentManteiner;
 import es.collectserv.test.collectserv.TestCollectionPoint;
 import es.collectserv.test.collectserv.TestRemoveUnconfirmedAppointment;
 import es.collectserv.test.collectserv.TestRequestManagement;
@@ -24,7 +25,7 @@ import es.collectserv.test.services.TestUserService;
 		TestFurnituresMapper.class, TestUserMapper.class,
 		TestRequestManagement.class, TestUserService.class, TestCollectionPointService.class,
 		TestRemoveUnconfirmedAppointment.class,TestConcurrenceInDailyServices.class,
-		TestConcurrenceInRequestManagement.class})
+		TestConcurrenceInRequestManagement.class,TestAppointmentManteiner.class})
 public class AllTests {
 
 }

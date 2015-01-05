@@ -81,4 +81,12 @@ public interface SqlConector {
 	 * @throws IOException
 	 */
 	public List<LocalDate> selectAllCollectionDays() throws IOException;
+	
+	/**
+	 * Obtiene todas las solicitudes de recogida del sistema.
+	 * @param phone
+	 * @return
+	 * @throws IOException 
+	 */
+	public List<CollectionRequest> getAllCollectionRequest(String phone) throws IOException;
 }

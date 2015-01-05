@@ -69,7 +69,7 @@ public class UserServiceConectorImp implements UserServiceConector{
 		if(resp.getStatusLine().getStatusCode() == 200){
 			return true;
 		}
-		else if(resp.getStatusLine().getStatusCode() == 404){
+		else if(resp.getStatusLine().getStatusCode() == 400){
 			return false;
 		}
 		else{
