@@ -1,5 +1,6 @@
 package es.collectserv.test.mybatis;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -218,6 +219,14 @@ public class TestCollectionRequest extends MyBatisConfigurator{
 			assertNotNull(
 					session.selectList("CollectionRequestMapper"+
 			".selectPendingRequest"));
+			List<CollectionRequest> request = 
+					session.selectList("CollectionRequestMapper"+
+							".selectPendingRequest");
+			assertNotNull(request);
+			assertFalse(request.get(0).getFurnitures().isEmpty());
+			assertNotNull(request.get(0).getFurnitures().get(0));
+			assertNotNull(request.get(0).getFurnitures().get(0).getName());
+			assertFalse(request.get(0).getFurnitures().get(0).getName().isEmpty());
 			session.delete("CollectionRequestMapper.deleteFurnituresFromCollReq",
 					solicitud);
 			session.delete("CollectionRequestMapper.deleteCollectionRequest",

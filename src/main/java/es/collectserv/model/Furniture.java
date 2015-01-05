@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Furniture {
 	private int id;
 	private int cantidad;
+	private String mName;
 	
 	public Furniture(){
 		
@@ -27,7 +28,15 @@ public class Furniture {
 	public int getCantidad() {
 		return cantidad;
 	}
+	
+	public void setName(String name){
+		mName = name;
+	}
 
+	public String getName(){
+		return mName;
+	}
+	
 	public void setCantidad(int cantidad) {
 		this.cantidad = cantidad;
 	}

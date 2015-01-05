@@ -41,7 +41,9 @@
           resultType="es.collectserv.model.Furniture">
           SELECT 
           id_furniture_nn AS id,
-          cantidad_ck AS cantidad 
+          cantidad_ck AS cantidad,
+          	(SELECT servrecog_furnitures.name_nn FROM servrecog_furnitures 
+          	WHERE servrecog_furnitures.id_furniture_pk = id_furniture_nn)  AS mName
           FROM servrecog_muebles_solicitud WHERE id_solicitud_nn = #{id}
       </select>
       

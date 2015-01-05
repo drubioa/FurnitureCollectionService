@@ -55,6 +55,7 @@ public abstract class JSONConverter{
 			JSONObject item = new JSONObject();
 			item.put("id", furniture.getId());
 			item.put("cantidad", furniture.getCantidad());
+			item.put("name", furniture.getName());
 			furnitures.put(item);
 		}
 		obj.put("furnitures",  furnitures);
@@ -104,14 +105,18 @@ public abstract class JSONConverter{
 		        	JSONObject obj = jsonFurnitures.getJSONObject(j);
 		        	int cantidad = obj.getInt("cantidad");
 		        	int furnitureId = obj.getInt("id");
+		        	String name = obj.getString("name");
 		        	Furniture f = new Furniture(furnitureId,cantidad);
+		        	f.setName(name);
 		        	furnitures.add(f);
 		        }
 	        }catch(JSONException e){
 	        	JSONObject furniture = object.getJSONObject("furnitures");
 	        	int cantidad = furniture.getInt("cantidad");
 	        	int furnitureId = furniture.getInt("id");
+	        	String name = furniture.getString("name");
 	        	Furniture f = new Furniture(furnitureId,cantidad);
+	        	f.setName(name);
 	        	furnitures.add(f);
 	        }
 	        req.setFurnitures(furnitures);

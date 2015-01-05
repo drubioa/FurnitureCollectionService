@@ -318,6 +318,8 @@ public class TestDailyAppointmentService {
 		int totalFurnitures = 0;
 		for(Furniture f : req.getFurnitures()){
 			totalFurnitures += f.getCantidad();
+			assertNotNull(f.getName());
+			assertTrue(!f.getName().isEmpty());
 		}
 		return req.checkCorrectRequest() && req.getNumFurnitures() == totalFurnitures;
 	}

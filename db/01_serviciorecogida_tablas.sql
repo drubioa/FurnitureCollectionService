@@ -106,7 +106,9 @@ SELECT  id_solicitud_pk,
 	(SELECT SUM(servrecog_muebles_solicitud.cantidad_ck) 
 		FROM servrecog_muebles_solicitud
 		WHERE servrecog_muebles_solicitud.id_solicitud_nn = id_solicitud_pk) 
-		AS num_enseres
+		AS num_enseres,
+	(SELECT name_nn FROM servrecog_furnitures WHERE id_furniture_pk = 1 LIMIT 1)
+	 AS mName
 	FROM servrecog_solicitudes;
 
 -- VISTA DE SOLICITUDES PENDIENTES
