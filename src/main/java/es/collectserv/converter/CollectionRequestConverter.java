@@ -15,7 +15,8 @@ import es.collectserv.model.Furniture;
 @XmlRootElement(name = "collectionRequest")
 public class CollectionRequestConverter {
 	private CollectionRequest entity = null;
-	private static DateTimeFormatter dtfOut = DateTimeFormat.forPattern("yyyy-MM-dd");
+	private static DateTimeFormatter dtfOut =
+			DateTimeFormat.forPattern("yyyy-MM-dd");
 	
 	 public CollectionRequestConverter(){
 		  entity = new CollectionRequest();

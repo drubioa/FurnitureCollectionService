@@ -11,6 +11,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.joda.time.LocalDate;
+
 import es.collectserv.converter.CollectionRequestConverter;
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.sqlconector.SqlConector;
@@ -22,7 +24,7 @@ public class CollectionRequestServiceImp implements CollectionRequestService{
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ArrayList<CollectionRequestConverter> getCollectionRequest(
+	public ArrayList<CollectionRequestConverter> getPendingCollectionRequest(
 			@QueryParam("phone_number") String phone) {
 		ArrayList<CollectionRequest> requests = new ArrayList<CollectionRequest>();
 		try {
@@ -33,13 +35,18 @@ public class CollectionRequestServiceImp implements CollectionRequestService{
 				throw new WebApplicationException(Response.Status.NOT_FOUND);
 			}
 			requests = (ArrayList<CollectionRequest>) 
-					conector.getAllCollectionRequest(phone);
+					conector.getPendingCollectionRequest(phone);
 			if(requests.size() == 0){
 				throw new WebApplicationException(Response.Status.NO_CONTENT);
 			}
 			ArrayList<CollectionRequestConverter> reqConverter = 
 					new ArrayList<CollectionRequestConverter>();
 			for(CollectionRequest c : requests){
+				if(!c.checkCorrectRequest()){
+					System.out.println("TODAY is "+(new LocalDate()).toString());
+					System.out.println("Request in bad format: "+c.toString());
+					throw new WebApplicationException(Response.Status.INTERNAL_SERVER_ERROR);
+				}
 				reqConverter.add(new CollectionRequestConverter(c));
 			}
 			return reqConverter;

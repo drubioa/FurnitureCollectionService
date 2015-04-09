@@ -5,6 +5,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.joda.time.LocalDate;
+
 @XmlRootElement
 public class CollectionRequest extends Request{
 	private int id;
@@ -70,12 +72,13 @@ public class CollectionRequest extends Request{
 	public boolean checkCorrectRequest(){
 		boolean isCorrect = true;
 		if(furnitures.size() == 0  || 
-		getFch_collection() == null ||
-		getFch_request() == null ||
-		getNumFurnitures() <= 0 ||this.getTelephone().isEmpty()){
-			isCorrect = false;
+			getFch_collection() == null ||
+			getFch_request() == null ||
+			getNumFurnitures() <= 0 ||this.getTelephone().isEmpty()){
+				isCorrect = false;
 		}
-		if(!getFch_collection().isAfter(getFch_request())){
+		if((!getFch_collection().isAfter(getFch_request())
+				||(!getFch_collection().isAfter(LocalDate.now())))){
 			isCorrect = false;
 		}
 		return isCorrect;

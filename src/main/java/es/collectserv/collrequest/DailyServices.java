@@ -22,7 +22,8 @@ import es.collectserv.sqlconector.SqlConectorImp;
  * @version 1.0
  */
 public class DailyServices implements Comparable<DailyServices> {
-	private static LocalDate LAST_DATE;
+	// El primer dia de servicio es el siguiente a la fecha del sistema
+	private static LocalDate LAST_DATE = LocalDate.now().plusDays(1);
 	private LocalDate mDate;
 	private static final int MAX_FUNRITNURES_PER_DAY = 24;
 	private static final int MAX_FURNIUTRES_PER_DAY_USER = 4;
@@ -34,14 +35,8 @@ public class DailyServices implements Comparable<DailyServices> {
 	private static SqlConector sesion;
 	
 	public DailyServices() throws IOException{
-		final LocalDate TODAY = new LocalDate();
-		if(LAST_DATE == null){
-			LAST_DATE = TODAY.plusDays(1);
-			mDate = LAST_DATE;
-		}
-		else{
-			mDate =  LAST_DATE.plusDays(1);
-		}
+		mDate =  LAST_DATE;
+		LAST_DATE.plusDays(1);
 		sesion = new SqlConectorImp();
 		inUse = new AtomicBoolean(false);
 		mRequestToConfirmation = new ArrayList<ProvisionalAppointment>();
@@ -50,15 +45,11 @@ public class DailyServices implements Comparable<DailyServices> {
 	
 	public DailyServices(LocalDate serviceDay) 
 			throws IllegalArgumentException, IOException{
-		final LocalDate TODAY = new LocalDate();
-		if(serviceDay.isBefore(TODAY)){
+		if(!serviceDay.isAfter(LocalDate.now())){
 			throw new IllegalArgumentException("invalid day, it must "
 					+ "be later than the current day ("+serviceDay.toString()+")");
 		}
-		if(LAST_DATE == null){
-			LAST_DATE = serviceDay;
-		}
-		else if(serviceDay.isAfter(LAST_DATE)){
+		if(serviceDay.isAfter(LAST_DATE)){
 			LAST_DATE = serviceDay;
 		}
 		sesion = new SqlConectorImp();
@@ -187,9 +178,9 @@ public class DailyServices implements Comparable<DailyServices> {
 		return this.mDate;
 	}
 
-
 	public synchronized void confirmProvisionalAppointment(String phone) 
 			throws InterruptedException, UnsupportedOperationException {
+		// Area de ex. mutua
 		while(inUse.get()){
 			wait();
 		}

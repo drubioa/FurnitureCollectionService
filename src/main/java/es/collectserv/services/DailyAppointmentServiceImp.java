@@ -33,13 +33,13 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public ArrayList<ProvisionalAppointmentConverter> getProvisionalAppintments(
-			@QueryParam("phone_number") String phone_number,
-			@QueryParam("num_funritures") int itemsRequest,
-			@QueryParam("collection_point_id") int collection_point_id){
-			if(checkIfUserGotPrevAppointment(phone_number)){
-				throw new WebApplicationException(Response.Status.BAD_REQUEST);
-			}
-			List<ProvisionalAppointment> appointment;
+		@QueryParam("phone_number") String phone_number,
+		@QueryParam("num_funritures") int itemsRequest,
+		@QueryParam("collection_point_id") int collection_point_id){
+		if(checkIfUserGotPrevAppointment(phone_number)){
+			throw new WebApplicationException(Response.Status.BAD_REQUEST);
+		}
+		List<ProvisionalAppointment> appointment;
 		try {
 				appointment = manager.getAppointmentToConfirm(phone_number, 
 				itemsRequest,collection_point_id);
@@ -71,7 +71,8 @@ public class DailyAppointmentServiceImp implements DailyAppointmentService{
 			System.out.println(collectionRequest.toString());
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);			
 		}
-		else if(!collectionRequest.getFch_collection().isAfter(new LocalDate())){
+		else if(!collectionRequest.getFch_collection().isAfter(new LocalDate())||
+				collectionRequest.getFch_collection().isEqual(new LocalDate())){
 			System.out.println("Fecha de solicitud posterior a hoy.");
 			System.out.println(collectionRequest.toString());
 			throw new WebApplicationException(Response.Status.BAD_REQUEST);			

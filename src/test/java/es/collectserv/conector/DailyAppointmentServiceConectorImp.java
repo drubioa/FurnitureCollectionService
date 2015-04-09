@@ -24,6 +24,7 @@ import org.codehaus.jettison.json.JSONObject;
 import es.collectserv.json.JSONConverter;
 import es.collectserv.model.CollectionRequest;
 import es.collectserv.model.ProvisionalAppointment;
+import es.collectserv.test.collectserv.AppointmentValidator;
 
 public class DailyAppointmentServiceConectorImp 
 	implements DailyAppointmentServiceConector{

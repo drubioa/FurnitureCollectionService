@@ -135,6 +135,11 @@ public class SqlConectorImp implements SqlConector{
 		.getOpenSqlSesion();
 		List<CollectionRequest> requests = session.selectList("CollectionRequestMapper"+
 				".selectPendingRequestByPhone",phone);
+		for(CollectionRequest r:requests){
+			if(!r.checkCorrectRequest()){
+				System.out.println("ERROR EN EL FORMATO AL TRAER DE LA BD");
+			}
+		}
 		session.close();
 		return requests;	
 	}

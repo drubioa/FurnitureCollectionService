@@ -16,6 +16,6 @@ public interface CollectionRequestService {
 	 * @param phone
 	 * @return
 	 */
-	public ArrayList<CollectionRequestConverter> getCollectionRequest(String phone);
+	public ArrayList<CollectionRequestConverter> getPendingCollectionRequest(String phone);
 
 }

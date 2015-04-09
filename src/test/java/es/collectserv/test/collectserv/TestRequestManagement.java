@@ -51,11 +51,7 @@ public class TestRequestManagement {
 		try {
 			List<ProvisionalAppointment> appointments = 
 					mManagement.getAppointmentToConfirm(phone, 1, 1);
-			assertNotNull(appointments);
-			assertTrue(appointments.size() == 1);
-			ProvisionalAppointment appointmet = appointments.get(0);
-			assertTrue(appointmet.getTelephone() == phone);
-			utilities.validAppointment(appointmet);
+			AppointmentValidator.validAppointment(appointments);
 			assertTrue(mManagement.userGotPreviosRequest(phone));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -111,6 +107,7 @@ public class TestRequestManagement {
 					mManagement.getAppointmentToConfirm(phone, 12, 1);
 			assertNotNull(appointments);
 			assertTrue(appointments.size() == 3); // 12 / 4 = 3
+			AppointmentValidator.validAppointment(appointments);;
 			for(ProvisionalAppointment appointmet : appointments){
 				assertTrue(appointmet.getTelephone() == phone);	
 				utilities.validAppointment(appointmet);

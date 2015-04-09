@@ -93,8 +93,7 @@
            keyProperty="id">
      	INSERT INTO servrecog_solicitudes(
 			fch_solicitud_nn,fch_recogida_nn,telephone_nn,punto_recogida_nn) 
-			VALUES (#{fch_request},#{fch_collection},
-			#{telephone},#{collectionPointId}) 
+			VALUES (#{fch_request},#{fch_collection},#{telephone},#{collectionPointId}) 
       </insert>
       
       <insert id="insertFurnituresInRequest">

@@ -16,10 +16,11 @@ import es.collectserv.model.User;
 @RunWith(JUnit4.class)
 public class TestUserService {
 	private UserServiceConector conector;
-
+	private final String HOST = "108.170.29.138";
+	
 	@Before
 	public void setUp(){
-		conector = new UserServiceConectorImp("localhost",8080,"http");
+		conector = new UserServiceConectorImp(HOST,8080,"http");
 	}
 	
 	/**

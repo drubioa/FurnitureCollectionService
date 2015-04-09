@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
+import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -125,7 +126,7 @@ public class TestDailyAppointmentService {
 	@Test
 	public void testGetAndConfirm1Appointment() throws Exception{
 		final String userName = "Paco";
-		final String userPhoneNumber = "600000001";
+		final String userPhoneNumber = "654398565";
 		final int num_furnitures = 1;
 		final int collectionPointId = 1;
 		try{
@@ -215,7 +216,7 @@ public class TestDailyAppointmentService {
 			createUser(userName,userPhoneNumber);
 			getAllCollectionRequest(userPhoneNumber);
 		} catch (Exception e) {
-			if(!e.toString().contains("HTTP error code : 204")){
+			if(!e.toString().contains("HTTP error code : 400")){
 				fail(e.toString());
 			}
 		}
@@ -278,6 +279,8 @@ public class TestDailyAppointmentService {
 					/ MAX_FURNIUTRES_PER_DAY_USER)+1);
 			AppointmentValidator.validAppointment(appointments);
 			for(ProvisionalAppointment appointment: appointments){
+				assertTrue(appointment.getFch_request().equals(new LocalDate())&&
+						appointment.getFch_collection().isAfter(appointment.getFch_request()));
 				List<Furniture> furnitures = createExampleFurnitureList(
 						appointment.getNumFurnitures());
 				CollectionRequest req =
@@ -321,6 +324,9 @@ public class TestDailyAppointmentService {
 			assertNotNull(f.getName());
 			assertTrue(!f.getName().isEmpty());
 		}
+		assertTrue(req.getFch_collection().isAfter(req.getFch_request()));
+		assertTrue(req.getFch_collection().isAfter(LocalDate.now()));
+		assertTrue(req.getFch_request().isEqual(LocalDate.now()));
 		return req.checkCorrectRequest() && req.getNumFurnitures() == totalFurnitures;
 	}
 	

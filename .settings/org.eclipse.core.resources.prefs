@@ -3,6 +3,7 @@ encoding//src/main/java/es/collectserv/collrequest/DailyServices.java=UTF-8
 encoding//src/main/java/es/collectserv/model/Area.java=UTF-8
 encoding//src/main/java/es/collectserv/model/CollectionRequest.java=UTF-8
 encoding//src/main/java/es/collectserv/model/Request.java=UTF-8
+encoding//src/main/java/es/collectserv/services/DailyAppointmentServiceImp.java=UTF-8
 encoding//src/test/java/es/collectserv/test/mybatis/MyBatisConfigurator.java=UTF-8
 encoding//src/test/java/es/collectserv/test/mybatis/TestCollectionRequest.java=UTF-8
 encoding//src/test/java/es/collectserv/test/services/TestUserService.java=UTF-8

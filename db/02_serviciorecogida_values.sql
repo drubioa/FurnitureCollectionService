@@ -1,22 +1,47 @@
 -- Se insertan todas las zonas
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('Centro');
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('Rio San Pedro');
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('las Canteras');
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('Casines');
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('Barrio Jarana');
-INSERT INTO servrecog_zones(nombre_uk) 
+INSERT INTO servrecog_zones(nombre_uk)
 	VALUES ('Meadero de la Reina ');
-INSERT INTO servrecog_zones(nombre_uk) 
-	VALUES ('Zonas Rurales');		
-				
+INSERT INTO servrecog_zones(nombre_uk)
+	VALUES ('Zonas Rurales');
+
 -- Centro
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.538232,-6.200345,'Avenida de la Universidad',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Centro'));
 
 --Rio San Pedro
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.521414,-6.22784,'Calle Proa, 19',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.522981,-6.22484,'Calle Uruguay, 4',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.523663,-6.225382,'Avenida de la Bahía, 1',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.52355,-6.226122,'Avenida de la Bahía, 4',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.523469,-6.226707,'Avenida de la Bahía, 6',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.523341,-6.227556,'Calle Botavara, 4',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
+	VALUES(36.523745,-6.228485,'Avenida Quinto Centenario, 9',
+		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'Rio San Pedro'));
+-- Incompleto
 
 --las Canteras
 INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
@@ -61,13 +86,13 @@ INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
 INSERT INTO servrecog_puntos_recogida(lat_nn,lon_nn,direccion,zone)
 	VALUES(36.533857,-6.187203,'Orion',
 		(SELECT id_zone_pk FROM servrecog_zones WHERE servrecog_zones.nombre_uk LIKE 'las Canteras'));
-		
-		
+
+
 -- Casines
 
 --Barrio Jarana
 
---Meadero de la Reina 
+--Meadero de la Reina
 
 --Zonas Rurales.
 
@@ -161,3 +186,5 @@ INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 	VALUES(34,'door',6);
 INSERT INTO servrecog_furnitures (id_furniture_pk,name_nn,id_category_uk)
 	VALUES(35,'heater',6);
+
+COMMIT;

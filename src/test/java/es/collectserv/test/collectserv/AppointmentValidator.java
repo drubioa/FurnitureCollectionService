@@ -17,13 +17,15 @@ public abstract class AppointmentValidator {
 	public static void validAppointment(ProvisionalAppointment appointment){
 		assertNotNull(appointment);
 		assertNotNull(appointment.getTelephone());
-		assertTrue(appointment.getTelephone().charAt(0) == '6');
+		assertTrue(appointment.getTelephone().charAt(0) == '6'
+				||appointment.getTelephone().charAt(0) == '9');
 		assertTrue(appointment.getNumFurnitures() > 0);
 		assertNotNull(appointment.getFch_collection());
 		LocalDate collection_date = appointment.getFch_collection();
 		assertNotNull(appointment.getFch_request());
 		LocalDate request_date = appointment.getFch_request();
 		assertTrue(collection_date.isAfter(request_date));
+		assertTrue(appointment.getFch_request().equals(new LocalDate()));
 		assertTrue(collection_date.isAfter(new LocalDate()));
 		assertNotNull(appointment.getCollectionPointId());
 	}

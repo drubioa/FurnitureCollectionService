@@ -28,11 +28,13 @@ public class LocalDateTypeHandler implements TypeHandler
 {
 
   /* (non-Javadoc)
-   * @see org.apache.ibatis.type.TypeHandler#setParameter(java.sql.PreparedStatement, int, java.lang.Object, org.apache.ibatis.type.JdbcType)
+   * @see org.apache.ibatis.type.TypeHandler#setParameter
+   * (java.sql.PreparedStatement, int, java.lang.Object,
+   *  org.apache.ibatis.type.JdbcType)
    */
-  public void setParameter(PreparedStatement ps, int i, Object parameter, JdbcType jdbcType) throws SQLException
+  public void setParameter(PreparedStatement ps, int i, Object parameter,
+		  JdbcType jdbcType) throws SQLException
   {
-
       LocalDate date = (LocalDate) parameter;
       if (date != null)
       {
@@ -52,7 +54,9 @@ public class LocalDateTypeHandler implements TypeHandler
       Date date = rs.getDate(columnName);
       if (date != null)
       {
-          return new LocalDate(date.getTime(), DateTimeZone.UTC);
+    	  // Se toma la fecha del sistema.
+          LocalDate d = new LocalDate(date.getTime(), DateTimeZone.getDefault());
+          return d;
       }
       else
       {

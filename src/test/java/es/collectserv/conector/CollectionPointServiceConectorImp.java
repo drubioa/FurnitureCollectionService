@@ -22,9 +22,11 @@ public class CollectionPointServiceConectorImp
 	private HttpHost mTarget;
 	private DefaultHttpClient mHttpclient;
 	
+	private final String HOST = "108.170.29.138";
+	
 	public CollectionPointServiceConectorImp(){
 		mHttpclient = new DefaultHttpClient();
-		mTarget = new HttpHost("localhost", 8080, "http");	
+		mTarget = new HttpHost(HOST, 8080, "http");	
 	}
 	
 	/**

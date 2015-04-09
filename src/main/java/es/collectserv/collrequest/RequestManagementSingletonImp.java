@@ -153,19 +153,19 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 	 */
 	private List<ProvisionalAppointment> createProvisionalAppointments(int itemsRequest,
 			String phone_number, int collectionPointId) throws Exception{
-		List<ProvisionalAppointment> appintment_list = 
+		List<ProvisionalAppointment> appointment_list = 
 				new ArrayList<ProvisionalAppointment>();
 		for(DailyServices d : mDays){
 			int realizablesFurPerReq = 
 					d.obtainRealizablePeticions(phone_number);
 			if(realizablesFurPerReq > 0){
 				if(itemsRequest <= realizablesFurPerReq){
-					appintment_list.add(d.getProvisionalAppointment(phone_number, 
+					appointment_list.add(d.getProvisionalAppointment(phone_number, 
 							itemsRequest, collectionPointId));
 					itemsRequest = 0;
 					break;
 				}else{
-					appintment_list.add(d.getProvisionalAppointment(phone_number, 
+					appointment_list.add(d.getProvisionalAppointment(phone_number, 
 							realizablesFurPerReq, collectionPointId));
 					itemsRequest -= realizablesFurPerReq;
 				}
@@ -173,10 +173,10 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		}
 		// Se creab nuevos dias de recogida
 		if(itemsRequest > 0){
-			appintment_list.addAll(createNewServiceDaysForAppointment(itemsRequest,
+			appointment_list.addAll(createNewServiceDaysForAppointment(itemsRequest,
 					phone_number,collectionPointId));
 		}
-		return appintment_list;
+		return appointment_list;
 	}
 
 	/**
@@ -219,6 +219,7 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 		return appointment_list;
 	}
 
+	/* Confirma una solicitud de recogida */
 	public synchronized void confirmProvisionalAppointment(
 			CollectionRequest request) 
 					throws ServiceUnavailableException, IOException, NotBoundException, 
@@ -227,32 +228,42 @@ public class RequestManagementSingletonImp implements RequestManagementSingleton
 			throw new ServiceUnavailableException("request is null");
 		}
 		if(!request.checkCorrectRequest()){
-			throw new ServiceUnavailableException("Request got incorrect format. \n"+
+			throw new ServiceUnavailableException("in 'confirmProvisionalAppointment':"
+					+ " Request got incorrect format. \n"+
 					request.toString());
 		}
 		if(mDays.size() == 0){
-			throw new ServiceUnavailableException("DailyServices is empty");			
+			throw new ServiceUnavailableException("in 'confirmProvisionalAppointment':"
+				+"DailyServices is empty");			
 		}
 		DailyServices dailyService = null;
+		// busca el dia de servicio correspondiente
 		for(DailyServices d : mDays){
 			if(d.getServiceDate().isEqual(request.getFch_collection())){
 				dailyService = d;
 				break;
 			}
 		}
+		// si no lo encuentre lanza excepcion
 		if(dailyService == null){
 			throw new NotBoundException("dailyService not found for day "+
 						request.getFch_collection());
 		}
 		try {
-			if(inUse.get()){
+			// Area de ex.mutua
+			while(inUse.get()){
 				wait();
 			}
 			inUse.set(true);
+			// confirma la solicitud
 			dailyService.confirmProvisionalAppointment(request.getTelephone());
+			session.registerRequestInDB(request);
+			// Se comprueba que las solicitudes se registran correctamente en
+			//la base de datos, y que tienen un formato de fecha de req y col 
+			//correcto.
 			inUse.set(false);
 			notifyAll();
-			session.registerRequestInDB(request);
+			
 		} catch (IOException e) {
 			inUse.set(false);
 			notifyAll();
